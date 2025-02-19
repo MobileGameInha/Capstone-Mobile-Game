@@ -81,9 +81,10 @@ public class GameManager : MonoBehaviour
     private int perfect_count_ = 0; //퍼펙트 개수
     private int perfect_count_fever_ = 0; //퍼펙트 개수 (피버 용도)
     private const int PERFECT_FEVER_COUNT_ = 5; //피버 도달을 위한 퍼펙트 개수
-    private bool is_fever = false; //피버 상태인지
-    private int remain_fever_count = 0; //피버에 도달 했는지
-    private const int MAX_FEVER_COUNT = 2; //피버 개수
+    private bool is_fever_ = false; //피버 상태인지
+    private int remain_fever_count_ = 0; //피버에 도달 했는지
+    private int max_fever_count_ = MAX_FEVER_COUNT_; //피버 개수
+    private const int MAX_FEVER_COUNT_ = 2; //시작 피버 개수
 
     private int tile_size_ = MIN_TILE_SIZE_;
     public const int MIN_TILE_SIZE_ = 5; //시작 타일 개수
@@ -95,10 +96,14 @@ public class GameManager : MonoBehaviour
     private ArrowDirection[] tile_arrows_ = new ArrowDirection[10]; //화살표 방향
     private int tile_index_ = 0; //현재 타일 위치
 
+    private const int LINE_TILES = 5; //한 줄에 몇개의 타일이 있는지
 
     private const int CAT_SIZE_ = 12;
     private bool[] using_cat_ = new bool[CAT_SIZE_]; //고양이를 사용중인가
     private float[] using_cat_value_ = new float[CAT_SIZE_];//고양이의 사용 수치
+
+    private bool is_stop_round_time = false;
+
 
     private void Awake()
     {
@@ -112,7 +117,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        SetUsingCat(3,-1,-1,5); //!!!!임시코드 : 삭제 할 예정
+        SetUsingCat(CatIndex.TIME_STOP_,-1,-1,0.5f); //!!!!임시코드 : 삭제 할 예정
         StartGame(); //!!!!임시코드 : 삭제 할 예정
     }
 
@@ -137,7 +142,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if (is_fever)
+        if (is_fever_)
         {
             Debug.Log("피버!");
             ArrowDirection dir = (ArrowDirection)Random.Range(0, 4);
@@ -147,12 +152,90 @@ public class GameManager : MonoBehaviour
                 tile_arrows_[i] = dir;
             }
         }
-        else { 
-            for (int i = 0; i < tile_size_; i++)
+        else {
+            if (using_cat_[CatIndex.BONUS_STAGE_])
             {
-            ArrowDirection dir = (ArrowDirection)Random.Range(0, 4);
-            tile_manager_.SetState(true, i, dir);
-            tile_arrows_[i] = dir;
+                int range = Mathf.RoundToInt(using_cat_value_[CatIndex.BONUS_STAGE_] * 100.0f);
+                int num = Random.Range(1, 101);
+                if (range >= num)
+                {
+                    Debug.Log("보너스 스테이지!");
+
+                    ArrowDirection dir1 = (ArrowDirection)Random.Range(0, 4);
+                    ArrowDirection dir2 = (ArrowDirection)Random.Range(0, 4);
+
+                    while (dir1 == dir2)
+                    {
+                        dir2 = (ArrowDirection)Random.Range(0, 4);
+                    }
+                    for (int i = 0; i < tile_size_; i++)
+                    {
+                        int idx = Random.Range(0, 2);
+                        if (i == 0)
+                        {
+                            tile_manager_.SetState(true, i, dir1);
+                            tile_arrows_[i] = dir1;
+                        }
+                        else
+                        {
+                            tile_manager_.SetState(true, i, dir2);
+                            tile_arrows_[i] = dir2;
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < tile_size_; i++)
+                    {
+                        ArrowDirection dir = (ArrowDirection)Random.Range(0, 4);
+                        tile_manager_.SetState(true, i, dir);
+                        tile_arrows_[i] = dir;
+                    }
+                }
+            }
+            else if (using_cat_[CatIndex.SIMPLE_LINE_])
+            {
+                int range = Mathf.RoundToInt(using_cat_value_[CatIndex.SIMPLE_LINE_] * 100.0f);
+                int num = Random.Range(1, 101);
+                if (range >= num)
+                {
+                    Debug.Log("단순화!");
+
+                    ArrowDirection dir_simple = (ArrowDirection)Random.Range(0, 4);
+                    int line = Random.Range(0, tile_size_ / LINE_TILES);
+                    for (int i = 0; i < tile_size_; i++)
+                    {
+                        int idx = Random.Range(0, 2);
+                        if (i >= line * LINE_TILES && i < (line + 1) * LINE_TILES)
+                        {
+                            tile_manager_.SetState(true, i, dir_simple);
+                            tile_arrows_[i] = dir_simple;
+                        }
+                        else
+                        {
+                            ArrowDirection dir = (ArrowDirection)Random.Range(0, 4);
+                            tile_manager_.SetState(true, i, dir);
+                            tile_arrows_[i] = dir;
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < tile_size_; i++)
+                    {
+                        ArrowDirection dir = (ArrowDirection)Random.Range(0, 4);
+                        tile_manager_.SetState(true, i, dir);
+                        tile_arrows_[i] = dir;
+                    }
+                }
+            }
+            else {
+                for (int i = 0; i < tile_size_; i++)
+                {
+                    ArrowDirection dir = (ArrowDirection)Random.Range(0, 4);
+                    tile_manager_.SetState(true, i, dir);
+                    tile_arrows_[i] = dir;
+                }
             }
         }
 
@@ -173,13 +256,13 @@ public class GameManager : MonoBehaviour
     }
 
     private void FeverCheck() {
-        if (is_fever)
+        if (is_fever_)
         {
             {
-                remain_fever_count--;
-                if (remain_fever_count == 0)
+                remain_fever_count_--;
+                if (remain_fever_count_ == 0)
                 {
-                    is_fever = false;
+                    is_fever_ = false;
                 }
             }
         }
@@ -192,14 +275,14 @@ public class GameManager : MonoBehaviour
             if (perfect_count_fever_ == PERFECT_FEVER_COUNT_)
             {
                 perfect_count_fever_ = 0;
-                is_fever = true;
-                remain_fever_count = MAX_FEVER_COUNT;
+                is_fever_ = true;
+                remain_fever_count_ = max_fever_count_;
             }
         }
     }
 
     private void AddScore(int val) {
-        if (is_fever)
+        if (is_fever_)
         {
             if (val >= 0) { score_ += Mathf.RoundToInt(val * 1.5f); }
         }
@@ -260,6 +343,21 @@ public class GameManager : MonoBehaviour
     private void SetRoundTimer(bool is_reset, float delta_time = 0.0f) {
         if (is_reset)
         {
+            if (using_cat_[CatIndex.TIME_STOP_])
+            {
+                int range = Mathf.RoundToInt(using_cat_value_[CatIndex.TIME_STOP_] * 100.0f);
+                int num = Random.Range(1, 101);
+                if (range >= num)
+                {
+                    Debug.Log("시간 정지!");
+                    is_stop_round_time = true;
+                }
+                else 
+                {
+                    is_stop_round_time = false;
+                }
+            }
+
             max_round_time_ -= remove_round_time_;
             remove_round_time_ *= REMOVE_ROUND_TIME_RATE;
             round_time_ = max_round_time_;
@@ -267,6 +365,11 @@ public class GameManager : MonoBehaviour
             RoundTimerImage.fillAmount = round_time_ / max_round_time_;
         }
         else {
+            if (is_stop_round_time) 
+            {
+                return;
+            }
+
             round_time_ -= delta_time;
 
             if (round_time_ <= 0.0f)
@@ -305,7 +408,8 @@ public class GameManager : MonoBehaviour
             score_ = 0;
 
             is_perfect_ = false;
-            is_fever = false;
+            is_fever_ = false;
+            is_stop_round_time = false;
 
             perfect_count_ = 0;
             perfect_count_fever_ = 0;
@@ -314,6 +418,7 @@ public class GameManager : MonoBehaviour
             max_total_time_ = MAX_TOTAL_TIME_;
             max_round_time_ = FIRST_MAX_ROUND_TIME;
             max_tile_count_ = MAX_TILE_COUNT_;
+            max_fever_count_ = MAX_FEVER_COUNT_;
 
             SetStartCatSkill();
 
@@ -345,15 +450,26 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                is_perfect_ = false;
-
-                tile_manager_.SetState(false, tile_index_);
-                AddScore(REMOVING_SCORE_TILE_);
-                RemoveLife(removing_value_life_);
-                if (life_ <= 0.0f) {
-                    return;
+                if (using_cat_[CatIndex.MISTAKE_DEFENCE_] && using_cat_value_[CatIndex.MISTAKE_DEFENCE_] > 0)
+                {
+                    Debug.Log("실수 방지!");
+                    using_cat_value_[CatIndex.MISTAKE_DEFENCE_] -= 1;
+                    tile_manager_.SetState(false, tile_index_);
+                    IncreaseTileIndex();
                 }
-                IncreaseTileIndex();
+                else
+                {
+                    is_perfect_ = false;
+
+                    tile_manager_.SetState(false, tile_index_);
+                    AddScore(REMOVING_SCORE_TILE_);
+                    RemoveLife(removing_value_life_);
+                    if (life_ <= 0.0f)
+                    {
+                        return;
+                    }
+                    IncreaseTileIndex();
+                }
             }
         }
     }
@@ -385,6 +501,10 @@ public class GameManager : MonoBehaviour
             Debug.Log("데미지 감소! : " + removing_value_life_.ToString());
         }
 
+        if (using_cat_[CatIndex.FEVER_UP_])
+        {
+            max_fever_count_ = MAX_FEVER_COUNT_ + Mathf.RoundToInt(using_cat_value_[CatIndex.FEVER_UP_]);
+        }
     }
 
 
