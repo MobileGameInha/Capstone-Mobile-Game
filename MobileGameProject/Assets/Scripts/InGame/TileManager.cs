@@ -13,13 +13,13 @@ public class TileManager : MonoBehaviour
     public Sprite[] tile_sprites_ = new Sprite[4];
 
     [SerializeField]
-    private Image[] tile_images_ = new Image[GameManager.tile_size_]; //타일 이미지 : 인스펙터에서 지정
-    private Transform[] arrows_ = new Transform[GameManager.tile_size_]; //각 타일의 화살표
+    private Image[] tile_images_ = new Image[GameManager.MAX_TILE_SIZE_]; //타일 이미지 : 인스펙터에서 지정
+    private Transform[] arrows_ = new Transform[GameManager.MAX_TILE_SIZE_]; //각 타일의 화살표
 
 
     private void Awake()
     {
-        for (int  i = 0;  i < GameManager.tile_size_;  i++)
+        for (int  i = 0;  i < GameManager.MAX_TILE_SIZE_;  i++)
         {
             arrows_[i] = tile_images_[i].GetComponentsInChildren<Transform>()[1];
         }
