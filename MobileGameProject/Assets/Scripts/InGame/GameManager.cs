@@ -7,7 +7,7 @@ using UnityEditorInternal;
 
 
 
-public enum ArrowDirection { LU, LD, RU, RD }
+public enum ArrowDirection { LU, LD, RU, RD, CTORUP, DN }
 
 public static class DisruptorIndex
 {
@@ -107,17 +107,19 @@ public class GameManager : MonoBehaviour
     private int max_fever_count_ = MAX_FEVER_COUNT_; //피버 개수
     private const int MAX_FEVER_COUNT_ = 2; //시작 피버 개수
 
-    private int tile_size_ = MIN_TILE_SIZE_;
-    public const int MIN_TILE_SIZE_ = 5; //시작 타일 개수
-    public const int MAX_TILE_SIZE_ = 10; //최대 타일 개수
-    private int tile_count_ = MAX_TILE_COUNT_;
-    public int max_tile_count_ = MAX_TILE_COUNT_; //최대 타일 개수
-    public const int MAX_TILE_COUNT_ = 3; //시작 최대 타일 개수
+    public int BUTTON_COUNT = 4;
 
-    private ArrowDirection[] tile_arrows_ = new ArrowDirection[10]; //화살표 방향
+    private int tile_size_ = 5;
+    public int MIN_TILE_SIZE_ = 5; //시작 타일 개수
+    public int MAX_TILE_SIZE_ = 10; //최대 타일 개수
+    private int tile_count_ = MAX_TILE_COUNT_;
+    private int max_tile_count_ = MAX_TILE_COUNT_; //최대 타일 변동 카운트
+    private const int MAX_TILE_COUNT_ = 3; //시작 최대 타일 변동 카운트
+
+    private ArrowDirection[] tile_arrows_ = new ArrowDirection[20]; //화살표 방향
     private int tile_index_ = 0; //현재 타일 위치
 
-    private const int LINE_TILES = 5; //한 줄에 몇개의 타일이 있는지
+    public int LINE_TILES = 5; //한 줄에 몇개의 타일이 있는지
 
     private const int CAT_SIZE_ = 12;
     private bool[] using_cat_ = new bool[CAT_SIZE_]; //고양이를 사용중인가
@@ -252,12 +254,12 @@ public class GameManager : MonoBehaviour
             {
                 Debug.Log("하드 피버!");
 
-                ArrowDirection dir1 = (ArrowDirection)Random.Range(0, 4);
-                ArrowDirection dir2 = (ArrowDirection)Random.Range(0, 4);
+                ArrowDirection dir1 = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
+                ArrowDirection dir2 = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
 
                 while (dir1 == dir2)
                 {
-                    dir2 = (ArrowDirection)Random.Range(0, 4);
+                    dir2 = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
                 }
                 for (int i = 0; i < tile_size_; i++)
                 {
@@ -277,7 +279,7 @@ public class GameManager : MonoBehaviour
             else
             {
                 Debug.Log("피버!");
-                ArrowDirection dir = (ArrowDirection)Random.Range(0, 4);
+                ArrowDirection dir = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
                 for (int i = 0; i < tile_size_; i++)
                 {
                     tile_manager_.SetState(true, i, dir);
@@ -296,12 +298,12 @@ public class GameManager : MonoBehaviour
                 {
                     Debug.Log("보너스 스테이지!");
 
-                    ArrowDirection dir1 = (ArrowDirection)Random.Range(0, 4);
-                    ArrowDirection dir2 = (ArrowDirection)Random.Range(0, 4);
+                    ArrowDirection dir1 = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
+                    ArrowDirection dir2 = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
 
                     while (dir1 == dir2)
                     {
-                        dir2 = (ArrowDirection)Random.Range(0, 4);
+                        dir2 = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
                     }
                     for (int i = 0; i < tile_size_; i++)
                     {
@@ -322,7 +324,7 @@ public class GameManager : MonoBehaviour
                 {
                     for (int i = 0; i < tile_size_; i++)
                     {
-                        ArrowDirection dir = (ArrowDirection)Random.Range(0, 4);
+                        ArrowDirection dir = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
                         tile_manager_.SetState(true, i, dir, disruptor_hide_check_);
                         tile_arrows_[i] = dir;
                     }
@@ -336,7 +338,7 @@ public class GameManager : MonoBehaviour
                 {
                     Debug.Log("단순화!");
 
-                    ArrowDirection dir_simple = (ArrowDirection)Random.Range(0, 4);
+                    ArrowDirection dir_simple = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
                     int line = Random.Range(0, tile_size_ / LINE_TILES);
                     for (int i = 0; i < tile_size_; i++)
                     {
@@ -348,7 +350,7 @@ public class GameManager : MonoBehaviour
                         }
                         else
                         {
-                            ArrowDirection dir = (ArrowDirection)Random.Range(0, 4);
+                            ArrowDirection dir = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
                             tile_manager_.SetState(true, i, dir, disruptor_hide_check_);
                             tile_arrows_[i] = dir;
                         }
@@ -358,7 +360,7 @@ public class GameManager : MonoBehaviour
                 {
                     for (int i = 0; i < tile_size_; i++)
                     {
-                        ArrowDirection dir = (ArrowDirection)Random.Range(0, 4);
+                        ArrowDirection dir = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
                         tile_manager_.SetState(true, i, dir, disruptor_hide_check_);
                         tile_arrows_[i] = dir;
                     }
@@ -367,7 +369,7 @@ public class GameManager : MonoBehaviour
             else {
                 for (int i = 0; i < tile_size_; i++)
                 {
-                    ArrowDirection dir = (ArrowDirection)Random.Range(0, 4);
+                    ArrowDirection dir = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
                     tile_manager_.SetState(true, i, dir, disruptor_hide_check_);
                     tile_arrows_[i] = dir;
                 }

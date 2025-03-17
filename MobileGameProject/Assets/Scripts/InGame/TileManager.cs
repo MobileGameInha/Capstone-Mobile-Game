@@ -9,22 +9,27 @@ public class TileManager : MonoBehaviour
     private Quaternion ARROW_ROTATION_LD = Quaternion.Euler(0, 0, 45);
     private Quaternion ARROW_ROTATION_RU = Quaternion.Euler(0, 0, 225);
     private Quaternion ARROW_ROTATION_RD = Quaternion.Euler(0, 0, 135);
+    private Quaternion ARROW_ROTATION_CTORUP = Quaternion.Euler(0, 0, -90);
+    private Quaternion ARROW_ROTATION_DN = Quaternion.Euler(0, 0, 90);
     private Quaternion ARROW_ROTATION_HIDE = Quaternion.Euler(0, 0, 0);
 
     public Sprite[] tile_sprites_ = new Sprite[4];
     public Sprite tile_hide_sprite;
     public Sprite arrow_sprite;
+    public Sprite circle_sprite;
     public Sprite hidemark_sprite;
 
     [SerializeField]
-    private Image[] tile_images_ = new Image[GameManager.MAX_TILE_SIZE_]; //타일 이미지 : 인스펙터에서 지정
-    private Image[] arrows_ = new Image[GameManager.MAX_TILE_SIZE_]; //각 타일의 화살표
+    private Image[] tile_images_;//타일 이미지 : 인스펙터에서 지정
+    private Image[] arrows_; //각 타일의 화살표
 
 
 
     private void Awake()
     {
-        for (int  i = 0;  i < GameManager.MAX_TILE_SIZE_;  i++)
+        arrows_ = new Image[tile_images_.Length];
+
+        for (int  i = 0;  i < tile_images_.Length;  i++)
         {
             arrows_[i] = tile_images_[i].GetComponentsInChildren<Image>()[1];
         }
@@ -44,7 +49,16 @@ public class TileManager : MonoBehaviour
             {
                 tile_images_[idx].gameObject.SetActive(true);
                 tile_images_[idx].sprite = tile_sprites_[((int)dir)];
-                arrows_[idx].sprite = arrow_sprite;
+
+                if (dir == ArrowDirection.CTORUP && GameManager.gameManager.BUTTON_COUNT == 5)
+                {
+                    arrows_[idx].sprite = circle_sprite;
+                }
+                else 
+                {
+                    arrows_[idx].sprite = arrow_sprite;
+                }
+
                 switch (dir)
                 {
                     case ArrowDirection.LU:
@@ -58,6 +72,12 @@ public class TileManager : MonoBehaviour
                         break;
                     case ArrowDirection.RD:
                         arrows_[idx].transform.rotation = ARROW_ROTATION_RD;
+                        break;
+                    case ArrowDirection.CTORUP:
+                        arrows_[idx].transform.rotation = ARROW_ROTATION_CTORUP;
+                        break;
+                    case ArrowDirection.DN:
+                        arrows_[idx].transform.rotation = ARROW_ROTATION_DN;
                         break;
                 }
             }
