@@ -6,7 +6,7 @@ using TMPro;
 using UnityEditorInternal;
 
 
-
+public enum ChallangeMode { None, ButtonRoatator, OneLife, BlackAndWhite}
 public enum ArrowDirection { LU, LD, RU, RD, CTORUP, DN }
 
 public static class DisruptorIndex
@@ -59,7 +59,11 @@ public class GameManager : MonoBehaviour
     public Image TotalTimerImage;
     public Image RoundTimerImage;
 
+    [SerializeField]
+    private ChallangeMode Mode = ChallangeMode.None;
 
+   [SerializeField]
+    private ButtonRotator CHALLANGE_ButtonRotator;
 
     [SerializeField]
     private TileManager tile_manager_;
@@ -229,6 +233,11 @@ public class GameManager : MonoBehaviour
         {
             SwapButtons();
         }//이전에 스왑했다면 다시 스왑
+
+        if (Mode == ChallangeMode.ButtonRoatator)
+        {
+            CHALLANGE_ButtonRotator.RotateButtons();
+        }
 
         DisruptorCheck();//조력자 사용 체크
 
@@ -692,6 +701,10 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
+                    if (Mode == ChallangeMode.OneLife) {
+                        EndGame();
+                    }
+
                     is_perfect_ = false;
 
                     tile_manager_.SetState(false, tile_index_);
