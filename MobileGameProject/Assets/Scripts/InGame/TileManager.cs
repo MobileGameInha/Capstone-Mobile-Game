@@ -32,6 +32,7 @@ public class TileManager : MonoBehaviour
         for (int  i = 0;  i < tile_images_.Length;  i++)
         {
             arrows_[i] = tile_images_[i].GetComponentsInChildren<Image>()[1];
+            tile_images_[i].gameObject.SetActive(false);
         }
     }
 
