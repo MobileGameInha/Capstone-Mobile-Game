@@ -7,6 +7,9 @@ using UnityEngine.UI;
 
 public class BasicStageManagement : MonoBehaviour
 {
+    public GameObject StageSelectPack;
+    public GameObject StagesPack;
+
     public RectTransform CanvasTransform;
     public RectTransform[] StageTransforms;
 
@@ -20,12 +23,9 @@ public class BasicStageManagement : MonoBehaviour
 
     private Vector2 MainPosition;
 
-    [SerializeField]
     private bool isSweepRight = false;
-    [SerializeField]
     private bool isSweepLeft = false;
 
-    [SerializeField]
     private int currentStage = 0;
 
     private RectTransform CurrentStageTransform;
@@ -46,6 +46,9 @@ public class BasicStageManagement : MonoBehaviour
             StageTransforms[i].position = LeftPosition.position;
         }
         ResetStagePositions();
+
+        StagesPack.SetActive(false);
+        StageSelectPack.SetActive(true);
     }
 
 
@@ -84,6 +87,21 @@ public class BasicStageManagement : MonoBehaviour
 
     }
 
+    public void OnClickMoveToStagesPack(int idx)
+    {
+        currentStage = idx;
+        ResetStagePositions();
+
+        StagesPack.SetActive(true);
+        StageSelectPack.SetActive(false);
+    }
+
+    public void OnClickMoveToStageSelectPack()
+    {
+        StagesPack.SetActive(false);
+        StageSelectPack.SetActive(true);
+    }
+
     public void OnClickMoveToStage(int idx) {
         SceneManager.LoadScene("Stage_" + idx.ToString());
     }
@@ -120,6 +138,11 @@ public class BasicStageManagement : MonoBehaviour
 
     private void ResetStagePositions()
     {
+        for (int i = 0; i < MaxStage; i++)
+        {
+            StageTransforms[i].position = LeftPosition.position;
+        }
+
         CurrentStageTransform = StageTransforms[currentStage];
 
         if (currentStage == 0)
