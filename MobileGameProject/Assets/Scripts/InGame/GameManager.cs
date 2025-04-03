@@ -3,10 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEditorInternal;
 
 
+public enum ChallangeMode { None, ButtonRoatator, OneLife, BlackAndWhite}
+public enum ArrowDirection { LU, LD, RU, RD, CTORUP, DN }
 
-public enum ArrowDirection { LU, LD, RU, RD }
+public static class DisruptorIndex
+{
+    public const int BUTTON_SWAP_ = 0;
+    public const int HIDE_ = 1;
+    public const int TIME_REMOVE_ = 2;
+    public const int HARD_FEVER_ = 3;
+}
 
 
 public static class CatIndex {
@@ -25,6 +34,7 @@ public static class CatIndex {
     public const int TIME_STOP_ = 10;
     public const int SAVOTAGE_DEFENCE_ = 11;
 }
+
 
 public class GameManager : MonoBehaviour
 {
@@ -49,10 +59,23 @@ public class GameManager : MonoBehaviour
     public Image TotalTimerImage;
     public Image RoundTimerImage;
 
+    [SerializeField]
+    private ChallangeMode Mode = ChallangeMode.None;
 
+   [SerializeField]
+    private ButtonRotator CHALLANGE_ButtonRotator;
 
     [SerializeField]
     private TileManager tile_manager_;
+
+    [SerializeField]
+    private Transform LeftUpButtonTransform;
+    [SerializeField]
+    private Transform RightUpButtonTransform;
+    [SerializeField]
+    private Transform LeftDownButtonTransform;
+    [SerializeField]
+    private Transform RightDownButtonTransform;
 
     private bool is_started_ = false; //게임 시작 유무
 
@@ -78,6 +101,8 @@ public class GameManager : MonoBehaviour
     private float FIRST_REMOVE_REOUND_TIME_ = 0.5f;//첫 라운드 감소 시간
     private float REMOVE_ROUND_TIME_RATE = 0.9f;//라운드 타임 감소치 감소 비율
 
+    private bool is_stop_round_time = false;
+
     private int perfect_count_ = 0; //퍼펙트 개수
     private int perfect_count_fever_ = 0; //퍼펙트 개수 (피버 용도)
     private const int PERFECT_FEVER_COUNT_ = 5; //피버 도달을 위한 퍼펙트 개수
@@ -86,23 +111,94 @@ public class GameManager : MonoBehaviour
     private int max_fever_count_ = MAX_FEVER_COUNT_; //피버 개수
     private const int MAX_FEVER_COUNT_ = 2; //시작 피버 개수
 
-    private int tile_size_ = MIN_TILE_SIZE_;
-    public const int MIN_TILE_SIZE_ = 5; //시작 타일 개수
-    public const int MAX_TILE_SIZE_ = 10; //최대 타일 개수
-    private int tile_count_ = MAX_TILE_COUNT_;
-    public int max_tile_count_ = MAX_TILE_COUNT_; //최대 타일 개수
-    public const int MAX_TILE_COUNT_ = 3; //시작 최대 타일 개수
+    public int BUTTON_COUNT = 4;
 
-    private ArrowDirection[] tile_arrows_ = new ArrowDirection[10]; //화살표 방향
+    private int tile_size_ = 5;
+    public int MIN_TILE_SIZE_ = 5; //시작 타일 개수
+    public int MAX_TILE_SIZE_ = 10; //최대 타일 개수
+    private int tile_count_ = MAX_TILE_COUNT_;
+    private int max_tile_count_ = MAX_TILE_COUNT_; //최대 타일 변동 카운트
+    private const int MAX_TILE_COUNT_ = 3; //시작 최대 타일 변동 카운트
+
+    private ArrowDirection[] tile_arrows_ = new ArrowDirection[20]; //화살표 방향
     private int tile_index_ = 0; //현재 타일 위치
 
-    private const int LINE_TILES = 5; //한 줄에 몇개의 타일이 있는지
+    public int LINE_TILES = 5; //한 줄에 몇개의 타일이 있는지
 
     private const int CAT_SIZE_ = 12;
     private bool[] using_cat_ = new bool[CAT_SIZE_]; //고양이를 사용중인가
     private float[] using_cat_value_ = new float[CAT_SIZE_];//고양이의 사용 수치
 
-    private bool is_stop_round_time = false;
+    private const int DISRUPTOR_SIZE_ = 4;
+    private bool[] using_disruptor_ = new bool[DISRUPTOR_SIZE_];  //어떤 방해자가 적용되었는가?
+    private bool use_disruptor_ = false; //방해자가 사용되는가?
+    private float disruptor_probability_ = 0.2f; // 방해자 확률
+    private int disruptor_count_ = 0;
+    private int max_disruptor_count_ = 2; //피버 전 방해자 최대 등장 횟수
+
+    private const float DISRUPTOR_REMOVE_ROUND_TIME_RATE = 0.8f;
+    private int disruptor_index_; //방해자 사용 인덱스
+    private bool disruptor_round_check; //라운드에 방해자가 적용되는가?
+
+    private bool disrutor_error_check_
+    {
+        get
+        {
+            if (!use_disruptor_) { Debug.Log("방해자 사용 안함"); return false; }
+
+            bool using_check = false;
+            for (int i = 0; i < DISRUPTOR_SIZE_; i++)
+            {
+                if (using_disruptor_[i] == true)
+                {
+                    using_check = true;
+                    break;
+                }
+            }
+
+            if (!using_check) { Debug.Log("사용하는 방해자가 없음"); return false; }
+
+            if (disruptor_probability_ <= 0.0f) { Debug.Log("확률이 0 이하임"); return false; }
+
+            if (max_disruptor_count_ < 1) { Debug.Log("방해자가 나올 수 있는 수가 1 미만임"); return false; }
+
+            return true;
+        }
+    }
+
+    private bool disruptor_hide_check_
+    {
+        get
+        {
+            return disruptor_round_check && disruptor_index_ == DisruptorIndex.HIDE_;
+        }
+    }
+    private bool disruptor_timeremove_check_
+    {
+        get
+        {
+            return disruptor_round_check && disruptor_index_ == DisruptorIndex.TIME_REMOVE_;
+        }
+    }
+    private bool disruptor_swap_check_
+    {
+        get
+        {
+            return disruptor_round_check && disruptor_index_ == DisruptorIndex.BUTTON_SWAP_;
+        }
+
+    }
+
+    private bool disruptor_hardfever_check_
+    {
+        get
+        {
+            return disruptor_round_check && disruptor_index_ == DisruptorIndex.HARD_FEVER_;
+        }
+
+    }
+
+    
 
 
     private void Awake()
@@ -117,7 +213,8 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        SetUsingCat(CatIndex.TIME_STOP_,-1,-1,0.5f); //!!!!임시코드 : 삭제 할 예정
+        SetUsingCat(CatIndex.SAVOTAGE_DEFENCE_,-1,-1,0.5f); //!!!!임시코드 : 삭제 할 예정
+        SetUsingDisruptor(true, true, true, false, false, 0.8f, 2);
         StartGame(); //!!!!임시코드 : 삭제 할 예정
     }
 
@@ -130,8 +227,26 @@ public class GameManager : MonoBehaviour
     }
 
     private void ResetTiles() {
-        FeverCheck();
-        Debug.Log("피버카운트 : " + perfect_count_fever_);
+        FeverCheck();//피버 체크
+
+        if (disruptor_swap_check_)
+        {
+            SwapButtons();
+        }//이전에 스왑했다면 다시 스왑
+
+        if (Mode == ChallangeMode.ButtonRoatator)
+        {
+            CHALLANGE_ButtonRotator.RotateButtons();
+        }
+
+        DisruptorCheck();//조력자 사용 체크
+
+        if (disruptor_swap_check_)
+        {
+            SwapButtons();
+            Debug.Log("버튼 스왑!");
+        }
+
         tile_index_ = 0;
 
         if (tile_size_ != MAX_TILE_SIZE_) {
@@ -144,15 +259,46 @@ public class GameManager : MonoBehaviour
 
         if (is_fever_)
         {
-            Debug.Log("피버!");
-            ArrowDirection dir = (ArrowDirection)Random.Range(0, 4);
-            for (int i = 0; i < tile_size_; i++)
+            if (disruptor_hardfever_check_)
             {
-                tile_manager_.SetState(true, i, dir);
-                tile_arrows_[i] = dir;
+                Debug.Log("하드 피버!");
+
+                ArrowDirection dir1 = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
+                ArrowDirection dir2 = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
+
+                while (dir1 == dir2)
+                {
+                    dir2 = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
+                }
+                for (int i = 0; i < tile_size_; i++)
+                {
+                    int idx = Random.Range(0, 2);
+                    if (idx == 0)
+                    {
+                        tile_manager_.SetState(true, i, dir1, disruptor_hide_check_);
+                        tile_arrows_[i] = dir1;
+                    }
+                    else
+                    {
+                        tile_manager_.SetState(true, i, dir2, disruptor_hide_check_);
+                        tile_arrows_[i] = dir2;
+                    }
+                }
+            }
+            else
+            {
+                Debug.Log("피버!");
+                ArrowDirection dir = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
+                for (int i = 0; i < tile_size_; i++)
+                {
+                    tile_manager_.SetState(true, i, dir);
+                    tile_arrows_[i] = dir;
+                }
             }
         }
         else {
+
+            
             if (using_cat_[CatIndex.BONUS_STAGE_])
             {
                 int range = Mathf.RoundToInt(using_cat_value_[CatIndex.BONUS_STAGE_] * 100.0f);
@@ -161,24 +307,24 @@ public class GameManager : MonoBehaviour
                 {
                     Debug.Log("보너스 스테이지!");
 
-                    ArrowDirection dir1 = (ArrowDirection)Random.Range(0, 4);
-                    ArrowDirection dir2 = (ArrowDirection)Random.Range(0, 4);
+                    ArrowDirection dir1 = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
+                    ArrowDirection dir2 = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
 
                     while (dir1 == dir2)
                     {
-                        dir2 = (ArrowDirection)Random.Range(0, 4);
+                        dir2 = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
                     }
                     for (int i = 0; i < tile_size_; i++)
                     {
                         int idx = Random.Range(0, 2);
-                        if (i == 0)
+                        if (idx == 0)
                         {
-                            tile_manager_.SetState(true, i, dir1);
+                            tile_manager_.SetState(true, i, dir1, disruptor_hide_check_);
                             tile_arrows_[i] = dir1;
                         }
                         else
                         {
-                            tile_manager_.SetState(true, i, dir2);
+                            tile_manager_.SetState(true, i, dir2, disruptor_hide_check_);
                             tile_arrows_[i] = dir2;
                         }
                     }
@@ -187,8 +333,8 @@ public class GameManager : MonoBehaviour
                 {
                     for (int i = 0; i < tile_size_; i++)
                     {
-                        ArrowDirection dir = (ArrowDirection)Random.Range(0, 4);
-                        tile_manager_.SetState(true, i, dir);
+                        ArrowDirection dir = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
+                        tile_manager_.SetState(true, i, dir, disruptor_hide_check_);
                         tile_arrows_[i] = dir;
                     }
                 }
@@ -201,20 +347,20 @@ public class GameManager : MonoBehaviour
                 {
                     Debug.Log("단순화!");
 
-                    ArrowDirection dir_simple = (ArrowDirection)Random.Range(0, 4);
+                    ArrowDirection dir_simple = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
                     int line = Random.Range(0, tile_size_ / LINE_TILES);
                     for (int i = 0; i < tile_size_; i++)
                     {
                         int idx = Random.Range(0, 2);
                         if (i >= line * LINE_TILES && i < (line + 1) * LINE_TILES)
                         {
-                            tile_manager_.SetState(true, i, dir_simple);
+                            tile_manager_.SetState(true, i, dir_simple, disruptor_hide_check_);
                             tile_arrows_[i] = dir_simple;
                         }
                         else
                         {
-                            ArrowDirection dir = (ArrowDirection)Random.Range(0, 4);
-                            tile_manager_.SetState(true, i, dir);
+                            ArrowDirection dir = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
+                            tile_manager_.SetState(true, i, dir, disruptor_hide_check_);
                             tile_arrows_[i] = dir;
                         }
                     }
@@ -223,8 +369,8 @@ public class GameManager : MonoBehaviour
                 {
                     for (int i = 0; i < tile_size_; i++)
                     {
-                        ArrowDirection dir = (ArrowDirection)Random.Range(0, 4);
-                        tile_manager_.SetState(true, i, dir);
+                        ArrowDirection dir = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
+                        tile_manager_.SetState(true, i, dir, disruptor_hide_check_);
                         tile_arrows_[i] = dir;
                     }
                 }
@@ -232,8 +378,8 @@ public class GameManager : MonoBehaviour
             else {
                 for (int i = 0; i < tile_size_; i++)
                 {
-                    ArrowDirection dir = (ArrowDirection)Random.Range(0, 4);
-                    tile_manager_.SetState(true, i, dir);
+                    ArrowDirection dir = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
+                    tile_manager_.SetState(true, i, dir, disruptor_hide_check_);
                     tile_arrows_[i] = dir;
                 }
             }
@@ -246,12 +392,18 @@ public class GameManager : MonoBehaviour
 
     private void IncreaseTileIndex() {
         tile_index_++;
-        if (tile_index_ == tile_size_) {
-            if (is_perfect_) {
+        if (tile_index_ == tile_size_)
+        {
+            if (is_perfect_)
+            {
                 perfect_count_++;
                 AddScore(ADDING_SCORE_TILE_);
             }
             ResetTiles();
+        }
+        else if (disruptor_hide_check_)
+        {
+            tile_manager_.SetState(true, tile_index_, tile_arrows_[tile_index_]);
         }
     }
 
@@ -263,6 +415,7 @@ public class GameManager : MonoBehaviour
                 if (remain_fever_count_ == 0)
                 {
                     is_fever_ = false;
+                    disruptor_count_ = 0;
                 }
             }
         }
@@ -280,6 +433,66 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
+    private void DisruptorCheck() {
+        if (use_disruptor_ && disruptor_count_ < max_disruptor_count_)
+        {
+            int range = Mathf.RoundToInt(disruptor_probability_ * 100.0f);
+            int num = Random.Range(1, 101);
+            if (range >= num)
+            {
+                if (using_cat_[CatIndex.SAVOTAGE_DEFENCE_]) { 
+                    int def_range = Mathf.RoundToInt(using_cat_value_[CatIndex.SAVOTAGE_DEFENCE_] * 100.0f);
+                    int def_num = Random.Range(1, 101);
+                    if (def_range >= def_num)
+                    {
+                        Debug.Log("고양이 : 방해자 저지 성공");
+                        disruptor_count_++;
+                        disruptor_round_check = false;
+                        return;
+                    }
+
+                }
+
+
+                int idx;
+
+                if (is_fever_)
+                {
+                    idx = DisruptorIndex.HARD_FEVER_;
+                }
+                else
+                {
+                    if (using_disruptor_[DisruptorIndex.HARD_FEVER_] && disruptor_count_ <= 1)
+                    {
+                        disruptor_round_check = false;
+                        return;
+                    }
+                    else
+                    {
+                        idx = Random.Range(0, DISRUPTOR_SIZE_);
+                        while (!using_disruptor_[idx] || idx == DisruptorIndex.HARD_FEVER_)
+                        {
+                            idx = Random.Range(0, DISRUPTOR_SIZE_);
+                        }
+                    }
+                }
+                disruptor_count_++;
+                disruptor_round_check = true;
+                disruptor_index_ = idx;
+            }
+            else
+            {
+                disruptor_round_check = false;
+            }
+        }
+        else
+        {
+            disruptor_round_check = false;
+        }
+
+    }
+
 
     private void AddScore(int val) {
         if (is_fever_)
@@ -325,6 +538,28 @@ public class GameManager : MonoBehaviour
         }
     } //외부에서 사용할 고양이 지정
 
+    public void SetUsingDisruptor(bool use, bool use_dis1=false, bool use_dis2 = false, bool use_dis3 = false, bool use_dis4 = false, float probability=0.1f, int max_disruptor_count=2)
+    {
+        use_disruptor_ = use;
+
+        if (use)
+        {
+            using_disruptor_[0] = use_dis1;
+            using_disruptor_[1] = use_dis2;
+            using_disruptor_[2] = use_dis3;
+            using_disruptor_[3] = use_dis4;
+
+            disruptor_probability_ = probability;
+            max_disruptor_count_ = max_disruptor_count;
+            disruptor_count_ = 0;
+
+            if (!disrutor_error_check_) { 
+                use_disruptor_ = false; 
+                Debug.Log("데이터에 문제 발생 : 방해자 안나타나게 설정"); 
+            }
+        }
+    } //외부에서 사용할 방해자 지정
+
     private void SetTotalTimer(float delta_time = 0.0f) {
         total_time_ -= delta_time;
 
@@ -358,9 +593,16 @@ public class GameManager : MonoBehaviour
                 }
             }
 
+
             max_round_time_ -= remove_round_time_;
             remove_round_time_ *= REMOVE_ROUND_TIME_RATE;
             round_time_ = max_round_time_;
+
+            if (disruptor_timeremove_check_)
+            {
+                round_time_ *= DISRUPTOR_REMOVE_ROUND_TIME_RATE;
+                Debug.Log("방해자 : 시간 단축!");
+            }
 
             RoundTimerImage.fillAmount = round_time_ / max_round_time_;
         }
@@ -459,6 +701,10 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
+                    if (Mode == ChallangeMode.OneLife) {
+                        EndGame();
+                    }
+
                     is_perfect_ = false;
 
                     tile_manager_.SetState(false, tile_index_);
@@ -508,7 +754,15 @@ public class GameManager : MonoBehaviour
     }
 
 
+    private void SwapButtons() {
+        Vector3 tmp = LeftUpButtonTransform.position;
+        LeftUpButtonTransform.position = RightUpButtonTransform.position;
+        RightUpButtonTransform.position = tmp;
 
+        tmp = LeftDownButtonTransform.position;
+        LeftDownButtonTransform.position = RightDownButtonTransform.position;
+        RightDownButtonTransform.position = tmp;
+    }
 
 
 
