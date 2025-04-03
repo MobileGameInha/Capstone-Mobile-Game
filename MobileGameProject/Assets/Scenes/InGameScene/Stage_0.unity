@@ -1743,12 +1743,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 800, y: 1000}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 1
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -2278,6 +2278,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 569a6c541421beb41baf53591276daa9, type: 3}
   tile_hide_sprite: {fileID: 21300000, guid: a81a2e7f2e7ff8b49bb693dd85e5a0ab, type: 3}
   arrow_sprite: {fileID: 21300000, guid: bcc0eed7d0baf8e449c24645c544ce8c, type: 3}
+  circle_sprite: {fileID: 0}
   hidemark_sprite: {fileID: 21300000, guid: 3e26e8549fb655944a1c9f251a13926a, type: 3}
   tile_images_:
   - {fileID: 1093610545}
@@ -2323,12 +2324,17 @@ MonoBehaviour:
   LifeImage: {fileID: 2009538744}
   TotalTimerImage: {fileID: 356281723}
   RoundTimerImage: {fileID: 528520755}
+  Mode: 0
+  CHALLANGE_ButtonRotator: {fileID: 0}
   tile_manager_: {fileID: 1200680921}
   LeftUpButtonTransform: {fileID: 998263425}
   RightUpButtonTransform: {fileID: 863812692}
   LeftDownButtonTransform: {fileID: 245669987}
   RightDownButtonTransform: {fileID: 1765714622}
-  max_tile_count_: 3
+  BUTTON_COUNT: 4
+  MIN_TILE_SIZE_: 5
+  MAX_TILE_SIZE_: 10
+  LINE_TILES: 5
 --- !u!4 &1228153309
 Transform:
   m_ObjectHideFlags: 0
