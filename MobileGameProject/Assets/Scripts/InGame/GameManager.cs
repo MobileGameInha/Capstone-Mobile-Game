@@ -35,6 +35,24 @@ public static class CatIndex {
     public const int SAVOTAGE_DEFENCE_ = 11;
 }
 
+public static class CatValue
+{
+    public static readonly float[] TOTAL_TIME_UP_ = new float[] {1,2,3,4,5 };
+    public static readonly float[] ROUND_TIME_UP_ = new float[] { 1, 2, 3, 4, 5 };
+    public static readonly float[] TILE_SPEED_DOWN_ = new float[] { 1, 2, 3, 4, 5 };
+    public static readonly float[] LIFE_REMOVE_DOWN_ = new float[] { 0.2f, 0.25f, 0.3f, 0.4f, 0.5f };
+    public static readonly float[] EXP_UP_ = new float[] { 0.2f, 0.25f, 0.3f, 0.4f, 0.5f };
+
+    public static readonly float[] GOLD_UP_ = new float[] { 0.2f, 0.25f, 0.3f, 0.4f, 0.5f };
+    public static readonly float[] MISTAKE_DEFENCE_ = new float[] { 1, 2, 3, 4, 5 };
+    public static readonly float[] FEVER_UP_ = new float[] { 1, 2, 3, 4, 5 };
+    public static readonly float[] BONUS_STAGE_ = new float[] { 0.2f, 0.25f, 0.3f, 0.4f, 0.5f };
+    public static readonly float[] SIMPLE_LINE_ = new float[] { 0.2f, 0.25f, 0.3f, 0.4f, 0.5f };
+
+    public static readonly float[] TIME_STOP_ = new float[] { 0.2f, 0.25f, 0.3f, 0.4f, 0.5f };
+    public static readonly float[] SAVOTAGE_DEFENCE_ = new float[] { 0.2f, 0.25f, 0.3f, 0.4f, 0.5f };
+}
+
 
 public class GameManager : MonoBehaviour
 {
@@ -125,7 +143,7 @@ public class GameManager : MonoBehaviour
 
     public int LINE_TILES = 5; //한 줄에 몇개의 타일이 있는지
 
-    private const int CAT_SIZE_ = 12;
+    public static readonly int CAT_SIZE_ = 12;
     private bool[] using_cat_ = new bool[CAT_SIZE_]; //고양이를 사용중인가
     private float[] using_cat_value_ = new float[CAT_SIZE_];//고양이의 사용 수치
 
@@ -139,6 +157,10 @@ public class GameManager : MonoBehaviour
     private const float DISRUPTOR_REMOVE_ROUND_TIME_RATE = 0.8f;
     private int disruptor_index_; //방해자 사용 인덱스
     private bool disruptor_round_check; //라운드에 방해자가 적용되는가?
+
+
+
+
 
     private bool disrutor_error_check_
     {
@@ -209,12 +231,69 @@ public class GameManager : MonoBehaviour
         {
             using_cat_[i] = false;
         }
+
+        int[] cat_idx = { -1, -1, -1 };
+        float[] cat_value = { 0, 0, 0 };
+
+        for (int i = 0; i < 3; i++)
+        {
+            cat_idx[i] = DataManager.dataManager.GetSelectedCat(i);
+            if (cat_idx[i] >= 0 && cat_idx[i] < CAT_SIZE_)
+            {
+                switch (cat_idx[i])
+                {
+                    case CatIndex.TOTAL_TIME_UP_:
+                        cat_value[i] = CatValue.TOTAL_TIME_UP_[DataManager.dataManager.GetLevelOfCat(i)];
+                        break;
+                    case CatIndex.ROUND_TIME_UP_:
+                        cat_value[i] = CatValue.ROUND_TIME_UP_[DataManager.dataManager.GetLevelOfCat(i)];
+                        break;
+                    case CatIndex.TILE_SPEED_DOWN_:
+                        cat_value[i] = CatValue.TILE_SPEED_DOWN_[DataManager.dataManager.GetLevelOfCat(i)];
+                        break;
+                    case CatIndex.LIFE_REMOVE_DOWN_:
+                        cat_value[i] = CatValue.LIFE_REMOVE_DOWN_[DataManager.dataManager.GetLevelOfCat(i)];
+                        break;
+                    case CatIndex.EXP_UP_:
+                        cat_value[i] = CatValue.EXP_UP_[DataManager.dataManager.GetLevelOfCat(i)];
+                        break;
+                    case CatIndex.GOLD_UP_:
+                        cat_value[i] = CatValue.GOLD_UP_[DataManager.dataManager.GetLevelOfCat(i)];
+                        break;
+                    case CatIndex.MISTAKE_DEFENCE_:
+                        cat_value[i] = CatValue.MISTAKE_DEFENCE_[DataManager.dataManager.GetLevelOfCat(i)];
+                        break;
+                    case CatIndex.FEVER_UP_:
+                        cat_value[i] = CatValue.FEVER_UP_[DataManager.dataManager.GetLevelOfCat(i)];
+                        break;
+                    case CatIndex.BONUS_STAGE_:
+                        cat_value[i] = CatValue.BONUS_STAGE_[DataManager.dataManager.GetLevelOfCat(i)];
+                        break;
+                    case CatIndex.SIMPLE_LINE_:
+                        cat_value[i] = CatValue.SIMPLE_LINE_[DataManager.dataManager.GetLevelOfCat(i)];
+                        break;
+                    case CatIndex.TIME_STOP_:
+                        cat_value[i] = CatValue.TIME_STOP_[DataManager.dataManager.GetLevelOfCat(i)];
+                        break;
+                    case CatIndex.SAVOTAGE_DEFENCE_:
+                        cat_value[i] = CatValue.SAVOTAGE_DEFENCE_[DataManager.dataManager.GetLevelOfCat(i)];
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else 
+            {
+                cat_idx[i] = -1;
+            }
+        }
+
+        SetUsingCat(cat_idx[0], cat_idx[1], cat_idx[2], cat_value[0], cat_value[1], cat_value[2]);
     }
 
     private void Start()
     {
-        SetUsingCat(CatIndex.SAVOTAGE_DEFENCE_,-1,-1,0.5f); //!!!!임시코드 : 삭제 할 예정
-        SetUsingDisruptor(true, true, true, false, false, 0.8f, 2);
+        SetUsingDisruptor(true, true, true, false, false, 0.8f, 2); //!!!!임시코드 : 삭제 할 예정
         StartGame(); //!!!!임시코드 : 삭제 할 예정
     }
 
