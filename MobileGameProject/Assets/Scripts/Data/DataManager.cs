@@ -38,7 +38,7 @@ public class DataManager : MonoBehaviour
 
     public bool SetSelectedCat(int idx, int cat_idx)
     {
-        if (is_unlock_cat_[cat_idx])
+        if (cat_idx>=0 && cat_idx<GameManager.CAT_SIZE_&&is_unlock_cat_[cat_idx])
         {
             for (int i = 0; i < BasicHelperManager.MAX_HELPER_; i++)
             {
@@ -99,10 +99,13 @@ public class DataManager : MonoBehaviour
             level_cat_[i] = 0;
             exp_cat_[i] = 0;
         }
-    }
 
-    private void Start()
-    {
+
+
+
+
+
+        //!!!!임시코드 고양이 지정
         is_unlock_cat_[CatIndex.TOTAL_TIME_UP_] = true;
         is_unlock_cat_[CatIndex.ROUND_TIME_UP_] = true;
         is_unlock_cat_[CatIndex.MISTAKE_DEFENCE_] = true;
@@ -117,4 +120,5 @@ public class DataManager : MonoBehaviour
         selected_cat_[2] = CatIndex.TOTAL_TIME_UP_;
         //!!!!임시코드 고양이 지정
     }
+
 }

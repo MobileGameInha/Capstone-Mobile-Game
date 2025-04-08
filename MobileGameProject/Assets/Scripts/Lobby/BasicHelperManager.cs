@@ -122,6 +122,7 @@ public class BasicHelperManager : MonoBehaviour
     private void SetCatState() {
         for (int i = 0; i < MAX_HELPER_; i++)
         {
+            Debug.Log(i + "¹ø¤Š´Â : " + DataManager.dataManager.GetSelectedCat(i));
             selected_cat_index[i] = DataManager.dataManager.GetSelectedCat(i);
         }
 
