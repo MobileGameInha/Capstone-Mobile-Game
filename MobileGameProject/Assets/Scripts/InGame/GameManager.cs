@@ -73,9 +73,8 @@ public class GameManager : MonoBehaviour
 
 
     public TMP_Text ScoreText; //스코어 텍스트 : 외부 지정
-    public Image LifeImage;
-    public Image TotalTimerImage;
-    public Image RoundTimerImage;
+    public Slider TotalTimerSlider;
+    public Slider RoundTimerSlider;
 
     [SerializeField]
     private ChallangeMode Mode = ChallangeMode.None;
@@ -85,6 +84,12 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     private TileManager tile_manager_;
+    [SerializeField]
+    private LayerManager layer_manager_;
+    [SerializeField]
+    private VisualManager visual_manager_;
+    [SerializeField]
+    private InGameBGMManager bgm_manager_;
 
     [SerializeField]
     private Transform LeftUpButtonTransform;
@@ -104,10 +109,12 @@ public class GameManager : MonoBehaviour
     private const int ADDING_SCORE_PERFECT_ = 20; //퍼펙트 점수
     private const int REMOVING_SCORE_TILE_ = -5; //감점
 
-    private float life_ = 100; //생명
-    private const float MAX_LIFE_ = 100; //생명 최대값
-    private float removing_value_life_ = FIRST_REMOVING_VALUE_LIFE_;//생명 감점
-    private const float FIRST_REMOVING_VALUE_LIFE_ = 10; //최대(첫) 생명 감점
+    private float co2_ = 50; //CO2
+    private const float MAX_CO2_ = 100; //CO2 최대값
+    private float removing_value_co2_ = FIRST_REMOVING_VALUE_CO2_;//생명 추가
+    private const float FIRST_REMOVING_VALUE_CO2_ = 5; //최대(첫) 생명 추가
+    private float adding_value_co2_ = FIRST_ADDING_VALUE_CO2_;//생명 감소
+    private const float FIRST_ADDING_VALUE_CO2_ = 10; //최대(첫) 생명 추가
 
     private float total_time_ = 100.0f; //전체 시간
     private float max_total_time_ = MAX_TOTAL_TIME_; //전체 시간 맥스
@@ -223,7 +230,7 @@ public class GameManager : MonoBehaviour
     
 
 
-    private void Awake()
+    private void Start()
     {
         is_started_ = false;
 
@@ -235,7 +242,7 @@ public class GameManager : MonoBehaviour
         int[] cat_idx = { -1, -1, -1 };
         float[] cat_value = { 0, 0, 0 };
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < BasicHelperManager.MAX_HELPER_; i++)
         {
             cat_idx[i] = DataManager.dataManager.GetSelectedCat(i);
             if (cat_idx[i] >= 0 && cat_idx[i] < CAT_SIZE_)
@@ -289,13 +296,13 @@ public class GameManager : MonoBehaviour
         }
 
         SetUsingCat(cat_idx[0], cat_idx[1], cat_idx[2], cat_value[0], cat_value[1], cat_value[2]);
-    }
 
-    private void Start()
-    {
         SetUsingDisruptor(true, true, true, false, false, 0.8f, 2); //!!!!임시코드 : 삭제 할 예정
         StartGame(); //!!!!임시코드 : 삭제 할 예정
+
+        bgm_manager_.PlayBGM();
     }
+
 
     private void Update()
     {
@@ -477,6 +484,7 @@ public class GameManager : MonoBehaviour
             {
                 perfect_count_++;
                 AddScore(ADDING_SCORE_TILE_);
+                RemoveCO2(removing_value_co2_);
             }
             ResetTiles();
         }
@@ -583,15 +591,34 @@ public class GameManager : MonoBehaviour
         }
         if (score_ < 0) { score_ = 0; }
         ScoreText.text = score_.ToString();
+
     }
 
-    private void RemoveLife(float val)
+    private void RemoveCO2(float val)
     {
-        life_ -= val;
-        if (life_ < 0) { life_ = 0; }
-        LifeImage.fillAmount = life_ / MAX_LIFE_;
+        co2_ -= val;
+        if (co2_ < 0) { co2_ = 0; }
+        else if (co2_ > MAX_CO2_) { co2_ = MAX_CO2_; }
+        visual_manager_.SetCo2Value(co2_ / MAX_CO2_);
 
-        if (life_ == 0.0f) {
+        layer_manager_.SetLayer(co2_ / MAX_CO2_);
+
+        if (co2_ == MAX_CO2_) {
+            EndGame();
+        }
+    }
+
+    private void AddCO2(float val)
+    {
+        co2_ += val;
+        if (co2_ < 0) { co2_ = 0; }
+        else if (co2_ > MAX_CO2_) { co2_ = MAX_CO2_; }
+        visual_manager_.SetCo2Value(co2_ / MAX_CO2_);
+
+        layer_manager_.SetLayer(co2_ / MAX_CO2_);
+
+        if (co2_ == MAX_CO2_)
+        {
             EndGame();
         }
     }
@@ -645,12 +672,12 @@ public class GameManager : MonoBehaviour
         if (total_time_ <= 0.0f)
         {
             total_time_ = 0.0f;
-            TotalTimerImage.fillAmount = total_time_ / max_total_time_;
+            TotalTimerSlider.value = total_time_ / max_total_time_;
 
             EndGame();
         }
         else {
-            TotalTimerImage.fillAmount = total_time_ / max_total_time_;
+            TotalTimerSlider.value = total_time_ / max_total_time_;
         }
     }
 
@@ -683,7 +710,7 @@ public class GameManager : MonoBehaviour
                 Debug.Log("방해자 : 시간 단축!");
             }
 
-            RoundTimerImage.fillAmount = round_time_ / max_round_time_;
+            RoundTimerSlider.value = round_time_ / max_round_time_;
         }
         else {
             if (is_stop_round_time) 
@@ -696,14 +723,14 @@ public class GameManager : MonoBehaviour
             if (round_time_ <= 0.0f)
             {
                 round_time_ = 0.0f;
-                RoundTimerImage.fillAmount = round_time_ / max_round_time_;
+                RoundTimerSlider.value = round_time_ / max_round_time_;
 
                 is_perfect_ = false;
                 ResetTiles();
-                RemoveLife(removing_value_life_ * 2);
+                AddCO2(adding_value_co2_ * 2.0f);
             }
             else {
-                RoundTimerImage.fillAmount = round_time_ / max_round_time_;
+                RoundTimerSlider.value = round_time_ / max_round_time_;
             }
         }
     }
@@ -715,8 +742,8 @@ public class GameManager : MonoBehaviour
 
         remove_round_time_ = FIRST_REMOVE_REOUND_TIME_;
 
-        TotalTimerImage.fillAmount = total_time_ / MAX_TOTAL_TIME_;
-        RoundTimerImage.fillAmount = round_time_ / max_round_time_;
+        TotalTimerSlider.value = total_time_ / MAX_TOTAL_TIME_;
+        RoundTimerSlider.value = round_time_ / max_round_time_;
     }
 
     private void StartGame() {
@@ -727,6 +754,7 @@ public class GameManager : MonoBehaviour
             tile_size_ = MIN_TILE_SIZE_;
 
             score_ = 0;
+            ScoreText.text = "0";
 
             is_perfect_ = false;
             is_fever_ = false;
@@ -735,7 +763,12 @@ public class GameManager : MonoBehaviour
             perfect_count_ = 0;
             perfect_count_fever_ = 0;
 
-            removing_value_life_ = FIRST_REMOVING_VALUE_LIFE_;
+            co2_ = MAX_CO2_ / 2.0f;
+            layer_manager_.SetLayer(co2_ / MAX_CO2_);
+            visual_manager_.SetCo2Value(co2_ / MAX_CO2_);
+
+            removing_value_co2_ = FIRST_REMOVING_VALUE_CO2_;
+            adding_value_co2_ = FIRST_ADDING_VALUE_CO2_;
             max_total_time_ = MAX_TOTAL_TIME_;
             max_round_time_ = FIRST_MAX_ROUND_TIME;
             max_tile_count_ = MAX_TILE_COUNT_;
@@ -788,8 +821,8 @@ public class GameManager : MonoBehaviour
 
                     tile_manager_.SetState(false, tile_index_);
                     AddScore(REMOVING_SCORE_TILE_);
-                    RemoveLife(removing_value_life_);
-                    if (life_ <= 0.0f)
+                    AddCO2(adding_value_co2_);
+                    if (co2_ >= MAX_CO2_)
                     {
                         return;
                     }
@@ -822,8 +855,8 @@ public class GameManager : MonoBehaviour
 
         if (using_cat_[CatIndex.LIFE_REMOVE_DOWN_])
         {
-            removing_value_life_ = FIRST_REMOVING_VALUE_LIFE_ - using_cat_value_[CatIndex.LIFE_REMOVE_DOWN_];
-            Debug.Log("데미지 감소! : " + removing_value_life_.ToString());
+            adding_value_co2_ = FIRST_ADDING_VALUE_CO2_ - using_cat_value_[CatIndex.LIFE_REMOVE_DOWN_];
+            Debug.Log("데미지 감소! : " + adding_value_co2_.ToString());
         }
 
         if (using_cat_[CatIndex.FEVER_UP_])

@@ -29,7 +29,7 @@ public class DataManager : MonoBehaviour
     private float exp_ = 0.0f;
 
     [SerializeField] //삭제 예정
-    private int[] selected_cat_;
+    private int[] selected_cat_ = { -1,-1,-1};
     private bool[] is_unlock_cat_;
     private int[] level_cat_;
     private float[] exp_cat_;
@@ -62,7 +62,6 @@ public class DataManager : MonoBehaviour
     }
     public int GetSelectedCat(int idx)
     {
-
 
         if (selected_cat_[idx]!=-1 && is_unlock_cat_[selected_cat_[idx]])
         {
