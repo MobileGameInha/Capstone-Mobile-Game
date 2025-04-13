@@ -23,7 +23,8 @@ public class TileManager : MonoBehaviour
     private Image[] tile_images_;//타일 이미지 : 인스펙터에서 지정
     private Image[] arrows_; //각 타일의 화살표
 
-
+    public ParticleSystem[] fail_particles_;
+    public ParticleSystem[] default_hit_particles_;
 
     private void Awake()
     {
@@ -88,7 +89,19 @@ public class TileManager : MonoBehaviour
             //++성공 유무에 따른 이펙트 변경 예정
         }
     }//각 타일 상태(보이는지, 화살표가 어디인지) 지정
-    
 
+    public void PopTile(int idx, bool success)
+    {
+
+        if (success)
+        {
+            default_hit_particles_[idx].Play();
+            tile_images_[idx].gameObject.SetActive(false);
+        }
+        else {
+            fail_particles_[idx].Play();
+            tile_images_[idx].gameObject.SetActive(false);
+        }
+    }//각 타일 상태(보이는지, 화살표가 어디인지) 지정
 
 }

@@ -803,7 +803,7 @@ public class GameManager : MonoBehaviour
         {
             if (dir == tile_arrows_[tile_index_])
             {
-                tile_manager_.SetState(false, tile_index_);
+                tile_manager_.PopTile(tile_index_,true);
                 AddScore(ADDING_SCORE_TILE_);
                 IncreaseTileIndex();
             }
@@ -813,7 +813,7 @@ public class GameManager : MonoBehaviour
                 {
                     Debug.Log("실수 방지!");
                     using_cat_value_[CatIndex.MISTAKE_DEFENCE_] -= 1;
-                    tile_manager_.SetState(false, tile_index_);
+                    tile_manager_.PopTile(tile_index_, true);
                     IncreaseTileIndex();
                 }
                 else
@@ -824,7 +824,7 @@ public class GameManager : MonoBehaviour
 
                     is_perfect_ = false;
 
-                    tile_manager_.SetState(false, tile_index_);
+                    tile_manager_.PopTile(tile_index_, false);
                     AddScore(REMOVING_SCORE_TILE_);
                     AddCO2(adding_value_co2_);
                     if (co2_ >= MAX_CO2_)
