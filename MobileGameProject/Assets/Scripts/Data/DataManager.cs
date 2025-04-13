@@ -63,7 +63,7 @@ public class DataManager : MonoBehaviour
     public int GetSelectedCat(int idx)
     {
 
-        if (selected_cat_[idx]!=-1 && is_unlock_cat_[selected_cat_[idx]])
+        if (idx>=0 && idx<=2 && selected_cat_[idx]!=-1 && is_unlock_cat_[selected_cat_[idx]])
         {
             return selected_cat_[idx];
         }

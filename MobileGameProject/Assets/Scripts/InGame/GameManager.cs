@@ -230,7 +230,7 @@ public class GameManager : MonoBehaviour
     
 
 
-    private void Start()
+    private void Awake()
     {
         is_started_ = false;
 
@@ -239,6 +239,10 @@ public class GameManager : MonoBehaviour
             using_cat_[i] = false;
         }
 
+    }
+
+    private void Start()
+    {
         int[] cat_idx = { -1, -1, -1 };
         float[] cat_value = { 0, 0, 0 };
 
@@ -289,20 +293,19 @@ public class GameManager : MonoBehaviour
                         break;
                 }
             }
-            else 
+            else
             {
                 cat_idx[i] = -1;
             }
         }
 
         SetUsingCat(cat_idx[0], cat_idx[1], cat_idx[2], cat_value[0], cat_value[1], cat_value[2]);
+        visual_manager_.SetCatState(cat_idx);
 
         SetUsingDisruptor(true, true, true, false, false, 0.8f, 2); //!!!!임시코드 : 삭제 할 예정
-        StartGame(); //!!!!임시코드 : 삭제 할 예정
 
-        bgm_manager_.PlayBGM();
+        visual_manager_.StartAnimationForStartGame();
     }
-
 
     private void Update()
     {
@@ -746,7 +749,7 @@ public class GameManager : MonoBehaviour
         RoundTimerSlider.value = round_time_ / max_round_time_;
     }
 
-    private void StartGame() {
+    public void StartGame() {
         if (!is_started_)
         {
             is_started_ = true;
@@ -780,6 +783,8 @@ public class GameManager : MonoBehaviour
             GetReadyTimers();
 
             ResetTiles();
+
+            bgm_manager_.PlayBGM();
         }
     }
 
