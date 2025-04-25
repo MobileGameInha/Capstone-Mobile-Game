@@ -15,7 +15,6 @@ public class SettingManager : MonoBehaviour
     public Slider bgmSlider;
     public Slider sfxSlider;
 
-
     [Header("Setting UI Button")]
     public GameObject settingUI;
     public Button LowFPS;
@@ -28,8 +27,13 @@ public class SettingManager : MonoBehaviour
     public Color SelectedText;
     public Color SelectedFrame=Color.white;
 
-    
-
+    [Header("CutScene")]
+    public List<GameObject>Pages;
+    public GameObject Leftbtn;
+    public GameObject Rightbtn;
+    private int CurrentPage=0;
+    public TextMeshProUGUI PageText;
+    public GameObject CutScneUI;
     private void Start()
     {
 
@@ -141,5 +145,50 @@ public class SettingManager : MonoBehaviour
     public void ToggleSettingUI()
     {
         settingUI.SetActive(!settingUI.activeSelf);
+    }
+    public void ToggleCutSceneUI()
+    {
+        CutScneUI.SetActive(!CutScneUI.activeSelf);
+    }
+
+    public void ShowPage(int index)
+    {
+        ShowArrow(index);
+        UpdatePageText();
+        for (int i = 0; i < Pages.Count; i++)
+            Pages[i].SetActive(i == index);
+    }
+
+    public void OnClickNext()
+    {
+        if (CurrentPage < Pages.Count - 1)
+        {
+            CurrentPage++;
+            ShowPage(CurrentPage);
+        }
+    }   
+
+    public void OnClickPrev()
+    {
+        if (CurrentPage > 0)
+        {
+            CurrentPage--;
+            ShowPage(CurrentPage);
+        }
+    }
+    void UpdatePageText()
+    {
+        PageText.text = $"{CurrentPage + 1}";
+    }
+    public void ShowArrow(int index)
+    {
+        if (index==0){
+            Leftbtn.SetActive(false);
+            Rightbtn.SetActive(true);
+        }
+        else{
+            Leftbtn.SetActive(true);
+            Rightbtn.SetActive(false);
+        }
     }
 }

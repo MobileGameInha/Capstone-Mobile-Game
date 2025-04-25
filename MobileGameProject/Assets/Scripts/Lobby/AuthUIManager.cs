@@ -25,15 +25,21 @@ public class AuthUIManager : MonoBehaviour
     [Header("Sign Up Inputs")]
     public TMP_InputField emailInput;
     public TMP_InputField usernameInput;
+    public TMP_InputField idInput;
     public TMP_InputField passwordInput;
 
     [Header("Login Inputs")]
-    public TMP_InputField loginUsernameInput;
+    public TMP_InputField loginIdInput;
     public TMP_InputField loginPasswordInput;
 
     [Header("Toast UI")]
     public TMP_Text toastText;
     public GameObject toastPanel;
+    [Header("Find password UI")]
+    public GameObject FindpwdUI;
+    public TMP_InputField idInput_find;
+    public TMP_InputField emailInput_find;
+    public TMP_Text resultText;
 
     private const string SERVER_URL = "https://yourbackend.com/api"; // 예시용
 
@@ -57,7 +63,10 @@ public class AuthUIManager : MonoBehaviour
         }
         
     }
-
+    public void ToggleFindpwdUI()
+    {
+        FindpwdUI.SetActive(!FindpwdUI.activeSelf);
+    }
     public void ShowLogin()
     {
         LOG_IN.SetActive(true);
@@ -83,17 +92,23 @@ public class AuthUIManager : MonoBehaviour
     {
         string email = emailInput.text.Trim();
         string username = usernameInput.text.Trim();
+        string id=idInput.text.Trim();
         string password = passwordInput.text;
 
         if (string.IsNullOrEmpty(email) || !email.Contains("@"))
         {
-            ShowToast("유효한 이메일을 입력하세요.");
+            ShowToast("형식에 맞는 이메일이 입력되지 않았습니다.");
             return;
         }
 
         if (string.IsNullOrEmpty(username))
         {
-            ShowToast("사용자 이름을 입력하세요.");
+            ShowToast("닉네임을 입력하세요.");
+            return;
+        }
+        if (string.IsNullOrEmpty(id))
+        {
+            ShowToast("아이디를 입력하세요.");
             return;
         }
 
@@ -110,10 +125,10 @@ public class AuthUIManager : MonoBehaviour
 
     public void TryLogin()
     {
-        string username = loginUsernameInput.text.Trim();
+        string id = loginIdInput.text.Trim();
         string password = loginPasswordInput.text;
 
-        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(password))
         {
            
             ShowToast("아이디와 비밀번호를 입력하세요.");
@@ -137,6 +152,24 @@ public class AuthUIManager : MonoBehaviour
         toastPanel.SetActive(true);
         yield return new WaitForSeconds(2f);
         toastPanel.SetActive(false);
+    }
+    public void OnClickFindPassword()
+    {
+        string id = idInput_find.text.Trim();
+        string email = emailInput_find.text.Trim();
+
+        if (string.IsNullOrEmpty(id) || string.IsNullOrEmpty(email))
+        {
+            ShowToast("아이디와 이메일을 모두 입력해주세요.");
+            return;
+        }
+        if (!email.Contains("@"))
+        {
+            ShowToast("형식에 맞는 이메일이 입력되지 않았습니다.");
+            return;
+        }
+
+        resultText.text = "Email and Id Mismatch";
     }
 
     // ---------------------------
