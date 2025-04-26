@@ -45,6 +45,8 @@ public class VisualManager : MonoBehaviour
     public Animator FeverAnimator;
     public ParticleSystem FeverOnEffect;
 
+    public Animator[] DisructorAnimators;
+
     private void Awake()
     {
         start_trigger_ = false;
@@ -102,7 +104,13 @@ public class VisualManager : MonoBehaviour
     }
 
 
-
+    public void ShowDisruptor(int idx) 
+    {
+        if (DisructorAnimators[idx] != null) {
+            DisructorAnimators[idx].SetTrigger(SHOW_PARAM_HASH);
+            inGameSoundManager.PlayDisruptureClip(idx);
+        }
+    }
 
     public void StartFever()
     {

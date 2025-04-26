@@ -308,7 +308,7 @@ public class GameManager : MonoBehaviour
         SetUsingCat(cat_idx[0], cat_idx[1], cat_idx[2], cat_value[0], cat_value[1], cat_value[2]);
         visual_manager_.SetCatState(cat_idx);
 
-        SetUsingDisruptor(true, true, true, false, false, 0.8f, 2); //!!!!임시코드 : 삭제 할 예정
+        SetUsingDisruptor(true, true, true, true, true, 0.8f, 2); //!!!!임시코드 : 삭제 할 예정
 
         visual_manager_.StartAnimationForStartGame();
     }
@@ -335,6 +335,9 @@ public class GameManager : MonoBehaviour
         }
 
         DisruptorCheck();//조력자 사용 체크
+
+        if (disruptor_round_check) { visual_manager_.ShowDisruptor(disruptor_index_); } //조력자 스킬 사용 보여줌
+
 
         if (disruptor_swap_check_)
         {
@@ -562,12 +565,23 @@ public class GameManager : MonoBehaviour
 
                 if (is_fever_)
                 {
-                    idx = DisruptorIndex.HARD_FEVER_;
+                    Debug.Log("방해자 : 피버임");
+                    if (using_disruptor_[DisruptorIndex.HARD_FEVER_])
+                    {
+                        idx = DisruptorIndex.HARD_FEVER_;
+                        Debug.Log("방해자 : 하드피버 적용");
+                    }
+                    else {
+                        disruptor_round_check = false; 
+                        return;
+                    }
                 }
                 else
                 {
-                    if (using_disruptor_[DisruptorIndex.HARD_FEVER_] && disruptor_count_ <= 1)
+                    Debug.Log("방해자 : 피버아님");
+                    if (using_disruptor_[DisruptorIndex.HARD_FEVER_] && !using_disruptor_[DisruptorIndex.BUTTON_SWAP_] && !using_disruptor_[DisruptorIndex.TIME_REMOVE_] && !using_disruptor_[DisruptorIndex.HIDE_])
                     {
+                        Debug.Log("방해자 : 피버밖에 없어서 제한...");
                         disruptor_round_check = false;
                         return;
                     }
@@ -578,6 +592,7 @@ public class GameManager : MonoBehaviour
                         {
                             idx = Random.Range(0, DISRUPTOR_SIZE_);
                         }
+                        Debug.Log("방해자 : 일반단계 선택 : " + idx + "선택됨");
                     }
                 }
                 disruptor_count_++;

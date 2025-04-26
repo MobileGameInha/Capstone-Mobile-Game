@@ -22,6 +22,8 @@ public class InGameSoundManager : MonoBehaviour
 
     public AudioClip[] successCatClips;
 
+    public AudioClip[] disruptorCreatureClips;
+    public AudioClip[] disruptorClip;
 
     public void PlayCatClips(bool isSuccess)
     {
@@ -33,6 +35,12 @@ public class InGameSoundManager : MonoBehaviour
         {
             audioSource.PlayOneShot(failCatClips[Random.Range(0, failCatClips.Length)]);
         }
+    }
+
+    public void PlayDisruptureClip(int idx) 
+    {
+        audioSource.PlayOneShot(disruptorClip[idx]);
+        audioSource.PlayOneShot(disruptorCreatureClips[idx]);
     }
 
     public void PlayFeverClip()
