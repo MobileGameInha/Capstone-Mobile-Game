@@ -14,6 +14,37 @@ public class InGameSoundManager : MonoBehaviour
 
     public AudioClip footStepClip;
 
+    public AudioClip failClip;
+
+    public AudioClip feverClip;
+
+    public AudioClip[] failCatClips;
+
+    public AudioClip[] successCatClips;
+
+
+    public void PlayCatClips(bool isSuccess)
+    {
+        if (isSuccess)
+        {
+            audioSource.PlayOneShot(successCatClips[Random.Range(0, successCatClips.Length)]);
+        }
+        else 
+        {
+            audioSource.PlayOneShot(failCatClips[Random.Range(0, failCatClips.Length)]);
+        }
+    }
+
+    public void PlayFeverClip()
+    {
+        audioSource.PlayOneShot(feverClip);
+    }
+
+    public void PlayClickFailClip()
+    {
+        audioSource.PlayOneShot(failClip);
+    }
+
     public void PlayClickTileButtonClip() {
         audioSource.PlayOneShot(clickTileButtonClip);
     }

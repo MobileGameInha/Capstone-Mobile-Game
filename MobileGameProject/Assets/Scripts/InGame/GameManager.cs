@@ -79,7 +79,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private ChallangeMode Mode = ChallangeMode.None;
 
-   [SerializeField]
+    [SerializeField]
     private ButtonRotator CHALLANGE_ButtonRotator;
 
     [SerializeField]
@@ -91,14 +91,20 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private InGameBGMManager bgm_manager_;
 
+
+
+    private readonly int SWAP_BUTTONS_HASH = Animator.StringToHash("SWAP");
     [SerializeField]
-    private Transform LeftUpButtonTransform;
-    [SerializeField]
-    private Transform RightUpButtonTransform;
-    [SerializeField]
-    private Transform LeftDownButtonTransform;
-    [SerializeField]
-    private Transform RightDownButtonTransform;
+    private Animator ButtonSwapAnimator;
+    private bool is_swap_ = false;
+    //[SerializeField]
+    //private Transform LeftUpButtonTransform;
+    //[SerializeField]
+    //private Transform RightUpButtonTransform;
+    //[SerializeField]
+    //private Transform LeftDownButtonTransform;
+    //[SerializeField]
+    //private Transform RightDownButtonTransform;
 
     private bool is_started_ = false; //게임 시작 유무
 
@@ -134,7 +140,7 @@ public class GameManager : MonoBehaviour
     private bool is_fever_ = false; //피버 상태인지
     private int remain_fever_count_ = 0; //피버에 도달 했는지
     private int max_fever_count_ = MAX_FEVER_COUNT_; //피버 개수
-    private const int MAX_FEVER_COUNT_ = 2; //시작 피버 개수
+    private const int MAX_FEVER_COUNT_ = 3; //시작 피버 개수
 
     public int BUTTON_COUNT = 4;
 
@@ -346,8 +352,12 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        
+
         if (is_fever_)
         {
+            visual_manager_.SetCatAnimationFever(); //임시
+
             if (disruptor_hardfever_check_)
             {
                 Debug.Log("하드 피버!");
@@ -488,6 +498,7 @@ public class GameManager : MonoBehaviour
                 perfect_count_++;
                 AddScore(ADDING_SCORE_TILE_);
                 RemoveCO2(removing_value_co2_);
+                visual_manager_.SetCatAnimation(true); //임시
             }
             ResetTiles();
         }
@@ -504,6 +515,7 @@ public class GameManager : MonoBehaviour
                 remain_fever_count_--;
                 if (remain_fever_count_ == 0)
                 {
+                    visual_manager_.EndFever();
                     is_fever_ = false;
                     disruptor_count_ = 0;
                 }
@@ -517,6 +529,7 @@ public class GameManager : MonoBehaviour
 
             if (perfect_count_fever_ == PERFECT_FEVER_COUNT_)
             {
+                visual_manager_.StartFever();
                 perfect_count_fever_ = 0;
                 is_fever_ = true;
                 remain_fever_count_ = max_fever_count_;
@@ -759,6 +772,7 @@ public class GameManager : MonoBehaviour
             score_ = 0;
             ScoreText.text = "0";
 
+            is_swap_ = false;
             is_perfect_ = false;
             is_fever_ = false;
             is_stop_round_time = false;
@@ -825,6 +839,8 @@ public class GameManager : MonoBehaviour
                     is_perfect_ = false;
 
                     tile_manager_.PopTile(tile_index_, false);
+                    visual_manager_.SetCatAnimation(false); 
+
                     AddScore(REMOVING_SCORE_TILE_);
                     AddCO2(adding_value_co2_);
                     if (co2_ >= MAX_CO2_)
@@ -872,13 +888,8 @@ public class GameManager : MonoBehaviour
 
 
     private void SwapButtons() {
-        Vector3 tmp = LeftUpButtonTransform.position;
-        LeftUpButtonTransform.position = RightUpButtonTransform.position;
-        RightUpButtonTransform.position = tmp;
-
-        tmp = LeftDownButtonTransform.position;
-        LeftDownButtonTransform.position = RightDownButtonTransform.position;
-        RightDownButtonTransform.position = tmp;
+        is_swap_ = !is_swap_;
+        ButtonSwapAnimator.SetBool(SWAP_BUTTONS_HASH, is_swap_);
     }
 
 

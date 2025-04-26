@@ -6,6 +6,13 @@ using UnityEngine.UI;
 
 public class VisualManager : MonoBehaviour
 {
+    private readonly int SHOW_PARAM_HASH = Animator.StringToHash("SHOW");
+
+    private static readonly int[] CAT_INDEX_GOOD = { 1, 7, 8, 15, 17, 18, 20, 22, 23, 25, 26 };
+    private static readonly int[] CAT_INDEX_BAD = { 2,3,4,5,6,9,10,12,13,16,21,24 };
+    private static readonly int CAT_INDEX_FEVER = 19;
+    private static readonly int CAT_INDEX_SKILL = 11;
+
     public GameStartEffect startEffect;
     public InGameSoundManager soundManager;
 
@@ -32,6 +39,11 @@ public class VisualManager : MonoBehaviour
     private bool co2_is_chaging_;
     private float co2_rate_;
     private float co2_rate_destination_;
+
+    public InGameSoundManager inGameSoundManager;
+
+    public Animator FeverAnimator;
+    public ParticleSystem FeverOnEffect;
 
     private void Awake()
     {
@@ -86,6 +98,57 @@ public class VisualManager : MonoBehaviour
                 MovingCatPackTransform.gameObject.SetActive(false);
                 startEffect.StartAnim();
             }
+        }
+    }
+
+
+
+
+    public void StartFever()
+    {
+        inGameSoundManager.PlayFeverClip();
+        FeverAnimator.SetBool(SHOW_PARAM_HASH, true);
+        FeverOnEffect.Play();
+    }
+
+    public void EndFever()
+    {
+        FeverAnimator.SetBool(SHOW_PARAM_HASH, false);
+    }
+
+    public void SetCatAnimation(bool isGood) 
+    {
+        if (isGood)
+        {
+            inGameSoundManager.PlayCatClips(true);
+            for (int i = 0; i < BasicHelperManager.MAX_HELPER_; i++)
+            {
+                if (IdleCats[i] != null)
+                    IdleCats[i].AnimationState.SetAnimation(0, "idle-" + CAT_INDEX_GOOD[(Random.Range(0, CAT_INDEX_GOOD.Length))].ToString(), true);
+            }
+        }
+        else {
+            inGameSoundManager.PlayCatClips(false);
+            for (int i = 0; i < BasicHelperManager.MAX_HELPER_; i++)
+            {
+                if (IdleCats[i] != null)
+                    IdleCats[i].AnimationState.SetAnimation(0, "idle-" + CAT_INDEX_BAD[(Random.Range(0, CAT_INDEX_BAD.Length))].ToString(), true);
+            }
+        }
+    }
+
+    public void SetCatAnimationSkill(int cat_index)
+    {
+         if (IdleCats[cat_index] != null)
+             IdleCats[cat_index].AnimationState.SetAnimation(0, "idle-" + CAT_INDEX_SKILL.ToString(), true);
+    }
+
+    public void SetCatAnimationFever()
+    {
+        for (int i = 0; i < BasicHelperManager.MAX_HELPER_; i++)
+        {
+            if (IdleCats[i] != null)
+                IdleCats[i].AnimationState.SetAnimation(0, "idle-" + CAT_INDEX_SKILL.ToString(), true);
         }
     }
 

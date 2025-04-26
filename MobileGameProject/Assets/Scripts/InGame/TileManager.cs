@@ -26,6 +26,8 @@ public class TileManager : MonoBehaviour
     public ParticleSystem[] fail_particles_;
     public ParticleSystem[] default_hit_particles_;
 
+    public InGameSoundManager inGameSoundManager;
+
     private void Awake()
     {
         arrows_ = new Image[tile_images_.Length];
@@ -99,6 +101,7 @@ public class TileManager : MonoBehaviour
             tile_images_[idx].gameObject.SetActive(false);
         }
         else {
+            inGameSoundManager.PlayClickFailClip();
             fail_particles_[idx].Play();
             tile_images_[idx].gameObject.SetActive(false);
         }
