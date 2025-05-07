@@ -127,7 +127,7 @@ public class DataManager : MonoBehaviour
         level_cat_[CatIndex.SIMPLE_LINE_] = 2;
         level_cat_[CatIndex.SAVOTAGE_DEFENCE_] = 2;
 
-        selected_cat_[0] = CatIndex.SAVOTAGE_DEFENCE_;
+        selected_cat_[0] = CatIndex.SIMPLE_LINE_;
         selected_cat_[1] = -1;
         selected_cat_[2] = -1;
         //!!!!임시코드 고양이 지정

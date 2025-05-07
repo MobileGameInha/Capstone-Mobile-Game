@@ -39,7 +39,7 @@ public class VisualManager : MonoBehaviour
 
     private bool cats_is_moving_;
 
-    private float cats_speed_ = 1.25f;
+    private float cats_speed_ = 1.75f;
     private float cat_footstep_timer_;
     private float cat_footstep_timer_max_ = 0.5f;
     private bool start_trigger_ = false;
@@ -340,7 +340,24 @@ public class VisualManager : MonoBehaviour
         if (start_trigger_) { return; }
         cats_is_moving_ = true;
         start_trigger_ = true;
-        cat_footstep_timer_ = cat_footstep_timer_max_;
+        bool hasCat = false;
+        for (int i = 0; i < cat_index_.Length; i++)
+        {
+            if (cat_index_[i] != -1) {
+                hasCat = true;
+                break;
+            }
+        }
+
+        if (hasCat)
+        {
+            cat_footstep_timer_ = cat_footstep_timer_max_;
+        }
+        else {
+            cat_footstep_timer_ = 500000.0f;
+            inGameSoundManager.PlayCrowClip();
+        }
+ 
     }
 
 

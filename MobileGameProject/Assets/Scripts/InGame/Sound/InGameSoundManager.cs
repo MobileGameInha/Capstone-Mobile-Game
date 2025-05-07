@@ -27,6 +27,13 @@ public class InGameSoundManager : MonoBehaviour
 
     public AudioClip[] catSkillClip;
 
+    public AudioClip CrowClip;
+
+    public void PlayCrowClip()
+    {
+        audioSource.PlayOneShot(CrowClip);
+    }
+
     public void PlayCatSkillClips(int idx, bool playSkillSound) 
     {
         if (idx >= 0 && idx < GameManager.CAT_SIZE_)
