@@ -25,6 +25,18 @@ public class InGameSoundManager : MonoBehaviour
     public AudioClip[] disruptorCreatureClips;
     public AudioClip[] disruptorClip;
 
+    public AudioClip[] catSkillClip;
+
+    public void PlayCatSkillClips(int idx, bool playSkillSound) 
+    {
+        if (idx >= 0 && idx < GameManager.CAT_SIZE_)
+        {
+            if (playSkillSound) { 
+                audioSource.PlayOneShot(catSkillClip[idx]);
+            }
+        }
+    }
+
     public void PlayCatClips(bool isSuccess)
     {
         if (isSuccess)

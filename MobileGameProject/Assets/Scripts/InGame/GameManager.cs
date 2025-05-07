@@ -255,6 +255,7 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < BasicHelperManager.MAX_HELPER_; i++)
         {
             cat_idx[i] = DataManager.dataManager.GetSelectedCat(i);
+            Debug.Log(i + "번째고양이 : " + cat_idx[i]);
             if (cat_idx[i] >= 0 && cat_idx[i] < CAT_SIZE_)
             {
                 switch (cat_idx[i])
@@ -307,8 +308,7 @@ public class GameManager : MonoBehaviour
 
         SetUsingCat(cat_idx[0], cat_idx[1], cat_idx[2], cat_value[0], cat_value[1], cat_value[2]);
         visual_manager_.SetCatState(cat_idx);
-
-        SetUsingDisruptor(true, true, true, true, true, 0.8f, 2); //!!!!임시코드 : 삭제 할 예정
+        SetUsingDisruptor(true, true, true, true, true, 0.8f, 2);// !!!!임시코드 : 삭제 할 예정
 
         visual_manager_.StartAnimationForStartGame();
     }
@@ -323,6 +323,8 @@ public class GameManager : MonoBehaviour
 
     private void ResetTiles() {
         FeverCheck();//피버 체크
+
+        visual_manager_.ResetCatSkill();
 
         if (disruptor_swap_check_)
         {
@@ -360,6 +362,11 @@ public class GameManager : MonoBehaviour
         if (is_fever_)
         {
             visual_manager_.SetCatAnimationFever(); //임시
+
+            if (using_cat_[CatIndex.FEVER_UP_] && remain_fever_count_ <= max_fever_count_ - MAX_FEVER_COUNT_)
+            {
+                visual_manager_.PlayCatSkill((int)CatIndex.FEVER_UP_);
+            }
 
             if (disruptor_hardfever_check_)
             {
@@ -409,6 +416,8 @@ public class GameManager : MonoBehaviour
                 {
                     Debug.Log("보너스 스테이지!");
 
+                    visual_manager_.PlayCatSkill((int)CatIndex.BONUS_STAGE_);
+
                     ArrowDirection dir1 = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
                     ArrowDirection dir2 = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
 
@@ -449,8 +458,12 @@ public class GameManager : MonoBehaviour
                 {
                     Debug.Log("단순화!");
 
+
                     ArrowDirection dir_simple = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
                     int line = Random.Range(0, tile_size_ / LINE_TILES);
+
+                    visual_manager_.PlayCatSkill((int)CatIndex.SIMPLE_LINE_,true,line);
+
                     for (int i = 0; i < tile_size_; i++)
                     {
                         int idx = Random.Range(0, 2);
@@ -553,6 +566,7 @@ public class GameManager : MonoBehaviour
                     if (def_range >= def_num)
                     {
                         Debug.Log("고양이 : 방해자 저지 성공");
+                        visual_manager_.PlayCatSkill((int)CatIndex.SAVOTAGE_DEFENCE_);
                         disruptor_count_++;
                         disruptor_round_check = false;
                         return;
@@ -722,6 +736,7 @@ public class GameManager : MonoBehaviour
                 if (range >= num)
                 {
                     Debug.Log("시간 정지!");
+                    visual_manager_.PlayCatSkill((int)CatIndex.TIME_STOP_);
                     is_stop_round_time = true;
                 }
                 else 
@@ -841,6 +856,7 @@ public class GameManager : MonoBehaviour
                 if (using_cat_[CatIndex.MISTAKE_DEFENCE_] && using_cat_value_[CatIndex.MISTAKE_DEFENCE_] > 0)
                 {
                     Debug.Log("실수 방지!");
+                    visual_manager_.PlayCatSkill((int)CatIndex.MISTAKE_DEFENCE_);
                     using_cat_value_[CatIndex.MISTAKE_DEFENCE_] -= 1;
                     tile_manager_.PopTile(tile_index_, true);
                     IncreaseTileIndex();
@@ -871,28 +887,38 @@ public class GameManager : MonoBehaviour
 
     private void SetStartCatSkill() {
 
+        bool isPlaySkiilSound = true;
+
         if (using_cat_[CatIndex.TOTAL_TIME_UP_]) 
         {
+            visual_manager_.PlayCatSkill((int)CatIndex.TOTAL_TIME_UP_, isPlaySkiilSound);
             max_total_time_ = MAX_TOTAL_TIME_ + using_cat_value_[CatIndex.TOTAL_TIME_UP_];
             Debug.Log("시작 시간 증가! : " + max_total_time_.ToString());
+            isPlaySkiilSound = false;
         }
 
         if (using_cat_[CatIndex.ROUND_TIME_UP_])
         {
+            visual_manager_.PlayCatSkill((int)CatIndex.ROUND_TIME_UP_, isPlaySkiilSound);
             max_round_time_ = FIRST_MAX_ROUND_TIME + using_cat_value_[CatIndex.ROUND_TIME_UP_];
             Debug.Log("라운드 시간 증가! : " + max_round_time_.ToString());
+            isPlaySkiilSound = false;
         }
 
         if (using_cat_[CatIndex.TILE_SPEED_DOWN_])
         {
+            visual_manager_.PlayCatSkill((int)CatIndex.TILE_SPEED_DOWN_, isPlaySkiilSound);
             max_tile_count_ = MAX_TILE_COUNT_ + Mathf.RoundToInt(using_cat_value_[CatIndex.TILE_SPEED_DOWN_]);
             Debug.Log("타일 느리게 증가! : " + max_tile_count_.ToString());
+            isPlaySkiilSound = false;
         }
 
         if (using_cat_[CatIndex.LIFE_REMOVE_DOWN_])
         {
+            visual_manager_.PlayCatSkill((int)CatIndex.LIFE_REMOVE_DOWN_, isPlaySkiilSound);
             adding_value_co2_ = FIRST_ADDING_VALUE_CO2_ - using_cat_value_[CatIndex.LIFE_REMOVE_DOWN_];
             Debug.Log("데미지 감소! : " + adding_value_co2_.ToString());
+            isPlaySkiilSound = false;
         }
 
         if (using_cat_[CatIndex.FEVER_UP_])

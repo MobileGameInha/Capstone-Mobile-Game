@@ -1,17 +1,32 @@
 using Spine.Unity;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class VisualManager : MonoBehaviour
 {
+    private enum EffectDeleteType { NONE, TIMER, NEXT_ROUND}
+
     private readonly int SHOW_PARAM_HASH = Animator.StringToHash("SHOW");
 
     private static readonly int[] CAT_INDEX_GOOD = { 1, 7, 8, 15, 17, 18, 20, 22, 23, 25, 26 };
     private static readonly int[] CAT_INDEX_BAD = { 2,3,4,5,6,9,10,12,13,16,21,24 };
     private static readonly int CAT_INDEX_FEVER = 19;
     private static readonly int CAT_INDEX_SKILL = 11;
+
+    private static readonly float[] CAT_SKILL_TIMER = 
+        { 3.0f, 3.0f, 3.0f, 3.0f, 3.0f,
+    3.0f,1.5f,3.0f,3.0f,3.0f,
+    3.0f,3.0f,
+    };
+
+    private EffectDeleteType[] CAT_EFFECT_DELETE_TYPE_ =
+        { EffectDeleteType.TIMER, EffectDeleteType.TIMER, EffectDeleteType.TIMER, EffectDeleteType.TIMER, EffectDeleteType.NONE
+    ,EffectDeleteType.NONE, EffectDeleteType.TIMER, EffectDeleteType.NEXT_ROUND, EffectDeleteType.NEXT_ROUND, EffectDeleteType.NEXT_ROUND
+    ,EffectDeleteType.NEXT_ROUND, EffectDeleteType.NEXT_ROUND,
+    };
 
     public GameStartEffect startEffect;
     public InGameSoundManager soundManager;
@@ -47,8 +62,36 @@ public class VisualManager : MonoBehaviour
 
     public Animator[] DisructorAnimators;
 
+    public GameObject[] CatSkillEffect = new GameObject[BasicHelperManager.MAX_HELPER_];
+    public GameObject[] SkillEffect = new GameObject[GameManager.CAT_SIZE_];
+
+
+    private int[] cat_index_ = new int[3];
+    private bool[] is_playing_cat_effect_ = new bool[3];
+    private float[] cat_effect_timer_ = new float[3];
+
+
+    public GameObject[] SimpleLineEffects;
+
     private void Awake()
     {
+        for (int i = 0; i < BasicHelperManager.MAX_HELPER_; i++)
+        {
+            cat_index_[i] = -1;
+            is_playing_cat_effect_[i] = false;
+        }
+
+        for (int i = 0; i < CatSkillEffect.Length; i++)
+        {
+            CatSkillEffect[i].SetActive(false);
+        }
+
+        for (int i = 0; i < SkillEffect.Length; i++)
+        {
+            if(SkillEffect[i]!=null)
+                SkillEffect[i].SetActive(false);
+        }
+
         start_trigger_ = false;
 
         cats_is_moving_ = false;
@@ -103,6 +146,102 @@ public class VisualManager : MonoBehaviour
         }
     }
 
+    public void ResetCatSkill()
+    {
+        for (int i = 0; i < SkillEffect.Length; i++)
+        {
+            if (CAT_EFFECT_DELETE_TYPE_[i] == EffectDeleteType.NEXT_ROUND)
+            {
+                SkillEffect[i].SetActive(false);
+            }
+        }
+
+        for (int j = 0; j < CatSkillEffect.Length; j++)
+        {
+            if (cat_index_[j] != -1 && CAT_EFFECT_DELETE_TYPE_[cat_index_[j]] == EffectDeleteType.NEXT_ROUND)
+            {
+                CatSkillEffect[j].SetActive(false);
+            }
+        }
+
+    }
+
+    public void PlayCatSkill(int idx, bool playSkillSound = true, int simplelineIndex = 0)
+    {
+        int index = -1;
+
+        Debug.Log(idx + "고양이 스킬 사용!");
+
+        for (int i = 0; i < BasicHelperManager.MAX_HELPER_; i++)
+        {
+            if (cat_index_[i] == idx) { index = i; }
+        }
+
+        if (index > -1 && index < 3) 
+        {
+            if (is_playing_cat_effect_[index])
+            {
+                Debug.Log("이미 타이머 진입 상태!");
+                inGameSoundManager.PlayCatSkillClips(index, playSkillSound);
+                SetCatAnimationSkill(index);
+                cat_effect_timer_[index] += CAT_SKILL_TIMER[idx];
+            }
+            else 
+            {
+                if (CAT_EFFECT_DELETE_TYPE_[idx] == EffectDeleteType.NEXT_ROUND)
+                {
+                    Debug.Log(index+" : 넥스트 라운드 타입 발동!");
+                    inGameSoundManager.PlayCatSkillClips(index, playSkillSound);
+                    CatSkillEffect[index].SetActive(true);
+                    if (SkillEffect[cat_index_[index]] != null)
+                    {
+                        SkillEffect[cat_index_[index]].SetActive(true);
+                    }
+                    if (idx == (int)CatIndex.SIMPLE_LINE_)
+                    {
+                        for (int i = 0; i < SimpleLineEffects.Length; i++)
+                        {
+                            if (i == simplelineIndex) { SimpleLineEffects[i].SetActive(true); }
+                            else { SimpleLineEffects[i].SetActive(false); }
+                        }
+                    }
+
+                }
+                else if (CAT_EFFECT_DELETE_TYPE_[idx] == EffectDeleteType.TIMER)
+                {
+                    Debug.Log("타이머 타입 발동!");
+                    inGameSoundManager.PlayCatSkillClips(index, playSkillSound);
+                    SetCatAnimationSkill(index);
+                    cat_effect_timer_[index] = CAT_SKILL_TIMER[idx];
+                    is_playing_cat_effect_[index] = true;
+                    StartCoroutine(CatSkillCoroutine(index));
+                }
+            }
+        }
+
+    }
+
+    private IEnumerator CatSkillCoroutine(int idx) {
+        CatSkillEffect[idx].SetActive(true);
+        if (SkillEffect[cat_index_[idx]] != null)
+        {
+            SkillEffect[cat_index_[idx]].SetActive(true);
+        }
+
+        while (cat_effect_timer_[idx] > 0.0f) 
+        {
+            cat_effect_timer_[idx] -= CAT_SKILL_TIMER[cat_index_[idx]];
+            yield return new WaitForSeconds(CAT_SKILL_TIMER[cat_index_[idx]]);
+        }
+
+        CatSkillEffect[idx].SetActive(false);
+        if (SkillEffect[cat_index_[idx]] != null)
+        {
+            SkillEffect[cat_index_[idx]].SetActive(false);
+        }
+
+        is_playing_cat_effect_[idx] = false;
+    }
 
     public void ShowDisruptor(int idx) 
     {
@@ -131,7 +270,7 @@ public class VisualManager : MonoBehaviour
             inGameSoundManager.PlayCatClips(true);
             for (int i = 0; i < BasicHelperManager.MAX_HELPER_; i++)
             {
-                if (IdleCats[i] != null)
+                if (cat_index_[i]!=-1 &&IdleCats[i] != null)
                     IdleCats[i].AnimationState.SetAnimation(0, "idle-" + CAT_INDEX_GOOD[(Random.Range(0, CAT_INDEX_GOOD.Length))].ToString(), true);
             }
         }
@@ -139,7 +278,7 @@ public class VisualManager : MonoBehaviour
             inGameSoundManager.PlayCatClips(false);
             for (int i = 0; i < BasicHelperManager.MAX_HELPER_; i++)
             {
-                if (IdleCats[i] != null)
+                if (cat_index_[i] != -1 && IdleCats[i] != null)
                     IdleCats[i].AnimationState.SetAnimation(0, "idle-" + CAT_INDEX_BAD[(Random.Range(0, CAT_INDEX_BAD.Length))].ToString(), true);
             }
         }
@@ -147,7 +286,7 @@ public class VisualManager : MonoBehaviour
 
     public void SetCatAnimationSkill(int cat_index)
     {
-         if (IdleCats[cat_index] != null)
+         if (cat_index_[cat_index] != -1 && IdleCats[cat_index] != null)
              IdleCats[cat_index].AnimationState.SetAnimation(0, "idle-" + CAT_INDEX_SKILL.ToString(), true);
     }
 
@@ -155,7 +294,7 @@ public class VisualManager : MonoBehaviour
     {
         for (int i = 0; i < BasicHelperManager.MAX_HELPER_; i++)
         {
-            if (IdleCats[i] != null)
+            if (cat_index_[i] != -1 && IdleCats[i] != null)
                 IdleCats[i].AnimationState.SetAnimation(0, "idle-" + CAT_INDEX_SKILL.ToString(), true);
         }
     }
@@ -172,15 +311,21 @@ public class VisualManager : MonoBehaviour
 
     public void SetCatState(int[] cats)
     {
+        for (int i = 0; i < BasicHelperManager.MAX_HELPER_; i++)
+        {
+            cat_index_[i] = -1;
+        }
+
         for (int i = 0; i < cats.Length; i++)
         {
-            if (cats[i] <= 0 || cats[i] >= GameManager.CAT_SIZE_)
+            if (cats[i] < 0 || cats[i] >= GameManager.CAT_SIZE_)
             {
                 IdleCats[i].gameObject.SetActive(false);
                 MovingCats[i].gameObject.SetActive(false);
             }
             else
             {
+                cat_index_[i] = cats[i];
                 MovingCats[i].gameObject.SetActive(true);
                 MovingCats[i].initialSkinName = "Cat-" + (cats[i] + 1).ToString();
                 MovingCats[i].Initialize(true);
