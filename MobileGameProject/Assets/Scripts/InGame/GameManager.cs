@@ -413,9 +413,93 @@ public class GameManager : MonoBehaviour
             }
         }
         else {
+            if (using_cat_[CatIndex.BONUS_STAGE_] && using_cat_[CatIndex.SIMPLE_LINE_])
+            {
+                int choice = Random.Range(1, 3);
+                if (choice == 1)
+                {
+                    int range = Mathf.RoundToInt(using_cat_value_[CatIndex.BONUS_STAGE_] * 100.0f);
+                    int num = Random.Range(1, 101);
+                    if (range >= num)
+                    {
+                        Debug.Log("보너스 스테이지!");
 
-            
-            if (using_cat_[CatIndex.BONUS_STAGE_])
+                        visual_manager_.PlayCatSkill((int)CatIndex.BONUS_STAGE_);
+
+                        ArrowDirection dir1 = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
+                        ArrowDirection dir2 = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
+
+                        while (dir1 == dir2)
+                        {
+                            dir2 = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
+                        }
+                        for (int i = 0; i < tile_size_; i++)
+                        {
+                            int idx = Random.Range(0, 2);
+                            if (idx == 0)
+                            {
+                                tile_manager_.SetState(true, i, dir1, disruptor_hide_check_);
+                                tile_arrows_[i] = dir1;
+                            }
+                            else
+                            {
+                                tile_manager_.SetState(true, i, dir2, disruptor_hide_check_);
+                                tile_arrows_[i] = dir2;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < tile_size_; i++)
+                        {
+                            ArrowDirection dir = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
+                            tile_manager_.SetState(true, i, dir, disruptor_hide_check_);
+                            tile_arrows_[i] = dir;
+                        }
+                    }
+                }
+                else {
+                    int range = Mathf.RoundToInt(using_cat_value_[CatIndex.SIMPLE_LINE_] * 100.0f);
+                    int num = Random.Range(1, 101);
+                    if (range >= num)
+                    {
+                        Debug.Log("단순화!");
+
+
+                        ArrowDirection dir_simple = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
+                        int line = Random.Range(0, tile_size_ / LINE_TILES);
+
+                        visual_manager_.PlayCatSkill((int)CatIndex.SIMPLE_LINE_, true, line);
+
+                        for (int i = 0; i < tile_size_; i++)
+                        {
+                            int idx = Random.Range(0, 2);
+                            if (i >= line * LINE_TILES && i < (line + 1) * LINE_TILES)
+                            {
+                                tile_manager_.SetState(true, i, dir_simple, disruptor_hide_check_);
+                                tile_arrows_[i] = dir_simple;
+                            }
+                            else
+                            {
+                                ArrowDirection dir = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
+                                tile_manager_.SetState(true, i, dir, disruptor_hide_check_);
+                                tile_arrows_[i] = dir;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < tile_size_; i++)
+                        {
+                            ArrowDirection dir = (ArrowDirection)Random.Range(0, BUTTON_COUNT);
+                            tile_manager_.SetState(true, i, dir, disruptor_hide_check_);
+                            tile_arrows_[i] = dir;
+                        }
+                    }
+                }
+
+            }
+            else if (using_cat_[CatIndex.BONUS_STAGE_])
             {
                 int range = Mathf.RoundToInt(using_cat_value_[CatIndex.BONUS_STAGE_] * 100.0f);
                 int num = Random.Range(1, 101);

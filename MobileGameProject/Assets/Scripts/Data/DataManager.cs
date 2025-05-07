@@ -116,7 +116,7 @@ public class DataManager : MonoBehaviour
         is_unlock_cat_[CatIndex.BONUS_STAGE_] = true;
         is_unlock_cat_[CatIndex.SAVOTAGE_DEFENCE_] = true;
 
-        level_cat_[CatIndex.BONUS_STAGE_] = 2;
+        level_cat_[CatIndex.BONUS_STAGE_] = 5;
         level_cat_[CatIndex.MISTAKE_DEFENCE_] = 2;
         level_cat_[CatIndex.TOTAL_TIME_UP_] = 2;
         level_cat_[CatIndex.ROUND_TIME_UP_] = 2;
@@ -124,12 +124,12 @@ public class DataManager : MonoBehaviour
         level_cat_[CatIndex.TILE_SPEED_DOWN_] = 2;
         level_cat_[CatIndex.FEVER_UP_] = 2;
         level_cat_[CatIndex.TIME_STOP_] = 2;
-        level_cat_[CatIndex.SIMPLE_LINE_] = 2;
+        level_cat_[CatIndex.SIMPLE_LINE_] = 5;
         level_cat_[CatIndex.SAVOTAGE_DEFENCE_] = 2;
 
         selected_cat_[0] = CatIndex.SIMPLE_LINE_;
-        selected_cat_[1] = -1;
-        selected_cat_[2] = -1;
+        selected_cat_[1] = CatIndex.MISTAKE_DEFENCE_;
+        selected_cat_[2] = CatIndex.BONUS_STAGE_;
         //!!!!임시코드 고양이 지정
     }
 
