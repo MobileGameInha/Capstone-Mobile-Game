@@ -172,7 +172,12 @@ public class GameManager : MonoBehaviour
     private bool disruptor_round_check; //라운드에 방해자가 적용되는가?
 
 
-
+    [SerializeField]
+    private bool[] ready_to_using_disruptors = new bool[4];
+    [SerializeField]
+    private float ready_to_disruptor_rate_;
+    [SerializeField]
+    private int ready_to_disruptor_count_;
 
 
     private bool disrutor_error_check_
@@ -308,7 +313,9 @@ public class GameManager : MonoBehaviour
 
         SetUsingCat(cat_idx[0], cat_idx[1], cat_idx[2], cat_value[0], cat_value[1], cat_value[2]);
         visual_manager_.SetCatState(cat_idx);
-        SetUsingDisruptor(true, true, true, true, true, 0.8f, 2);// !!!!임시코드 : 삭제 할 예정
+        SetUsingDisruptor((ready_to_using_disruptors[0] || ready_to_using_disruptors[1] || ready_to_using_disruptors[2] || ready_to_using_disruptors[3]), 
+            ready_to_using_disruptors[0], ready_to_using_disruptors[1], ready_to_using_disruptors[2], ready_to_using_disruptors[3], ready_to_disruptor_rate_, ready_to_disruptor_count_);
+
 
         visual_manager_.StartAnimationForStartGame();
     }
