@@ -3176,7 +3176,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: CONNECT
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -6110,10 +6110,10 @@ MonoBehaviour:
   START_BTN: {fileID: 1462529614}
   REM_ON: {fileID: 140750558}
   emailInput: {fileID: 51699916}
-  usernameInput: {fileID: 1611967659}
+  nicknameInput: {fileID: 1611967659}
   idInput: {fileID: 265851444}
   passwordInput: {fileID: 839261013}
-  loginUsernameInput: {fileID: 2122651806}
+  loginIdInput: {fileID: 2122651806}
   loginPasswordInput: {fileID: 1036877037}
   toastText: {fileID: 1636850332}
   toastPanel: {fileID: 953990360}
@@ -9235,7 +9235,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Username
+  m_text: Nickname
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -10966,7 +10966,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 812071407}
         m_TargetAssemblyTypeName: AuthUIManager, Assembly-CSharp
-        m_MethodName: GotoRobby
+        m_MethodName: GotoLobby
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -12217,7 +12217,7 @@ GameObject:
   - component: {fileID: 1611967660}
   - component: {fileID: 1611967659}
   m_Layer: 0
-  m_Name: Username_input
+  m_Name: Nickname_input
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12734,7 +12734,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: bea6a977a63044bccb8960cdbb3b7f7d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: e103fac677e671449b4ae53036845d36, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -15012,7 +15012,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
   m_AnchoredPosition: {x: 0, y: 250}
-  m_SizeDelta: {x: 380, y: 140}
+  m_SizeDelta: {x: 400, y: 400}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1874390871
 MonoBehaviour:
@@ -15090,8 +15090,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: e2b763c5fb1fb427d8eb98f045850dd0, type: 3}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: d04f656f14cd46b46813a5a3a648e086, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -16900,7 +16900,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2127731656
 RectTransform:
   m_ObjectHideFlags: 0
@@ -16917,8 +16917,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: -300}
-  m_SizeDelta: {x: 800, y: 500}
+  m_AnchoredPosition: {x: 6, y: -600}
+  m_SizeDelta: {x: 900, y: 900}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2127731657
 MonoBehaviour:
@@ -16940,7 +16940,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: cb2f600251996d34d877abff5f9f53b9, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 9ea116dcdbab2564ebc01e5cb870a243, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

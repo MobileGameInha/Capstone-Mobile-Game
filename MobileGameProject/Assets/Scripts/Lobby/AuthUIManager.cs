@@ -24,7 +24,7 @@ public class AuthUIManager : MonoBehaviour
 
     [Header("Sign Up Inputs")]
     public TMP_InputField emailInput;
-    public TMP_InputField usernameInput;
+    public TMP_InputField nicknameInput;
     public TMP_InputField idInput;
     public TMP_InputField passwordInput;
 
@@ -41,15 +41,14 @@ public class AuthUIManager : MonoBehaviour
     public TMP_InputField emailInput_find;
     public TMP_Text resultText;
 
-    private const string SERVER_URL = "https://yourbackend.com/api"; // 예시용
 
     void Start()
     {
         toastPanel.SetActive(false);
     }
 
-    public void GotoRobby(){
-        SceneManager.LoadScene("RobbyScene");
+    public void GotoLobby(){
+        SceneManager.LoadScene("LobbyScene");
     }
 
     public void Remember_click(){
@@ -91,7 +90,7 @@ public class AuthUIManager : MonoBehaviour
     public void TrySignUp()
     {
         string email = emailInput.text.Trim();
-        string username = usernameInput.text.Trim();
+        string nickname = nicknameInput.text.Trim();
         string id=idInput.text.Trim();
         string password = passwordInput.text;
 
@@ -101,7 +100,7 @@ public class AuthUIManager : MonoBehaviour
             return;
         }
 
-        if (string.IsNullOrEmpty(username))
+        if (string.IsNullOrEmpty(nickname))
         {
             ShowToast("닉네임을 입력하세요.");
             return;
@@ -118,9 +117,8 @@ public class AuthUIManager : MonoBehaviour
             return;
         }
 
-        // 추후 서버 통신: StartCoroutine(SignUpRequest(email, username, password));
-        ShowToast("회원가입 완료! 로그인 화면으로 이동합니다.");
-        Invoke(nameof(ShowLogin), 1.5f);
+        StartCoroutine(SignUpRequest(email, nickname, id, password));
+
     }
 
     public void TryLogin()
@@ -134,10 +132,8 @@ public class AuthUIManager : MonoBehaviour
             ShowToast("아이디와 비밀번호를 입력하세요.");
             return;
         }
-        CloseUI();
+        StartCoroutine(LoginRequest(id, password));
 
-        // 추후 서버 통신: StartCoroutine(LoginRequest(username, password));
-        ShowToast("로그인 시도 중... (서버 연동 예정)");
     }
 
     private void ShowToast(string message)
@@ -173,51 +169,126 @@ public class AuthUIManager : MonoBehaviour
     }
 
     // ---------------------------
-    // 🔧 서버 통신 함수 (구현 예정)
+    // 🔧 서버 통신 함수 
     // ---------------------------
+    [System.Serializable]
+	public class SignUpData
+	{
+		public string username;
+		public string email;
+		public string nickname;
+		public string password;
+	}
 
-    IEnumerator SignUpRequest(string email, string username, string password)
+	[System.Serializable]
+	public class LoginSuccessResponse
+	{
+		public int id;
+	}
+
+	[System.Serializable]
+	public class LoginErrorResponse
+	{
+		public string message;
+		public string description;
+	}
+    [System.Serializable]
+    public class LoginData  
     {
-        WWWForm form = new WWWForm();
-        form.AddField("email", email);
-        form.AddField("username", username);
-        form.AddField("password", password);
+        public string username;
+        public string password;
+    }
 
-        using (UnityWebRequest www = UnityWebRequest.Post($"{SERVER_URL}/signup", form))
+	public IEnumerator SignUpRequest(string email, string nickname, string username, string password)
+	{
+		SignUpData requestData = new SignUpData
+		{
+			username = username,
+			email = email,
+			nickname = nickname,
+			password = password
+		};
+
+		string jsonData = JsonUtility.ToJson(requestData);
+
+		UnityWebRequest www = new UnityWebRequest("http://3.237.76.145:8080/member/sign", "POST");
+		byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+		www.uploadHandler = new UploadHandlerRaw(bodyRaw);
+		www.downloadHandler = new DownloadHandlerBuffer();
+		www.SetRequestHeader("Content-Type", "application/json; charset=UTF-8");
+
+		yield return www.SendWebRequest();
+
+		if (www.result == UnityWebRequest.Result.Success)
+		{
+			try
+			{
+				LoginSuccessResponse success = JsonUtility.FromJson<LoginSuccessResponse>(www.downloadHandler.text);
+				ShowToast($"회원가입 성공! 유저 ID: {success.id}");
+				Invoke(nameof(ShowLogin), 1.5f);
+			}
+			catch
+			{
+				ShowToast("응답 파싱 오류 (성공) parsing error(success)");
+			}
+		}
+		else
+		{
+			try
+			{
+				LoginErrorResponse error = JsonUtility.FromJson<LoginErrorResponse>(www.downloadHandler.text);
+				ShowToast($"회원가입 실패: {error.message}\n{error.description}");
+			}
+			catch
+			{
+				ShowToast("응답 파싱 오류 (실패) parsing error(failure)");
+			}
+		}
+	}
+
+    public IEnumerator LoginRequest(string username, string password)
+    {
+        LoginData loginData = new LoginData
         {
-            yield return www.SendWebRequest();
+            username = username,
+            password = password
+        };
 
-            if (www.result == UnityWebRequest.Result.Success)
+        string jsonData = JsonUtility.ToJson(loginData);
+
+        UnityWebRequest www = new UnityWebRequest("http://3.237.76.145:8080/member/login", "POST");
+        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+        www.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        www.downloadHandler = new DownloadHandlerBuffer();
+        www.SetRequestHeader("Content-Type", "application/json; charset=UTF-8");
+
+        yield return www.SendWebRequest();
+
+        if (www.result == UnityWebRequest.Result.Success)
+        {
+            try
             {
-                ShowToast("회원가입 성공!");
-                Invoke(nameof(ShowLogin), 1.5f);
+                LoginSuccessResponse success = JsonUtility.FromJson<LoginSuccessResponse>(www.downloadHandler.text);
+                ShowToast($"로그인 성공! 유저 ID: {success.id}");
+                CloseUI();
             }
-            else
+            catch
             {
-                ShowToast("회원가입 실패: " + www.error);
+                ShowToast("응답 파싱 오류 (성공)");
+            }
+        }
+        else
+        {
+            try
+            {
+                LoginErrorResponse error = JsonUtility.FromJson<LoginErrorResponse>(www.downloadHandler.text);
+                ShowToast($"Login Faliure: {error.message}\n{error.description}");
+            }
+            catch
+            {
+                ShowToast("응답 파싱 오류 (실패)");
             }
         }
     }
-
-    IEnumerator LoginRequest(string username, string password)
-    {
-        WWWForm form = new WWWForm();
-        form.AddField("username", username);
-        form.AddField("password", password);
-
-        using (UnityWebRequest www = UnityWebRequest.Post($"{SERVER_URL}/login", form))
-        {
-            yield return www.SendWebRequest();
-
-            if (www.result == UnityWebRequest.Result.Success)
-            {
-                ShowToast("로그인 성공!");
-                // 로그인 성공 후 다음 씬으로 이동하거나 처리
-            }
-            else
-            {
-                ShowToast("로그인 실패: " + www.error);
-            }
-        }
-    }
+    
 }
