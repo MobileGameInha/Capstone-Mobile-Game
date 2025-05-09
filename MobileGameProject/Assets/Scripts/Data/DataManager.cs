@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class DataManager : MonoBehaviour
 {
@@ -24,15 +26,201 @@ public class DataManager : MonoBehaviour
     private const float MAX_EXP = 500.0f;
     private const float MAX_CAT_EXP = 500.0f;
 
+
+
+    private string email_;
+    private string password_;
+    private string username_;
+
     private string nickname_ = "Player";
     private int coin_=0;
     private float exp_ = 0.0f;
 
-    [SerializeField] //삭제 예정
     private int[] selected_cat_ = { -1,-1,-1};
     private bool[] is_unlock_cat_;
     private int[] level_cat_;
     private float[] exp_cat_;
+
+
+
+
+
+    //===========서버 통신=============
+
+    private AuthUIManager authManager;
+
+    [System.Serializable]
+    public class SignUpData
+    {
+        public string username;
+        public string email;
+        public string nickname;
+        public string password;
+    }
+
+    [System.Serializable]
+    public class LoginSuccessResponse
+    {
+        public int id;
+    }
+
+    [System.Serializable]
+    public class LoginErrorResponse
+    {
+        public string message;
+        public string description;
+    }
+    [System.Serializable]
+    public class LoginData
+    {
+        public string username;
+        public string password;
+    }
+
+    public void SendSignUpRequest(AuthUIManager auth, string email, string nickname, string username, string password) {
+        authManager = auth;
+        StartCoroutine(SignUpRequest(email, nickname, username, password));
+    }
+
+    public void SendLoginRequest(AuthUIManager auth, string username, string password)
+    {
+        authManager = auth;
+        StartCoroutine(LoginRequest(username,password));
+    }
+
+
+    private IEnumerator SignUpRequest(string email, string nickname, string username, string password)
+    {
+        Debug.Log("서버에 회원가입 데이터를 SEND합니다.");
+
+        SignUpData requestData = new SignUpData
+        {
+            username = username,
+            email = email,
+            nickname = nickname,
+            password = password
+        };
+
+        string jsonData = JsonUtility.ToJson(requestData);
+
+        UnityWebRequest web_request = new UnityWebRequest("http://3.237.76.145:8080/member/sign", "POST");
+        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+        web_request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        web_request.downloadHandler = new DownloadHandlerBuffer();
+        web_request.SetRequestHeader("Content-Type", "application/json; charset=UTF-8");
+
+        yield return web_request.SendWebRequest();
+
+        Debug.Log("서버에서 회원가입 데이터를 받아왔습니다.");
+
+        if (web_request.result == UnityWebRequest.Result.Success)
+        {
+            try
+            {
+                LoginSuccessResponse success = JsonUtility.FromJson<LoginSuccessResponse>(web_request.downloadHandler.text);
+                if (authManager != null) 
+                {
+                    authManager.Unlock();
+                    authManager.ShowToast($"회원가입 성공! 로그인 하세요!");
+                    authManager.ShowLogin();
+                }
+            }
+            catch
+            {
+                if (authManager != null)
+                {
+                    authManager.Unlock();
+                    authManager.ShowToast("응답 파싱 오류 (성공) parsing error(success)");
+                }
+            }
+        }
+        else
+        {
+            try
+            {
+                LoginErrorResponse error = JsonUtility.FromJson<LoginErrorResponse>(web_request.downloadHandler.text);
+                if (authManager != null)
+                {
+                    Debug.Log("회원가입에 실패함 : " + error.message.ToString() + " / "+ error.description.ToString());
+                    authManager.Unlock();
+                    authManager.ShowToast($"회원가입 실패: {error.message}\n{error.description}");
+                }
+            }
+            catch
+            {
+                if (authManager != null)
+                {
+                    authManager.Unlock();
+                    authManager.ShowToast("응답 파싱 오류 (실패) parsing error(failure)");
+                }
+            }
+        }
+
+    }
+
+    private IEnumerator LoginRequest(string username, string password)
+    {
+        LoginData loginData = new LoginData
+        {
+            username = username,
+            password = password
+        };
+
+        string jsonData = JsonUtility.ToJson(loginData);
+
+        UnityWebRequest web_request = new UnityWebRequest("http://3.237.76.145:8080/member/login", "POST");
+        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+        web_request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        web_request.downloadHandler = new DownloadHandlerBuffer();
+        web_request.SetRequestHeader("Content-Type", "application/json; charset=UTF-8");
+
+        yield return web_request.SendWebRequest();
+
+        if (web_request.result == UnityWebRequest.Result.Success)
+        {
+            try
+            {
+                LoginSuccessResponse success = JsonUtility.FromJson<LoginSuccessResponse>(web_request.downloadHandler.text);
+                if (authManager != null)
+                {
+                    authManager.Unlock();
+                    authManager.ShowToast($"로그인 성공! 로그인 하세요!");
+                    authManager.CloseUI();
+                }
+            }
+            catch
+            {
+                if (authManager != null)
+                {
+                    authManager.Unlock();
+                    authManager.ShowToast("응답 파싱 오류 (성공)");
+                }
+            }
+        }
+        else
+        {
+            try
+            {
+                LoginErrorResponse error = JsonUtility.FromJson<LoginErrorResponse>(web_request.downloadHandler.text);
+                if (authManager != null)
+                {
+                    authManager.Unlock();
+                    authManager.ShowToast($"Login Faliure: {error.message}\n{error.description}");
+                }
+            }
+            catch
+            {
+                if (authManager != null)
+                {
+                    authManager.Unlock();
+                    authManager.ShowToast("응답 파싱 오류 (실패)");
+                }
+            }
+        }
+    }
+
+
+
 
 
 
