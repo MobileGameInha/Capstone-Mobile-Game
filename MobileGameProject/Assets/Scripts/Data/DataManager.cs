@@ -29,7 +29,7 @@ public class DataManager : MonoBehaviour
     private float exp_ = 0.0f;
 
     [SerializeField] //삭제 예정
-    private int[] selected_cat_;
+    private int[] selected_cat_ = { -1,-1,-1};
     private bool[] is_unlock_cat_;
     private int[] level_cat_;
     private float[] exp_cat_;
@@ -63,8 +63,7 @@ public class DataManager : MonoBehaviour
     public int GetSelectedCat(int idx)
     {
 
-
-        if (selected_cat_[idx]!=-1 && is_unlock_cat_[selected_cat_[idx]])
+        if (idx>=0 && idx<=2 && selected_cat_[idx]!=-1 && is_unlock_cat_[selected_cat_[idx]])
         {
             return selected_cat_[idx];
         }
@@ -109,15 +108,28 @@ public class DataManager : MonoBehaviour
         is_unlock_cat_[CatIndex.TOTAL_TIME_UP_] = true;
         is_unlock_cat_[CatIndex.ROUND_TIME_UP_] = true;
         is_unlock_cat_[CatIndex.MISTAKE_DEFENCE_] = true;
+        is_unlock_cat_[CatIndex.LIFE_REMOVE_DOWN_] = true;
+        is_unlock_cat_[CatIndex.TILE_SPEED_DOWN_] = true;
+        is_unlock_cat_[CatIndex.FEVER_UP_] = true;
+        is_unlock_cat_[CatIndex.TIME_STOP_] = true;
+        is_unlock_cat_[CatIndex.SIMPLE_LINE_] = true;
         is_unlock_cat_[CatIndex.BONUS_STAGE_] = true;
+        is_unlock_cat_[CatIndex.SAVOTAGE_DEFENCE_] = true;
 
-        level_cat_[CatIndex.BONUS_STAGE_] = 2;
+        level_cat_[CatIndex.BONUS_STAGE_] = 5;
         level_cat_[CatIndex.MISTAKE_DEFENCE_] = 2;
         level_cat_[CatIndex.TOTAL_TIME_UP_] = 2;
+        level_cat_[CatIndex.ROUND_TIME_UP_] = 2;
+        level_cat_[CatIndex.LIFE_REMOVE_DOWN_] = 2;
+        level_cat_[CatIndex.TILE_SPEED_DOWN_] = 2;
+        level_cat_[CatIndex.FEVER_UP_] = 2;
+        level_cat_[CatIndex.TIME_STOP_] = 2;
+        level_cat_[CatIndex.SIMPLE_LINE_] = 5;
+        level_cat_[CatIndex.SAVOTAGE_DEFENCE_] = 2;
 
-        selected_cat_[0] = CatIndex.BONUS_STAGE_;
+        selected_cat_[0] = CatIndex.SIMPLE_LINE_;
         selected_cat_[1] = CatIndex.MISTAKE_DEFENCE_;
-        selected_cat_[2] = CatIndex.TOTAL_TIME_UP_;
+        selected_cat_[2] = CatIndex.BONUS_STAGE_;
         //!!!!임시코드 고양이 지정
     }
 
