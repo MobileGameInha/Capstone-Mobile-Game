@@ -1,3 +1,4 @@
+using Spine.Unity;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -16,6 +17,9 @@ public class BasicStageManagement : MonoBehaviour
     public RectTransform RightPosition;
     public RectTransform LeftPosition;
 
+    public SkeletonAnimation[] Cat1s = new SkeletonAnimation[5];
+    public SkeletonAnimation[] Cat2s = new SkeletonAnimation[5];
+    public SkeletonAnimation[] Cat3s = new SkeletonAnimation[5];
 
     public int MaxStage;
     public float speed = 20.0f;
@@ -51,6 +55,10 @@ public class BasicStageManagement : MonoBehaviour
         StageSelectPack.SetActive(true);
     }
 
+    private void Start()
+    {
+        ResetCatState();
+    }
 
     private void Update()
     {
@@ -85,6 +93,10 @@ public class BasicStageManagement : MonoBehaviour
         }
 
 
+    }
+
+    public void OnClickCatButton() {
+        GameObject.FindObjectOfType<LobbyManager>().OnClickQuickButton(1);
     }
 
     public void OnClickMoveToStagesPack(int idx)
@@ -133,6 +145,59 @@ public class BasicStageManagement : MonoBehaviour
                 PlayerPrefs.SetInt("Stage", currentStage);
             }
             isSweepLeft = true;
+        }
+    }
+
+    public void ResetCatState() {
+        if (DataManager.dataManager.GetSelectedCat(0) != -1)
+        {
+            for (int i = 0; i < Cat1s.Length; i++)
+            {
+                Cat1s[i].gameObject.SetActive(true);
+                Cat1s[i].initialSkinName = "Cat-" + (DataManager.dataManager.GetSelectedCat(0) + 1).ToString();
+                Cat1s[i].Initialize(true);
+            }
+        }
+        else 
+        {
+            for (int i = 0; i < Cat1s.Length; i++)
+            {
+                Cat1s[i].gameObject.SetActive(false);
+            }
+        }
+
+        if (DataManager.dataManager.GetSelectedCat(1) != -1)
+        {
+            for (int i = 0; i < Cat2s.Length; i++)
+            {
+                Cat2s[i].gameObject.SetActive(true);
+                Cat2s[i].initialSkinName = "Cat-" + (DataManager.dataManager.GetSelectedCat(1) + 1).ToString();
+                Cat2s[i].Initialize(true);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < Cat2s.Length; i++)
+            {
+                Cat2s[i].gameObject.SetActive(false);
+            }
+        }
+
+        if (DataManager.dataManager.GetSelectedCat(2) != -1)
+        {
+            for (int i = 0; i < Cat3s.Length; i++)
+            {
+                Cat3s[i].gameObject.SetActive(true);
+                Cat3s[i].initialSkinName = "Cat-" + (DataManager.dataManager.GetSelectedCat(02) + 1).ToString();
+                Cat3s[i].Initialize(true);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < Cat3s.Length; i++)
+            {
+                Cat3s[i].gameObject.SetActive(false);
+            }
         }
     }
 

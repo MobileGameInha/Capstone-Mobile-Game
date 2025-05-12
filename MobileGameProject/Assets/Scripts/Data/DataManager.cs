@@ -5,6 +5,9 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.Networking;
 
+
+public enum Item { SNACK, BELL, BOX, DISK, TICKET, LEAF, FLOWER, EARTH }
+
 public class DataManager : MonoBehaviour
 {
     public static DataManager dataManager
@@ -23,8 +26,8 @@ public class DataManager : MonoBehaviour
     private static DataManager dataManager_instance; //싱글턴 인스턴스
 
 
-    private const float MAX_EXP = 500.0f;
-    private const float MAX_CAT_EXP = 500.0f;
+    public const float PLAYER_PER_EXP = 500.0f;
+    public const float MAX_CAT_EXP = 100.0f;
 
 
 
@@ -37,11 +40,11 @@ public class DataManager : MonoBehaviour
     private float exp_ = 0.0f;
 
     private int[] selected_cat_ = { -1,-1,-1};
-    private bool[] is_unlock_cat_;
-    private int[] level_cat_;
-    private float[] exp_cat_;
+    private bool[] is_unlock_cat_ = new bool[12];
+    private int[] level_cat_ = new int[12];
+    private float[] exp_cat_ = new float[12];
 
-
+    private int[] inventory = { 0,0,0,0,0,0,0,0 };
 
 
 
@@ -220,9 +223,11 @@ public class DataManager : MonoBehaviour
     }
 
 
-
-
-
+    
+    public string GetNickName() { return nickname_; }
+    public int GetCoin() { return coin_; }
+    public int GetLevel() { return Mathf.FloorToInt(exp_ / PLAYER_PER_EXP); }
+    public float GetRemainEXP() { return exp_ - GetLevel()*PLAYER_PER_EXP; }
 
     public bool SetSelectedCat(int idx, int cat_idx)
     {
@@ -266,6 +271,17 @@ public class DataManager : MonoBehaviour
         return level_cat_[idx];
     }
 
+    public float GetEXPOfCat(int idx)
+    {
+        return exp_cat_[idx];
+    }
+
+    public int GetItemCount(Item item)
+    {
+        return inventory[(int)item];
+    }
+
+
     private void Awake()
     {
         DontDestroyOnLoad(this);
@@ -283,8 +299,8 @@ public class DataManager : MonoBehaviour
         for (int i = 0; i < GameManager.CAT_SIZE_; i++)
         {
             is_unlock_cat_[i] = false;
-            level_cat_[i] = 0;
-            exp_cat_[i] = 0;
+            level_cat_[i] = 1;
+            exp_cat_[i] = 0.0f;
         }
 
 
@@ -293,16 +309,20 @@ public class DataManager : MonoBehaviour
 
 
         //!!!!임시코드 고양이 지정
+
+
         is_unlock_cat_[CatIndex.TOTAL_TIME_UP_] = true;
         is_unlock_cat_[CatIndex.ROUND_TIME_UP_] = true;
         is_unlock_cat_[CatIndex.MISTAKE_DEFENCE_] = true;
         is_unlock_cat_[CatIndex.LIFE_REMOVE_DOWN_] = true;
         is_unlock_cat_[CatIndex.TILE_SPEED_DOWN_] = true;
         is_unlock_cat_[CatIndex.FEVER_UP_] = true;
-        is_unlock_cat_[CatIndex.TIME_STOP_] = true;
         is_unlock_cat_[CatIndex.SIMPLE_LINE_] = true;
         is_unlock_cat_[CatIndex.BONUS_STAGE_] = true;
         is_unlock_cat_[CatIndex.SAVOTAGE_DEFENCE_] = true;
+
+        exp_cat_[CatIndex.TOTAL_TIME_UP_] = 50.0f;
+        exp_cat_[CatIndex.ROUND_TIME_UP_] = 50.0f;
 
         level_cat_[CatIndex.BONUS_STAGE_] = 5;
         level_cat_[CatIndex.MISTAKE_DEFENCE_] = 2;
@@ -311,7 +331,6 @@ public class DataManager : MonoBehaviour
         level_cat_[CatIndex.LIFE_REMOVE_DOWN_] = 2;
         level_cat_[CatIndex.TILE_SPEED_DOWN_] = 2;
         level_cat_[CatIndex.FEVER_UP_] = 2;
-        level_cat_[CatIndex.TIME_STOP_] = 2;
         level_cat_[CatIndex.SIMPLE_LINE_] = 5;
         level_cat_[CatIndex.SAVOTAGE_DEFENCE_] = 2;
 
