@@ -115,7 +115,8 @@ public class BasicStageManagement : MonoBehaviour
     }
 
     public void OnClickMoveToStage(int idx) {
-        SceneManager.LoadScene("Stage_" + idx.ToString());
+        LoadingManager.LoadScene("Stage_" + idx.ToString());
+        //SceneManager.LoadScene("Stage_" + idx.ToString()); µ¿±â½Ä..
     }
 
 

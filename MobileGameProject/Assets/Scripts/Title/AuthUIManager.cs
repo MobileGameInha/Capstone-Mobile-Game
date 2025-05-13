@@ -55,7 +55,8 @@ public class AuthUIManager : MonoBehaviour
     public void GotoLobby(){
         if (request_lock_) { return; }
 
-        SceneManager.LoadScene("LobbyScene");
+        LoadingManager.LoadScene("LobbyScene");
+        //SceneManager.LoadScene("LobbyScene"); 동기식...
     }
 
     public void Remember_click(){
