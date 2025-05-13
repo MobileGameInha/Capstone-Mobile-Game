@@ -2,6 +2,7 @@ using Spine.Unity;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -43,6 +44,7 @@ public class VisualManager : MonoBehaviour
     private float cat_footstep_timer_;
     private float cat_footstep_timer_max_ = 0.5f;
     private bool start_trigger_ = false;
+    private bool end_trigger_ = false;
 
     public Image Co2FillImage;
     public Slider Co2Slider;
@@ -72,6 +74,14 @@ public class VisualManager : MonoBehaviour
 
 
     public GameObject[] SimpleLineEffects;
+
+
+    public Animator HideAnimator;
+    public Animator EndAnimator;
+
+    public TMP_Text ScoreText;
+    public TMP_Text CoinText;
+    public TMP_Text EXPText;
 
     private void Awake()
     {
@@ -360,5 +370,26 @@ public class VisualManager : MonoBehaviour
  
     }
 
+    public void StartAnimationForEndGame(int score, int coin, int exp, bool coin_up, bool exp_up)
+    {
+        if (end_trigger_) { return; }
+        end_trigger_ = true;
 
+        ScoreText.text = score.ToString();
+        CoinText.text = coin.ToString();
+        EXPText.text = exp.ToString();
+
+        if (coin_up) { CoinText.color = Color.red; } else { CoinText.color = Color.white; }
+        if (exp_up) { EXPText.color = Color.red; } else { EXPText.color = Color.white; }
+
+        inGameSoundManager.PlayStartAnim_EndClip();
+        GameObject.FindObjectOfType<InGameBGMManager>().EndBGM();
+        HideAnimator.SetBool(SHOW_PARAM_HASH, true);
+        StartCoroutine(StartAnimationForEndGameCoroutine());
+    }
+
+    private IEnumerator StartAnimationForEndGameCoroutine() {
+        yield return new WaitForSeconds(2f);
+        EndAnimator.SetBool(SHOW_PARAM_HASH, true);
+    }
 }

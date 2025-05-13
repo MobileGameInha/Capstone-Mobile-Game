@@ -308,7 +308,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 9117d18fbb8cdf74fac17d2a377af534, type: 3}
+  m_Sprite: {fileID: 21300000, guid: df0eb8426505dd2478ca93be1ad8213d, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -995,7 +995,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: dae5fedbcf80dc642908323a8ec4d23e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b3b2ac4549d6597428105133f9e688f7, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1833,7 +1833,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 114320401}
-  BGM: {fileID: 8300000, guid: 70eef882116194121850cac0d879af45, type: 3}
+  BGM: {fileID: 8300000, guid: 0f256a90dbb5e49e2be30d380e2f9691, type: 3}
 --- !u!4 &114320403
 Transform:
   m_ObjectHideFlags: 0
@@ -5095,7 +5095,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: bb9d141986bf6e54d800d3deac452079, type: 3}
+  m_Sprite: {fileID: 21300000, guid: bb81acb4106e6f9419cb94c6a0453bf8, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -7438,7 +7438,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 731777373}
-  - component: {fileID: 731777374}
   m_Layer: 5
   m_Name: Buttons
   m_TagString: Untagged
@@ -7471,25 +7470,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 400}
   m_Pivot: {x: 0.5, y: 0}
---- !u!95 &731777374
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 731777372}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: b4fce1412005e794cad9c25680606750, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1001 &735027753
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9971,7 +9951,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.39215687}
+  m_Color: {r: 0.017205715, g: 0, b: 1, a: 0.19607843}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -10872,7 +10852,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: ae55e567fe56f5f4c95821c7e3ca9d2c, type: 3}
+  m_Texture: {fileID: 2800000, guid: 7523a6c716a702f40b0839a327e06dc3, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -12232,6 +12212,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1228153309}
   - component: {fileID: 1228153308}
+  - component: {fileID: 1228153310}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -12254,20 +12235,20 @@ MonoBehaviour:
   ScoreText: {fileID: 1630497120}
   TotalTimerSlider: {fileID: 4760533358287323890}
   RoundTimerSlider: {fileID: 5417369604857556882}
-  Mode: 0
-  CHALLANGE_ButtonRotator: {fileID: 0}
+  Mode: 1
+  CHALLANGE_ButtonRotator: {fileID: 1228153310}
   tile_manager_: {fileID: 1200680921}
   layer_manager_: {fileID: 363452502}
   visual_manager_: {fileID: 363452503}
   bgm_manager_: {fileID: 114320402}
-  ButtonSwapAnimator: {fileID: 731777374}
+  ButtonSwapAnimator: {fileID: 0}
   coin_per_score_: 60
   exp_per_score_: 350
   BUTTON_COUNT: 6
   MIN_TILE_SIZE_: 8
   MAX_TILE_SIZE_: 18
   LINE_TILES: 6
-  ready_to_using_disruptors: 01010101
+  ready_to_using_disruptors: 00010101
   ready_to_disruptor_rate_: 0.8
   ready_to_disruptor_count_: 3
 --- !u!4 &1228153309
@@ -12284,6 +12265,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1228153310
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1228153307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc3bab511cb9dc84c9229d70ec134ee7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ButtonPositions:
+  - {fileID: 245669987}
+  - {fileID: 998263425}
+  - {fileID: 533235538}
+  - {fileID: 863812692}
+  - {fileID: 1765714622}
+  - {fileID: 1711012334}
 --- !u!1001 &1235560217
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12573,7 +12573,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: da81ab374f5159f429e2ca7b561cceb4, type: 3}
+  m_Texture: {fileID: 2800000, guid: 9c81c7ed55b2f97478be41726ade771b, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -15104,7 +15104,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 3e159896b345c354ab989497bb3d8a5d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 177bd9704ea58f340beab236d06617b7, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -15726,7 +15726,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 348f4cbce119cb440847688968eff3aa, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4f31f48d07821d3408cf1b086e71d5df, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

@@ -167,6 +167,7 @@ public class BasicHelperManager : MonoBehaviour
         ResetHelperSelectPanel();
         ResetLobbyHelpers();
         GameObject.FindObjectOfType<BasicStageManagement>().ResetCatState();
+        GameObject.FindObjectOfType<BasicChallangeManager>().ResetCatState();
     }
 
     public void OnClickCatUpgradeButton()
