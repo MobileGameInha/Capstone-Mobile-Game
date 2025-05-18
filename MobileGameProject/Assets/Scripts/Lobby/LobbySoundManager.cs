@@ -20,6 +20,9 @@ public class LobbySoundManager : MonoBehaviour
     public AudioClip[] catClips;
 
     public AudioClip challangeChangeButtonClickClip;
+
+    public AudioClip shopMenuButtonClickClip;
+
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
@@ -43,4 +46,6 @@ public class LobbySoundManager : MonoBehaviour
 
 
     public void PlayChallangeChangeButtonClickClip() { audioSource.PlayOneShot(challangeChangeButtonClickClip); }
+
+    public void PlayShopMenuButtonClickClip() { audioSource.PlayOneShot(shopMenuButtonClickClip); }
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 
-public enum Item { SNACK, BELL, BOX, DISK, TICKET, LEAF, FLOWER, EARTH }
+public enum Item { SNACK, BELL, BOX, DISK, TICKET, FLOWER, LEAF, EARTH }
 
 public class DataManager : MonoBehaviour
 {
@@ -25,11 +25,16 @@ public class DataManager : MonoBehaviour
 
     private static DataManager dataManager_instance; //싱글턴 인스턴스
 
+    public delegate void RequestSuccessDelegate();
+    public delegate void RequestFailDelegate(string err);
 
     public const float PLAYER_PER_EXP = 500.0f;
     public const float MAX_CAT_EXP = 100.0f;
 
+    private bool requesting_ = false;
 
+    public RequestSuccessDelegate requestSuccededDelegate;
+    public RequestFailDelegate requestFailedDelegate;
 
     private string email_;
     private string password_;
@@ -40,17 +45,17 @@ public class DataManager : MonoBehaviour
     private float exp_ = 0.0f;
 
     private int[] selected_cat_ = { -1,-1,-1};
-    private bool[] is_unlock_cat_ = new bool[12];
-    private int[] level_cat_ = new int[12];
-    private float[] exp_cat_ = new float[12];
+    private bool[] is_unlock_cat_ = new bool[GameManager.CAT_SIZE_];
+    private int[] level_cat_ = new int[GameManager.CAT_SIZE_];
+    private float[] exp_cat_ = new float[GameManager.CAT_SIZE_];
 
     private int[] inventory = { 0,0,0,0,0,0,0,0 };
 
-
+    
 
     //===========서버 통신=============
 
-    private AuthUIManager authManager;
+    public bool GetIsRequesting() { return requesting_; }
 
     [System.Serializable]
     public class SignUpData
@@ -80,14 +85,14 @@ public class DataManager : MonoBehaviour
         public string password;
     }
 
-    public void SendSignUpRequest(AuthUIManager auth, string email, string nickname, string username, string password) {
-        authManager = auth;
+    public void SendSignUpRequest(string email, string nickname, string username, string password) {
+        requesting_ = true;
         StartCoroutine(SignUpRequest(email, nickname, username, password));
     }
 
-    public void SendLoginRequest(AuthUIManager auth, string username, string password)
+    public void SendLoginRequest(string username, string password)
     {
-        authManager = auth;
+        requesting_ = true;
         StartCoroutine(LoginRequest(username,password));
     }
 
@@ -121,20 +126,11 @@ public class DataManager : MonoBehaviour
             try
             {
                 LoginSuccessResponse success = JsonUtility.FromJson<LoginSuccessResponse>(web_request.downloadHandler.text);
-                if (authManager != null) 
-                {
-                    authManager.Unlock();
-                    authManager.ShowToast($"회원가입 성공! 로그인 하세요!");
-                    authManager.ShowLogin();
-                }
+                requestSuccededDelegate();
             }
             catch
             {
-                if (authManager != null)
-                {
-                    authManager.Unlock();
-                    authManager.ShowToast("응답 파싱 오류 (성공) parsing error(success)");
-                }
+                requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
             }
         }
         else
@@ -142,20 +138,11 @@ public class DataManager : MonoBehaviour
             try
             {
                 LoginErrorResponse error = JsonUtility.FromJson<LoginErrorResponse>(web_request.downloadHandler.text);
-                if (authManager != null)
-                {
-                    Debug.Log("회원가입에 실패함 : " + error.message.ToString() + " / "+ error.description.ToString());
-                    authManager.Unlock();
-                    authManager.ShowToast($"회원가입 실패: {error.message}\n{error.description}");
-                }
+                requestFailedDelegate("회원가입에 실패했습니다. 다시 시도해주세요");
             }
             catch
             {
-                if (authManager != null)
-                {
-                    authManager.Unlock();
-                    authManager.ShowToast("응답 파싱 오류 (실패) parsing error(failure)");
-                }
+                requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
             }
         }
 
@@ -184,20 +171,11 @@ public class DataManager : MonoBehaviour
             try
             {
                 LoginSuccessResponse success = JsonUtility.FromJson<LoginSuccessResponse>(web_request.downloadHandler.text);
-                if (authManager != null)
-                {
-                    authManager.Unlock();
-                    authManager.ShowToast($"로그인 성공! 로그인 하세요!");
-                    authManager.CloseUI();
-                }
+                requestSuccededDelegate();
             }
             catch
             {
-                if (authManager != null)
-                {
-                    authManager.Unlock();
-                    authManager.ShowToast("응답 파싱 오류 (성공)");
-                }
+                requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
             }
         }
         else
@@ -205,25 +183,17 @@ public class DataManager : MonoBehaviour
             try
             {
                 LoginErrorResponse error = JsonUtility.FromJson<LoginErrorResponse>(web_request.downloadHandler.text);
-                if (authManager != null)
-                {
-                    authManager.Unlock();
-                    authManager.ShowToast($"Login Faliure: {error.message}\n{error.description}");
-                }
+                requestFailedDelegate("로그인에 실패했습니다. 다시 시도해주세요");
             }
             catch
             {
-                if (authManager != null)
-                {
-                    authManager.Unlock();
-                    authManager.ShowToast("응답 파싱 오류 (실패)");
-                }
+                requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
             }
         }
     }
 
 
-    
+    //======================데이터 참조================================
     public string GetNickName() { return nickname_; }
     public int GetCoin() { return coin_; }
     public int GetLevel() { return Mathf.FloorToInt(exp_ / PLAYER_PER_EXP); }
@@ -281,6 +251,10 @@ public class DataManager : MonoBehaviour
         return inventory[(int)item];
     }
 
+    public void RequestRemoveCoin(int remove_value) 
+    {
+        coin_ -= remove_value;//+)임시 : 
+    }
 
     private void Awake()
     {
@@ -308,8 +282,9 @@ public class DataManager : MonoBehaviour
 
 
 
-        //!!!!임시코드 고양이 지정
-
+        //!!!!임시코드
+        inventory = new int[]{ 0,1,2,3,4,5,6,7 };
+        coin_ = 10000;
 
         is_unlock_cat_[CatIndex.TOTAL_TIME_UP_] = true;
         is_unlock_cat_[CatIndex.ROUND_TIME_UP_] = true;
@@ -337,7 +312,7 @@ public class DataManager : MonoBehaviour
         selected_cat_[0] = CatIndex.SIMPLE_LINE_;
         selected_cat_[1] = CatIndex.MISTAKE_DEFENCE_;
         selected_cat_[2] = CatIndex.BONUS_STAGE_;
-        //!!!!임시코드 고양이 지정
+        //!!!!임시코드
     }
 
 }

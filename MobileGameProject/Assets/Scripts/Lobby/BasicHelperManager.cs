@@ -54,7 +54,7 @@ public class BasicHelperManager : MonoBehaviour
     public GameObject[] NoneImages = new GameObject[3];
 
     public SkeletonAnimation HelperSelect_SelectedCat;
-    public SkeletonAnimation[] HelperSelect_IdleCats = new SkeletonAnimation[12];
+    public SkeletonAnimation[] HelperSelect_IdleCats = new SkeletonAnimation[GameManager.CAT_SIZE_];
     public TMP_Text CatNameText;
     public TMP_Text CatExplainText;
     public Slider CatEXPSlider;
@@ -200,7 +200,7 @@ public class BasicHelperManager : MonoBehaviour
     {
         if (!already_in_panel)
         {
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < GameManager.CAT_SIZE_; i++)
             {
                 if (DataManager.dataManager.GetIsUnlockCat(i))
                 {
@@ -272,7 +272,7 @@ public class BasicHelperManager : MonoBehaviour
     }//ÇïÆÛ »ø·ºÆ® ¸®ÇÁ·¹½¬
 
 
-    private void ResetHelperUpgradePanel()
+    public void ResetHelperUpgradePanel()
     {
         if (selected_cat_index[now_showing_idx] != -1)
         {
