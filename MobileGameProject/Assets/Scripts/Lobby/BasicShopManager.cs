@@ -164,8 +164,6 @@ public class BasicShopManager : MonoBehaviour
 
             Wheel.Spin();
 
-            //+)æ∆¿Ã≈€ »πµÊ
-
             ResetItemState();
             GameObject.FindObjectOfType<BasicHelperManager>().ResetHelperUpgradePanel();
         }
@@ -182,7 +180,8 @@ public class BasicShopManager : MonoBehaviour
     }
 
     public void AddItem(int idx) 
-    { 
-
+    {
+        Debug.Log(idx.ToString() + "æ∆¿Ã≈€ »πµÊ");
+        //+)æ∆¿Ã≈€ »πµÊ
     }
 }
