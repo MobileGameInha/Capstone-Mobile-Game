@@ -40,9 +40,13 @@ public class DataManager : MonoBehaviour
     private string password_;
     private string username_;
 
+    private int profile_image_=0;
     private string nickname_ = "Player";
     private int coin_=0;
     private float exp_ = 0.0f;
+
+    private bool[] isUnlockStage = { true, false, false, false, false };
+    private bool isUnlockChallange = false;
 
     private int[] selected_cat_ = { -1,-1,-1};
     private bool[] is_unlock_cat_ = new bool[GameManager.CAT_SIZE_];
@@ -96,6 +100,45 @@ public class DataManager : MonoBehaviour
         StartCoroutine(LoginRequest(username,password));
     }
 
+    public void GetPlayerData()
+    { 
+        //+)플레이어 데이터 끌어오기 ~ 로그인에 합쳐도 됨
+    }
+
+    public void SetPlayerProfile(int idx)
+    {
+        //+)플레이어 프로필 이미지 변경
+    }
+
+    public void RemoveCoin(int value)
+    {
+        //+)플레이어 코인 제거
+    }
+
+    public void UnlockCat(int idx)
+    {
+        //+)고양이 해금
+    }
+
+    public void UpgradeCat(int idx)
+    {
+        //+)고양이 업그레이드
+    }
+
+    public void GetItem(int idx)
+    {
+        //+)아이템 얻기
+    }
+
+    public void GetRankingData()
+    {
+        //+)랭킹데이터 끌어오기
+    }
+
+    public void ChangeDataOfEndGame(int score)
+    {
+        //+)게임 종료 후 데이터 전송
+    }
 
     private IEnumerator SignUpRequest(string email, string nickname, string username, string password)
     {
@@ -194,10 +237,14 @@ public class DataManager : MonoBehaviour
 
 
     //======================데이터 참조================================
+    public int GetProfileImage() { return profile_image_; }
     public string GetNickName() { return nickname_; }
     public int GetCoin() { return coin_; }
     public int GetLevel() { return Mathf.FloorToInt(exp_ / PLAYER_PER_EXP); }
     public float GetRemainEXP() { return exp_ - GetLevel()*PLAYER_PER_EXP; }
+
+    public bool GetIsUnlockStage(int idx) { return isUnlockStage[idx]; }
+    public bool GetIsUnlockChallangeStage() { return isUnlockChallange; }
 
     public bool SetSelectedCat(int idx, int cat_idx)
     {
@@ -285,7 +332,7 @@ public class DataManager : MonoBehaviour
         //!!!!임시코드
         inventory = new int[]{ 0,1,2,3,4,5,6,7 };
         coin_ = 10000;
-
+        profile_image_ = 2;
         is_unlock_cat_[CatIndex.TOTAL_TIME_UP_] = true;
         is_unlock_cat_[CatIndex.ROUND_TIME_UP_] = true;
         is_unlock_cat_[CatIndex.MISTAKE_DEFENCE_] = true;

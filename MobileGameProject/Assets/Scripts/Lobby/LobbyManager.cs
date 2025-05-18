@@ -6,6 +6,10 @@ using UnityEngine.UI;
 
 public class LobbyManager : MonoBehaviour
 {
+    public Image profileImage;
+
+    public Sprite[] profileSprites;
+
     public TMP_Text NickNameText;
     public TMP_Text LevelText;
     public TMP_Text CoinText;
@@ -16,13 +20,17 @@ public class LobbyManager : MonoBehaviour
     public GameObject[] MenuPacks;
     public GameObject[] QuickButtonBorders;
 
+    public GameObject ProfileSelectPanel;
+
     private void Awake()
     {
+        ProfileSelectPanel.SetActive(false);
         OnClickQuickButton(0);
     }
 
     private void Start()
     {
+        ChangeProfileImage();
         ResetState();
     }
 
@@ -49,4 +57,20 @@ public class LobbyManager : MonoBehaviour
         }
     }
 
+    public void OnClickProfileSelectButton()
+    {
+        ProfileSelectPanel.SetActive(!ProfileSelectPanel.activeSelf);
+    }
+
+    public void OnClickProfileChangeButton(int idx)
+    {
+        //+)프로필 값 변경
+        ChangeProfileImage();
+        ProfileSelectPanel.SetActive(false);
+    }
+
+    private void ChangeProfileImage() 
+    {
+        profileImage.sprite = profileSprites[DataManager.dataManager.GetProfileImage()];
+    }
 }

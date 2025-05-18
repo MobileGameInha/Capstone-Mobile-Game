@@ -131,7 +131,7 @@ public class BasicShopManager : MonoBehaviour
             PetExplain.text = BasicHelperManager.CAT_EXPLAIN_LIST_[pet_index_];
             if (DataManager.dataManager.GetIsUnlockCat(pet_index_))
             {
-                PetCost.text = "함께하는 고양이";
+                PetCost.text = "함께하는\n고양이";
             }
             else
             {

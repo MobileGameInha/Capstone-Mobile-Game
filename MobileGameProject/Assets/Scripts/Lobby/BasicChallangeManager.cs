@@ -15,6 +15,9 @@ public class BasicChallangeManager : MonoBehaviour
 
     public SkeletonAnimation[] Cats = new SkeletonAnimation[5];
 
+    public GameObject lockPanel;
+    public GameObject selectCatButtons;
+
     private State state_ = State.BW;
     private void Awake()
     {
@@ -28,6 +31,16 @@ public class BasicChallangeManager : MonoBehaviour
     private void Start()
     {
         ResetCatState();
+        if (DataManager.dataManager.GetIsUnlockChallangeStage())
+        {
+            lockPanel.SetActive(false);
+            selectCatButtons.SetActive(true);
+        }
+        else
+        {
+            lockPanel.SetActive(true);
+            selectCatButtons.SetActive(false);
+        }
     }
 
     public void OnClickChangeMode(int idx) {

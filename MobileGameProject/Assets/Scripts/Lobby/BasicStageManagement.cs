@@ -36,6 +36,12 @@ public class BasicStageManagement : MonoBehaviour
     private RectTransform RightStageTransform;
     private RectTransform LeftStageTransform;
 
+    public Image[] ButtonImages;
+    public Sprite[] ButtonSprites;
+    public Sprite ButtonLockSprite;
+    public GameObject[] StartButtons;
+    public GameObject[] StartLocks;
+
     private void Awake()
     {
         MainPosition = StageTransforms[0].position;
@@ -58,6 +64,7 @@ public class BasicStageManagement : MonoBehaviour
     private void Start()
     {
         ResetCatState();
+        ResetStageState();
     }
 
     private void Update()
@@ -94,6 +101,8 @@ public class BasicStageManagement : MonoBehaviour
 
 
     }
+
+    
 
     public void OnClickCatButton() {
         GameObject.FindObjectOfType<LobbyManager>().OnClickQuickButton(1);
@@ -146,6 +155,25 @@ public class BasicStageManagement : MonoBehaviour
                 PlayerPrefs.SetInt("Stage", currentStage);
             }
             isSweepLeft = true;
+        }
+    }
+
+    private void ResetStageState()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            if (DataManager.dataManager.GetIsUnlockStage(i))
+            {
+                StartLocks[i].SetActive(false);
+                StartButtons[i].SetActive(true);
+                ButtonImages[i].sprite = ButtonSprites[i];
+            }
+            else
+            {
+                StartLocks[i].SetActive(true);
+                StartButtons[i].SetActive(false);
+                ButtonImages[i].sprite = ButtonLockSprite;
+            }
         }
     }
 
