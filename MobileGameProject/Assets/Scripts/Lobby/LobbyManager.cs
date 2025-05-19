@@ -22,6 +22,9 @@ public class LobbyManager : MonoBehaviour
 
     public GameObject ProfileSelectPanel;
 
+    public GameObject[] StageAlert;
+    public GameObject ChallangeAlert;
+
     private void Awake()
     {
         ProfileSelectPanel.SetActive(false);
@@ -32,6 +35,30 @@ public class LobbyManager : MonoBehaviour
     {
         ChangeProfileImage();
         ResetState();
+        SetAlert();
+    }
+
+    private void SetAlert() {
+        for (int i = 0; i < 4; i++)
+        {
+            if (PlayerPrefs.GetInt("NoticeAlert_" + (i + 2).ToString(), 0) == 0 && DataManager.dataManager.GetIsUnlockStage(i + 1))
+            {
+                PlayerPrefs.SetInt("NoticeAlert_" + (i + 2).ToString(), 1);
+                StageAlert[i].SetActive(true);
+            }
+            else {
+                StageAlert[i].SetActive(false);
+            }
+        }
+
+        if (PlayerPrefs.GetInt("NoticeAlert_Challange", 0) == 0 && DataManager.dataManager.GetIsUnlockChallangeStage())
+        {
+            PlayerPrefs.SetInt("NoticeAlert_Challange", 1);
+            ChallangeAlert.SetActive(true);
+        }
+        else {
+            ChallangeAlert.SetActive(false);
+        }
     }
 
     public void ResetState() {

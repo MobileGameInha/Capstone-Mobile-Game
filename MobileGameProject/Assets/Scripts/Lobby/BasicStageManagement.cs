@@ -41,7 +41,7 @@ public class BasicStageManagement : MonoBehaviour
     public Sprite ButtonLockSprite;
     public GameObject[] StartButtons;
     public GameObject[] StartLocks;
-
+    public GameObject[] StageLevels;
     private void Awake()
     {
         MainPosition = StageTransforms[0].position;
@@ -123,9 +123,16 @@ public class BasicStageManagement : MonoBehaviour
         StageSelectPack.SetActive(true);
     }
 
-    public void OnClickMoveToStage(int idx) {
-        LoadingManager.LoadScene("Stage_" + idx.ToString());
-        //SceneManager.LoadScene("Stage_" + idx.ToString()); µ¿±â½Ä..
+    public void OnClickMoveToStage(int idx) 
+    {
+        if (PlayerPrefs.GetInt("Stage_" + idx.ToString(), 0)==0)
+        {
+            LoadingManager.LoadScene("CutScene_" + idx.ToString());
+        }
+        else
+        {
+            LoadingManager.LoadScene("Stage_" + idx.ToString());
+        }
     }
 
 
@@ -164,12 +171,14 @@ public class BasicStageManagement : MonoBehaviour
         {
             if (DataManager.dataManager.GetIsUnlockStage(i))
             {
+                StageLevels[i].SetActive(false);
                 StartLocks[i].SetActive(false);
                 StartButtons[i].SetActive(true);
                 ButtonImages[i].sprite = ButtonSprites[i];
             }
             else
             {
+                StageLevels[i].SetActive(true);
                 StartLocks[i].SetActive(true);
                 StartButtons[i].SetActive(false);
                 ButtonImages[i].sprite = ButtonLockSprite;

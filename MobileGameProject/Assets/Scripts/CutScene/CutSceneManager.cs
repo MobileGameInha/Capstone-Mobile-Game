@@ -38,6 +38,10 @@ public class CutSceneManager : MonoBehaviour
     public AudioClip[] effectClips;
     public AudioClip[] backgroundClips;
 
+    public GameObject SkipPanel;
+
+    public bool reSee = false;
+
     private Dictionary<int, TextSet> chat_dictionary;
 
     private int now_index_ = 0;
@@ -50,8 +54,11 @@ public class CutSceneManager : MonoBehaviour
     private bool is_skip_=false;
     private bool end_cut_scene_ = false;
 
+
     private void Awake()
     {
+        SkipPanel.SetActive(false);
+
         textSelectAnimator.SetBool(SHOW_PARAM_HASH, false);
         movingCats = new SkeletonAnimation[catSet.Length];
         idleCats = new SkeletonAnimation[catSet.Length];
@@ -203,7 +210,14 @@ public class CutSceneManager : MonoBehaviour
 
     public void EndCutScene() 
     {
-        LoadingManager.LoadScene(nextSceneName);
+        PlayerPrefs.SetInt("Stage_" + textIndex.ToString(), 1);
+        if (reSee)
+        {
+            LoadingManager.LoadScene("LobbyScene");
+        }
+        else {
+            LoadingManager.LoadScene(nextSceneName);
+        }
     }
 
     public void SelectEvent(int button_index) 
@@ -308,9 +322,19 @@ public class CutSceneManager : MonoBehaviour
         backgroundAudioSource.Stop();
     }
 
+    public void OnClickSkip() {
+        SkipPanel.SetActive(true);
+    }
 
+    public void OnClickSkipNo()
+    {
+        SkipPanel.SetActive(false);
+    }
 
-
+    public void OnClickSkipYes()
+    {
+        EndCutScene();
+    }
 
 
 

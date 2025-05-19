@@ -333,6 +333,9 @@ public class DataManager : MonoBehaviour
         inventory = new int[]{ 0,1,2,3,4,5,6,7 };
         coin_ = 10000;
         profile_image_ = 2;
+
+        isUnlockStage[1] = true;
+
         is_unlock_cat_[CatIndex.TOTAL_TIME_UP_] = true;
         is_unlock_cat_[CatIndex.ROUND_TIME_UP_] = true;
         is_unlock_cat_[CatIndex.MISTAKE_DEFENCE_] = true;
