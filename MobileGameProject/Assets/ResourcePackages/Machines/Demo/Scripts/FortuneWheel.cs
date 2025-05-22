@@ -35,16 +35,6 @@ namespace MinigamesDemo
             }
 
             [SerializeField]
-            private TextMeshProUGUI text;
-            public TextMeshProUGUI Text
-            {
-                get
-                {
-                    return text;
-                }
-            }
-
-            [SerializeField]
             private Animator appearFX;
             public Animator AppearFX
             {
@@ -133,7 +123,6 @@ namespace MinigamesDemo
             foreach (var item in items)
             {
                 item.Image.transform.localScale = Vector3.zero;
-                item.Text.transform.localScale = Vector3.zero;
             }
 
             foreach (var item in items)
@@ -150,7 +139,6 @@ namespace MinigamesDemo
             yield return new WaitForSeconds(itemShowDelay);
 
             item.Image.transform.localScale = Vector3.one;
-            item.Text.transform.localScale = Vector3.one;
         }
 
         private IEnumerator SpinWheel()

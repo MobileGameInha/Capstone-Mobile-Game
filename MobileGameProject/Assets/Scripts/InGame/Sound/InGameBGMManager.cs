@@ -19,4 +19,9 @@ public class InGameBGMManager : MonoBehaviour
         audioSource.clip = BGM;
         audioSource.Play();
     }
+
+    public void EndBGM()
+    {
+        audioSource.Stop();
+    }
 }

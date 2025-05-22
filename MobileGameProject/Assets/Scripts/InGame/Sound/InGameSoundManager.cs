@@ -29,6 +29,7 @@ public class InGameSoundManager : MonoBehaviour
 
     public AudioClip CrowClip;
 
+    public AudioClip endClip;
     public void PlayCrowClip()
     {
         audioSource.PlayOneShot(CrowClip);
@@ -89,6 +90,11 @@ public class InGameSoundManager : MonoBehaviour
     public void PlayStartAnim_FootStepClip()
     {
         audioSource.PlayOneShot(footStepClip);
+    }
+
+    public void PlayStartAnim_EndClip()
+    {
+        audioSource.PlayOneShot(endClip);
     }
 }
 
