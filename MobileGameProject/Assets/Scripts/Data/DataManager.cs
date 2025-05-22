@@ -162,8 +162,13 @@ public class DataManager : MonoBehaviour
     {
         if (idx >= 0 && idx < 9)
         {
+            requesting_ = true;
             profile_image_ = idx;
             StartCoroutine(ChangeProfileIndexRequest(idx));
+        }
+        else {
+            if (requestFailedDelegate != null)
+                requestFailedDelegate("인덱스 오류");
         }
     }
 
@@ -174,7 +179,26 @@ public class DataManager : MonoBehaviour
 
     public void UnlockCat(int idx)
     {
-        //+)고양이 해금
+        if (idx < 0 || idx >= GameManager.CAT_SIZE_)
+        {
+            if (requestFailedDelegate != null)
+                requestFailedDelegate("인덱스 오류");
+            return;
+        }
+
+        if (coin_ < BasicShopManager.CAT_COST_LIST[idx])
+        {
+            if (requestFailedDelegate != null)
+                requestFailedDelegate("금액 부족");
+            return;
+        }
+
+        if (is_unlock_cat_[idx])
+        {
+            if (requestFailedDelegate != null)
+                requestFailedDelegate("이미 해제된 고양이");
+            return;
+        }
     }
 
     public void UpgradeCat(int idx)
@@ -226,11 +250,13 @@ public class DataManager : MonoBehaviour
             try
             {
                 LoginSuccessResponse success = JsonUtility.FromJson<LoginSuccessResponse>(web_request.downloadHandler.text);
-                requestSuccededDelegate();
+                if(requestSuccededDelegate!=null)
+                    requestSuccededDelegate();
             }
             catch
             {
-                requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
+                if (requestFailedDelegate != null)
+                    requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
             }
         }
         else
@@ -238,11 +264,13 @@ public class DataManager : MonoBehaviour
             try
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
-                requestFailedDelegate("회원가입에 실패했습니다. 다시 시도해주세요");
+                if (requestFailedDelegate != null)
+                    requestFailedDelegate("회원가입에 실패했습니다. 다시 시도해주세요");
             }
             catch
             {
-                requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
+                if (requestFailedDelegate != null)
+                    requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
             }
         }
 
@@ -284,7 +312,8 @@ public class DataManager : MonoBehaviour
             }
             catch
             {
-                requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
+                if (requestFailedDelegate != null)
+                    requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
             }
         }
         else
@@ -292,11 +321,13 @@ public class DataManager : MonoBehaviour
             try
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
-                requestFailedDelegate("로그인에 실패했습니다. 다시 시도해주세요");
+                if (requestFailedDelegate != null)
+                    requestFailedDelegate("로그인에 실패했습니다. 다시 시도해주세요");
             }
             catch
             {
-                requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
+                if (requestFailedDelegate != null)
+                    requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
             }
         }
         if (is_succeded) {
@@ -408,11 +439,13 @@ public class DataManager : MonoBehaviour
         if (is_success)
         {
             Debug.Log("성공!");
-            requestSuccededDelegate();
+            if (requestSuccededDelegate != null)
+                requestSuccededDelegate();
         }
         else {
             Debug.Log("실패 : " + error.message);
-            requestFailedDelegate(error.message);
+            if (requestFailedDelegate != null)
+                requestFailedDelegate(error.message);
         }
 
         requesting_ = false;
@@ -429,7 +462,7 @@ public class DataManager : MonoBehaviour
 
         string jsonData = JsonUtility.ToJson(ProfileImageData);
 
-        UnityWebRequest web_request = new UnityWebRequest(SERVER_API_BASIC_ADDRESS + "/member/info/" + inherence_id_.ToString(), "POST");
+        UnityWebRequest web_request = new UnityWebRequest(SERVER_API_BASIC_ADDRESS + "/member/number/update/" + inherence_id_.ToString(), "POST");
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
         web_request.uploadHandler = new UploadHandlerRaw(bodyRaw);
         web_request.downloadHandler = new DownloadHandlerBuffer();
@@ -444,11 +477,13 @@ public class DataManager : MonoBehaviour
             try
             {
                 LoginSuccessResponse success = JsonUtility.FromJson<LoginSuccessResponse>(web_request.downloadHandler.text);
-                requestSuccededDelegate();
+                if (requestSuccededDelegate != null)
+                    requestSuccededDelegate();
             }
             catch
             {
-                requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
+                if(requestFailedDelegate!=null)
+                    requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
             }
         }
         else
@@ -456,11 +491,13 @@ public class DataManager : MonoBehaviour
             try
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
-                requestFailedDelegate("변경에 실패했습니다. 다시 시도해주세요");
+                if (requestFailedDelegate != null)
+                    requestFailedDelegate("변경에 실패했습니다. 다시 시도해주세요");
             }
             catch
             {
-                requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
+                if (requestFailedDelegate != null)
+                    requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
             }
         }
 
