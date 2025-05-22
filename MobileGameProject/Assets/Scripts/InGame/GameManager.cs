@@ -115,6 +115,11 @@ public class GameManager : MonoBehaviour
     private const int ADDING_SCORE_PERFECT_ = 20; //퍼펙트 점수
     private const int REMOVING_SCORE_TILE_ = -5; //감점
 
+    [SerializeField]
+    private int coin_per_score_ = 100;
+    [SerializeField]
+    private int exp_per_score_ = 500;
+
     private float co2_ = 50; //CO2
     private const float MAX_CO2_ = 100; //CO2 최대값
     private float removing_value_co2_ = FIRST_REMOVING_VALUE_CO2_;//생명 추가
@@ -122,12 +127,12 @@ public class GameManager : MonoBehaviour
     private float adding_value_co2_ = FIRST_ADDING_VALUE_CO2_;//생명 감소
     private const float FIRST_ADDING_VALUE_CO2_ = 10; //최대(첫) 생명 추가
 
-    private float total_time_ = 100.0f; //전체 시간
+    private float total_time_ = 120.0f; //전체 시간
     private float max_total_time_ = MAX_TOTAL_TIME_; //전체 시간 맥스
-    private const float MAX_TOTAL_TIME_ = 100.0f; //시작 전체 시간 맥스
-    private float round_time_ = 20.0f; //라운드 시간
-    private float max_round_time_ = 20.0f; //라운드 시간 맥스 (변동)
-    private const float FIRST_MAX_ROUND_TIME = 20.0f; //첫 라운드 시간 맥스
+    private const float MAX_TOTAL_TIME_ = 120.0f; //시작 전체 시간 맥스
+    private float round_time_ = 30.0f; //라운드 시간
+    private float max_round_time_ = 30.0f; //라운드 시간 맥스 (변동)
+    private const float FIRST_MAX_ROUND_TIME = 30.0f; //첫 라운드 시간 맥스
     private float remove_round_time_ = 0.5f;//라운드 감소 시간(변동)
     private float FIRST_REMOVE_REOUND_TIME_ = 0.5f;//첫 라운드 감소 시간
     private float REMOVE_ROUND_TIME_RATE = 0.9f;//라운드 타임 감소치 감소 비율
@@ -883,6 +888,10 @@ public class GameManager : MonoBehaviour
         RoundTimerSlider.value = round_time_ / max_round_time_;
     }
 
+    public void ReturnToLobby() {
+        LoadingManager.LoadScene("LobbyScene");
+    }
+
     public void StartGame() {
         if (!is_started_)
         {
@@ -927,6 +936,21 @@ public class GameManager : MonoBehaviour
         if (is_started_)
         {
             is_started_ = false;
+
+            int gold = score_ / coin_per_score_;
+            if (using_cat_[CatIndex.GOLD_UP_])
+            {
+                gold = Mathf.RoundToInt(gold*using_cat_value_[CatIndex.GOLD_UP_]);
+            }
+
+            int ex = score_ / exp_per_score_;
+            if (using_cat_[CatIndex.EXP_UP_])
+            {
+                ex = Mathf.RoundToInt(ex * using_cat_value_[CatIndex.EXP_UP_]);
+            }
+
+            //+)데이터 변경
+            visual_manager_.StartAnimationForEndGame(score_, gold, ex, using_cat_[CatIndex.GOLD_UP_], using_cat_[CatIndex.EXP_UP_]);
             Debug.Log("게임종료...");
         }
     }

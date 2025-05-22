@@ -66,17 +66,15 @@ public class AuthUIManager : MonoBehaviour
         //SceneManager.LoadScene("LobbyScene"); 동기식...
     }
 
-    public void Remember_click()
-    {
+
+    public void Remember_click() {
         if (is_requesting_) { return; }
 
-        if (ison)
-        {
+        if (ison) {
             REM_ON.SetActive(false);
             ison = false;
         }
-        else
-        {
+        else {
             REM_ON.SetActive(true);
             ison = true;
         }
@@ -208,6 +206,7 @@ public class AuthUIManager : MonoBehaviour
 
     private void SuccessRequestEvent()
     {
+
         if (is_requesting_)
         {
             if (signup_request_)

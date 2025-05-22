@@ -5,15 +5,15 @@ using UnityEngine.UIElements;
 
 public class ButtonRotator : MonoBehaviour
 {
-    public Transform[] ButtonPositions;
+    public RectTransform[] ButtonPositions;
 
     public void RotateButtons() {
         if (ButtonPositions.Length <= 0) { return; }
-        Vector3 position = ButtonPositions[0].position;
+        Vector2 position = ButtonPositions[0].anchoredPosition;
         for (int i = 0; i < ButtonPositions.Length-1; i++)
         {
-            ButtonPositions[i].position = ButtonPositions[i + 1].position;
+            ButtonPositions[i].anchoredPosition = ButtonPositions[i + 1].anchoredPosition;
         }
-        ButtonPositions[ButtonPositions.Length - 1].position = position;
+        ButtonPositions[ButtonPositions.Length - 1].anchoredPosition = position;
     }
 }
