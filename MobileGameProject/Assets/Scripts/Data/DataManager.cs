@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
@@ -34,28 +35,44 @@ public class DataManager : MonoBehaviour
 
     private const string SERVER_API_BASIC_ADDRESS = "http://44.195.91.215:8080";
 
+    private readonly int[] STAGE_UNLOCK_LEVEL = {0,3,6,10,13};
+    private readonly int STAGE_UNLOCK_CHALLENGE = 15;
+
     private bool requesting_ = false;
 
     public RequestSuccessDelegate requestSuccededDelegate;
     public RequestFailDelegate requestFailedDelegate;
 
+    private int inherence_id_; // 플레이어 식별 고유 아이디
+
     private string email_;
     private string password_;
     private string username_;
 
+    [SerializeField]
     private int profile_image_=0;
+    [SerializeField]
     private string nickname_ = "Player";
+    [SerializeField]
     private int coin_=0;
+    [SerializeField]
     private float exp_ = 0.0f;
 
+    [SerializeField]
     private bool[] isUnlockStage = { true, false, false, false, false };
+    [SerializeField]
     private bool isUnlockChallange = false;
 
+    [SerializeField]
     private int[] selected_cat_ = { -1,-1,-1};
+    [SerializeField]
     private bool[] is_unlock_cat_ = new bool[GameManager.CAT_SIZE_];
+    [SerializeField]
     private int[] level_cat_ = new int[GameManager.CAT_SIZE_];
+    [SerializeField]
     private float[] exp_cat_ = new float[GameManager.CAT_SIZE_];
 
+    [SerializeField]
     private int[] inventory = { 0,0,0,0,0,0,0,0 };
 
     
@@ -80,16 +97,49 @@ public class DataManager : MonoBehaviour
     }
 
     [System.Serializable]
-    public class LoginErrorResponse
+    public class ErrorResponse
     {
         public string message;
         public string description;
     }
+
     [System.Serializable]
     public class LoginData
     {
         public string username;
         public string password;
+    }
+
+    [System.Serializable]
+    public class UserBasicData
+    {
+        public int id;
+        public string nickname;
+        public string username;
+        public float totalExp;
+        public int gold;
+        public int profileNumber;
+    }
+
+    [System.Serializable]
+    public class CatData
+    {
+        public int helperId;
+        public float exp;
+        public int level;
+        public bool active;
+    }
+
+    [System.Serializable]
+    public class UserCatData
+    {
+        public CatData[] catHelpers;
+    }
+
+    [System.Serializable]
+    public class UserProfileImageData
+    {
+        public int profileNumber;
     }
 
     public void SendSignUpRequest(string email, string nickname, string username, string password) {
@@ -103,14 +153,18 @@ public class DataManager : MonoBehaviour
         StartCoroutine(LoginRequest(username,password));
     }
 
-    public void GetPlayerData()
-    { 
-        //+)플레이어 데이터 끌어오기 ~ 로그인에 합쳐도 됨
+    private void GetPlayerData()
+    {
+        StartCoroutine(GetUserDataRequest());
     }
 
     public void SetPlayerProfile(int idx)
     {
-        //+)플레이어 프로필 이미지 변경
+        if (idx >= 0 && idx < 9)
+        {
+            profile_image_ = idx;
+            StartCoroutine(ChangeProfileIndexRequest(idx));
+        }
     }
 
     public void RemoveCoin(int value)
@@ -183,7 +237,7 @@ public class DataManager : MonoBehaviour
         {
             try
             {
-                LoginErrorResponse error = JsonUtility.FromJson<LoginErrorResponse>(web_request.downloadHandler.text);
+                ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
                 requestFailedDelegate("회원가입에 실패했습니다. 다시 시도해주세요");
             }
             catch
@@ -192,10 +246,13 @@ public class DataManager : MonoBehaviour
             }
         }
 
+        requesting_ = false;
     }
 
     private IEnumerator LoginRequest(string username, string password)
     {
+        Debug.Log("서버에 로그인 데이터를 SEND합니다.");
+
         LoginData loginData = new LoginData
         {
             username = username,
@@ -211,6 +268,176 @@ public class DataManager : MonoBehaviour
         web_request.SetRequestHeader("Content-Type", "application/json; charset=UTF-8");
 
         yield return web_request.SendWebRequest();
+
+        Debug.Log("서버에서 로그인 데이터를 받아왔습니다.");
+
+        bool is_succeded = false;
+
+        if (web_request.result == UnityWebRequest.Result.Success)
+        {
+            try
+            {
+                LoginSuccessResponse success = JsonUtility.FromJson<LoginSuccessResponse>(web_request.downloadHandler.text);
+                inherence_id_ = success.id;
+                is_succeded = true;
+                //requestSuccededDelegate();
+            }
+            catch
+            {
+                requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
+            }
+        }
+        else
+        {
+            try
+            {
+                ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
+                requestFailedDelegate("로그인에 실패했습니다. 다시 시도해주세요");
+            }
+            catch
+            {
+                requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
+            }
+        }
+        if (is_succeded) {
+            GetPlayerData();
+        }
+        else
+        {
+            requesting_ = false;
+        }
+    }
+
+    private IEnumerator GetUserDataRequest()
+    {
+        Debug.Log("유저의 데이터를 받아옵니다.");
+        bool is_success = true;
+
+        //유저 기본 데이터
+
+        ErrorResponse error = new ErrorResponse();
+        error.message = "예기치 못한 에러가 발생하였습니다.";
+
+        UnityWebRequest web_request = new UnityWebRequest(SERVER_API_BASIC_ADDRESS + "/member/info/"+inherence_id_.ToString(), "GET");
+        web_request.SetRequestHeader("Content-Type", "application/json; charset=UTF-8");
+        web_request.downloadHandler = new DownloadHandlerBuffer();
+
+        yield return web_request.SendWebRequest();
+
+
+        if (web_request.result == UnityWebRequest.Result.Success)
+        {
+            try
+            {
+                Debug.Log("데이터 받아오기...");
+                UserBasicData response = JsonUtility.FromJson<UserBasicData>(web_request.downloadHandler.text);
+                nickname_ = response.nickname;
+                username_ = response.username;
+                coin_ = response.gold;
+                exp_ = response.totalExp;
+                profile_image_ = response.profileNumber;
+
+                SetStageUnlock();
+
+            }
+            catch
+            {
+                is_success = false;
+            }
+        }
+        else
+        {
+            is_success = false;
+
+            try
+            {
+                error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
+            }
+            catch
+            {
+                Debug.Log("에러 가져오기도 실패");
+            }
+        }
+
+
+        //유저 조력자 데이터
+
+
+        Debug.Log("유저의 조력자 데이터를 받아옵니다");
+        web_request = new UnityWebRequest(SERVER_API_BASIC_ADDRESS + "/helper/all/" + inherence_id_.ToString(), "GET");
+        web_request.SetRequestHeader("Content-Type", "application/json; charset=UTF-8");
+        web_request.downloadHandler = new DownloadHandlerBuffer();
+
+        yield return web_request.SendWebRequest();
+
+        if (web_request.result == UnityWebRequest.Result.Success)
+        {
+            try
+            {
+                Debug.Log("데이터 받아오기...");
+                UserCatData response = JsonUtility.FromJson<UserCatData>(web_request.downloadHandler.text);
+                for (int i = 0; i < response.catHelpers.Length; i++)
+                {
+                    if (response.catHelpers[i] != null)
+                    {
+                        is_unlock_cat_[response.catHelpers[i].helperId-1] = response.catHelpers[i].active;
+                        exp_cat_[response.catHelpers[i].helperId - 1] = response.catHelpers[i].exp;
+                        level_cat_[response.catHelpers[i].helperId - 1] = response.catHelpers[i].level;
+                    }
+                }
+            }
+            catch
+            {
+                is_success = false;
+            }
+        }
+        else
+        {
+            is_success = false;
+
+            try
+            {
+                error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
+            }
+            catch
+            {
+                Debug.Log("에러 가져오기도 실패");
+            }
+        }
+
+        if (is_success)
+        {
+            Debug.Log("성공!");
+            requestSuccededDelegate();
+        }
+        else {
+            Debug.Log("실패 : " + error.message);
+            requestFailedDelegate(error.message);
+        }
+
+        requesting_ = false;
+    }
+
+    private IEnumerator ChangeProfileIndexRequest(int profileNumber)
+    {
+        Debug.Log("서버에 프로필 데이터를 SEND합니다.");
+
+        UserProfileImageData ProfileImageData = new UserProfileImageData
+        {
+            profileNumber = profileNumber
+        };
+
+        string jsonData = JsonUtility.ToJson(ProfileImageData);
+
+        UnityWebRequest web_request = new UnityWebRequest(SERVER_API_BASIC_ADDRESS + "/member/info/" + inherence_id_.ToString(), "POST");
+        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+        web_request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        web_request.downloadHandler = new DownloadHandlerBuffer();
+        web_request.SetRequestHeader("Content-Type", "application/json; charset=UTF-8");
+
+        yield return web_request.SendWebRequest();
+
+        Debug.Log("서버에서 프로필 데이터를 받아왔습니다.");
 
         if (web_request.result == UnityWebRequest.Result.Success)
         {
@@ -228,14 +455,42 @@ public class DataManager : MonoBehaviour
         {
             try
             {
-                LoginErrorResponse error = JsonUtility.FromJson<LoginErrorResponse>(web_request.downloadHandler.text);
-                requestFailedDelegate("로그인에 실패했습니다. 다시 시도해주세요");
+                ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
+                requestFailedDelegate("변경에 실패했습니다. 다시 시도해주세요");
             }
             catch
             {
                 requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
             }
         }
+
+        requesting_ = false;
+    }
+
+    //======================데이터 리프레쉬================================
+    private void SetStageUnlock() {
+        int level = GetLevel();
+        for (int i = 0; i < isUnlockStage.Length; i++)
+        {
+            if (level >= STAGE_UNLOCK_LEVEL[i])
+            {
+                isUnlockStage[i] = true;
+            }
+            else
+            {
+                isUnlockStage[i] = false;
+            }
+        }
+
+        if (level >= STAGE_UNLOCK_CHALLENGE)
+        {
+            isUnlockChallange = true;
+        }
+        else
+        {
+            isUnlockChallange = false;
+        }
+
     }
 
 
@@ -326,46 +581,6 @@ public class DataManager : MonoBehaviour
             level_cat_[i] = 1;
             exp_cat_[i] = 0.0f;
         }
-
-
-
-
-
-
-        //!!!!임시코드
-        inventory = new int[]{ 0,1,2,3,4,5,6,7 };
-        coin_ = 10000;
-        profile_image_ = 2;
-
-        isUnlockStage[1] = true;
-
-        is_unlock_cat_[CatIndex.TOTAL_TIME_UP_] = true;
-        is_unlock_cat_[CatIndex.ROUND_TIME_UP_] = true;
-        is_unlock_cat_[CatIndex.MISTAKE_DEFENCE_] = true;
-        is_unlock_cat_[CatIndex.LIFE_REMOVE_DOWN_] = true;
-        is_unlock_cat_[CatIndex.TILE_SPEED_DOWN_] = true;
-        is_unlock_cat_[CatIndex.FEVER_UP_] = true;
-        is_unlock_cat_[CatIndex.SIMPLE_LINE_] = true;
-        is_unlock_cat_[CatIndex.BONUS_STAGE_] = true;
-        is_unlock_cat_[CatIndex.SAVOTAGE_DEFENCE_] = true;
-
-        exp_cat_[CatIndex.TOTAL_TIME_UP_] = 50.0f;
-        exp_cat_[CatIndex.ROUND_TIME_UP_] = 50.0f;
-
-        level_cat_[CatIndex.BONUS_STAGE_] = 5;
-        level_cat_[CatIndex.MISTAKE_DEFENCE_] = 2;
-        level_cat_[CatIndex.TOTAL_TIME_UP_] = 2;
-        level_cat_[CatIndex.ROUND_TIME_UP_] = 2;
-        level_cat_[CatIndex.LIFE_REMOVE_DOWN_] = 2;
-        level_cat_[CatIndex.TILE_SPEED_DOWN_] = 2;
-        level_cat_[CatIndex.FEVER_UP_] = 2;
-        level_cat_[CatIndex.SIMPLE_LINE_] = 5;
-        level_cat_[CatIndex.SAVOTAGE_DEFENCE_] = 2;
-
-        selected_cat_[0] = CatIndex.SIMPLE_LINE_;
-        selected_cat_[1] = CatIndex.MISTAKE_DEFENCE_;
-        selected_cat_[2] = CatIndex.BONUS_STAGE_;
-        //!!!!임시코드
     }
 
 }

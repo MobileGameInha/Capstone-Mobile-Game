@@ -91,7 +91,7 @@ public class LobbyManager : MonoBehaviour
 
     public void OnClickProfileChangeButton(int idx)
     {
-        //+)프로필 값 변경
+        DataManager.dataManager.SetPlayerProfile(idx);
         ChangeProfileImage();
         ProfileSelectPanel.SetActive(false);
     }

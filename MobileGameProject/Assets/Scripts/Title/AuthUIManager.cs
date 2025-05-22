@@ -206,6 +206,7 @@ public class AuthUIManager : MonoBehaviour
 
     private void SuccessRequestEvent()
     {
+        Debug.Log("서버요청 성공 이벤트 발생");
 
         if (is_requesting_)
         {
@@ -218,6 +219,7 @@ public class AuthUIManager : MonoBehaviour
             }
             else if (login_request_)
             {
+                Debug.Log("서버요청 성공 이벤트 발생 :  로그인");
                 is_requesting_ = false;
                 login_request_ = false;
                 ShowToast($"로그인 성공! 로그인 하세요!");
