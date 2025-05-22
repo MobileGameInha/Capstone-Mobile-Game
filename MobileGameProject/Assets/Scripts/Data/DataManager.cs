@@ -654,7 +654,7 @@ public class DataManager : MonoBehaviour
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("고양이 선택에 실패했습니다.\n다시 시도해주세요 : "+ error.ToString());
+                    requestFailedDelegate("고양이 선택에 실패했습니다.\n다시 시도해주세요 :\n" + error.ToString());
             }
             catch
             {
