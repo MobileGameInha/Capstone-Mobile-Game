@@ -40,6 +40,8 @@ public class BasicHelperManager : MonoBehaviour
 
     public static readonly int MAX_HELPER_ = 3;
 
+    public LobbyManager lobbyManager;
+
     public GameObject HelperSelectPanel;
     public GameObject HelperUpgradePanel;
     public GameObject HelperButtons;
@@ -73,6 +75,24 @@ public class BasicHelperManager : MonoBehaviour
     public GameObject Upgrade_UpgradeLevelCheckPanel;
 
     public Sprite[] Upgrade_ItemSprites;
+
+    private enum RequestType { SetCat };
+    private RequestType request_type_;
+    private bool is_requesting_ = false;
+
+    private void Awake()
+    {
+        DataManager.dataManager.requestSuccededDelegate += SuccessRequestEvent;
+        DataManager.dataManager.requestFailedDelegate += FailRequestEvent;
+
+        is_requesting_ = false;
+    }
+
+    private void OnDestroy()
+    {
+        DataManager.dataManager.requestSuccededDelegate -= SuccessRequestEvent;
+        DataManager.dataManager.requestFailedDelegate -= FailRequestEvent;
+    }
 
     private void Start()
     {
@@ -155,6 +175,8 @@ public class BasicHelperManager : MonoBehaviour
 
     public void OnClickCatSelectButton() 
     {
+        if (DataManager.dataManager.GetIsRequesting()) { return; }
+
         for (int i = 0; i < MAX_HELPER_; i++)
         {
             if (i != now_showing_idx && selected_cat_index[now_showing_idx] == selected_cat_index[i])
@@ -163,11 +185,10 @@ public class BasicHelperManager : MonoBehaviour
             }
         }
 
+        is_requesting_ = true;
+        request_type_ = RequestType.SetCat;
+        lobbyManager.OpenWaiting();
         DataManager.dataManager.SetSelectedCat(now_showing_idx,selected_cat_index[now_showing_idx]);
-        ResetHelperSelectPanel();
-        ResetLobbyHelpers();
-        GameObject.FindObjectOfType<BasicStageManagement>().ResetCatState();
-        GameObject.FindObjectOfType<BasicChallangeManager>().ResetCatState();
     }
 
     public void OnClickCatUpgradeButton()
@@ -358,4 +379,40 @@ public class BasicHelperManager : MonoBehaviour
 
         ResetLobbyHelpers();
     }
+
+
+
+    private void SuccessRequestEvent()
+    {
+        if (!is_requesting_) return;
+
+        is_requesting_ = false;
+
+        lobbyManager.CloseWaiting();
+
+        Debug.Log("서버요청 성공 이벤트 발생");
+        switch (request_type_)
+        {
+            case RequestType.SetCat:
+                ResetHelperSelectPanel();
+                ResetLobbyHelpers();
+                GameObject.FindObjectOfType<BasicStageManagement>().ResetCatState();
+                GameObject.FindObjectOfType<BasicChallangeManager>().ResetCatState();
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    private void FailRequestEvent(string err)
+    {
+        if (!is_requesting_) return;
+
+        is_requesting_ = false;
+
+        lobbyManager.CloseWaiting();
+        lobbyManager.OpenError(err);
+    }
+
 }

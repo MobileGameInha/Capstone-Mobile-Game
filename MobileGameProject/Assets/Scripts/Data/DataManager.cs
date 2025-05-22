@@ -190,7 +190,7 @@ public class DataManager : MonoBehaviour
         }
     }
 
-    public void SetHelper(int which_cat, int cat_idx)
+    public void SetSelectedCat(int which_cat, int cat_idx)
     {
         if (which_cat < 0 || which_cat >= BasicHelperManager.MAX_HELPER_ || cat_idx < 0 || cat_idx >= GameManager.CAT_SIZE_)
         {
@@ -205,13 +205,15 @@ public class DataManager : MonoBehaviour
         {
             if (i == which_cat)
             {
-                helperIndex[i] = cat_idx;
+                helperIndex[i] = cat_idx +1;
             }
             else
             {
-                helperIndex[i] = selected_cat_[i];
+                helperIndex[i] = selected_cat_[i] +1;
             }
         }
+
+        StartCoroutine(SelectCatRequest(helperIndex));
     }
 
     public void UnlockCat(int idx)
@@ -630,12 +632,15 @@ public class DataManager : MonoBehaviour
         {
             try
             {
-                selected_cat_ = helperIds;
+                for (int i = 0; i < helperIds.Length; i++)
+                {
+                    selected_cat_[i] = helperIds[i] - 1;
+                }
 
                 if (requestSuccededDelegate != null)
                     requestSuccededDelegate();
 
-                LoginSuccessResponse success = JsonUtility.FromJson<LoginSuccessResponse>(web_request.downloadHandler.text);
+                //LoginSuccessResponse success = JsonUtility.FromJson<LoginSuccessResponse>(web_request.downloadHandler.text);
             }
             catch
             {
@@ -700,25 +705,7 @@ public class DataManager : MonoBehaviour
     public bool GetIsUnlockStage(int idx) { return isUnlockStage[idx]; }
     public bool GetIsUnlockChallangeStage() { return isUnlockChallange; }
 
-    public bool SetSelectedCat(int idx, int cat_idx)
-    {
-        if (cat_idx>=0 && cat_idx<GameManager.CAT_SIZE_&&is_unlock_cat_[cat_idx])
-        {
-            for (int i = 0; i < BasicHelperManager.MAX_HELPER_; i++)
-            {
-                if (selected_cat_[i] == cat_idx)
-                {
-                    selected_cat_[i] = -1;
-                }
-            }
-            selected_cat_[idx] = cat_idx;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+
 
     public bool GetIsUnlockCat(int idx)
     {
