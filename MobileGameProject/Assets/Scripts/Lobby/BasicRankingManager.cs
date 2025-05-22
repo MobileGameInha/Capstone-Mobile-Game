@@ -12,7 +12,7 @@ public class RankerUI
     public TextMeshProUGUI score;
     public Image characterIcon;
 }
-public class Ranking : MonoBehaviour
+public class BasicRankingManager : MonoBehaviour
 {
     [Header("Stage_page")]
     public List<GameObject>Pages;
