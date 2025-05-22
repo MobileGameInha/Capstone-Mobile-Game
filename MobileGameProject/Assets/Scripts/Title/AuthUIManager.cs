@@ -236,4 +236,10 @@ public class AuthUIManager : MonoBehaviour
             ShowToast(err);
         }
     }
+
+    public void CloseLogin()
+    {
+        LOG_IN.SetActive(false);
+        SIGN_UP.SetActive(false);
+    }
 }
