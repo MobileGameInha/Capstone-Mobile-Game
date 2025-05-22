@@ -4,6 +4,7 @@ using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.Networking;
+using static System.Net.WebRequestMethods;
 
 
 public enum Item { SNACK, BELL, BOX, DISK, TICKET, FLOWER, LEAF, EARTH }
@@ -30,6 +31,8 @@ public class DataManager : MonoBehaviour
 
     public const float PLAYER_PER_EXP = 500.0f;
     public const float MAX_CAT_EXP = 100.0f;
+
+    private const string SERVER_API_BASIC_ADDRESS = "http://44.195.91.215:8080";
 
     private bool requesting_ = false;
 
@@ -154,7 +157,7 @@ public class DataManager : MonoBehaviour
 
         string jsonData = JsonUtility.ToJson(requestData);
 
-        UnityWebRequest web_request = new UnityWebRequest("http://3.237.76.145:8080/member/sign", "POST");
+        UnityWebRequest web_request = new UnityWebRequest(SERVER_API_BASIC_ADDRESS+"/member/sign", "POST");
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
         web_request.uploadHandler = new UploadHandlerRaw(bodyRaw);
         web_request.downloadHandler = new DownloadHandlerBuffer();
@@ -201,7 +204,7 @@ public class DataManager : MonoBehaviour
 
         string jsonData = JsonUtility.ToJson(loginData);
 
-        UnityWebRequest web_request = new UnityWebRequest("http://3.237.76.145:8080/member/login", "POST");
+        UnityWebRequest web_request = new UnityWebRequest(SERVER_API_BASIC_ADDRESS + "/member/login", "POST");
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
         web_request.uploadHandler = new UploadHandlerRaw(bodyRaw);
         web_request.downloadHandler = new DownloadHandlerBuffer();
