@@ -196,7 +196,7 @@ public class BasicHelperManager : MonoBehaviour
         }
     }
 
-    private void ResetHelperSelectPanel(bool already_in_panel = false, int before_index = -1) 
+    public void ResetHelperSelectPanel(bool already_in_panel = false, int before_index = -1) 
     {
         if (!already_in_panel)
         {

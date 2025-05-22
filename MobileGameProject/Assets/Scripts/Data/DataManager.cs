@@ -30,10 +30,10 @@ public class DataManager : MonoBehaviour
     public delegate void RequestSuccessDelegate();
     public delegate void RequestFailDelegate(string err);
 
-    public const float PLAYER_PER_EXP = 500.0f;
+    public const float PLAYER_PER_EXP = 100.0f;
     public const float MAX_CAT_EXP = 100.0f;
 
-    private const string SERVER_API_BASIC_ADDRESS = "http://44.195.91.215:8080";
+    private const string SERVER_API_BASIC_ADDRESS = "http://18.204.43.221:8080";
 
     private readonly int[] STAGE_UNLOCK_LEVEL = {0,3,6,10,13};
     private readonly int STAGE_UNLOCK_CHALLENGE = 15;
@@ -141,6 +141,24 @@ public class DataManager : MonoBehaviour
     {
         public int profileNumber;
     }
+    //유저 프로필 이미지 변경
+
+    [System.Serializable]
+    public class CatPriceData
+    {
+        public int helperPrice;
+    }
+    //유저의 고양이 구매
+
+    [System.Serializable]
+    public class CatSelectData
+    {
+        public int[] helperIds;
+    }
+    //유저의 고양이 선택
+
+
+
 
     public void SendSignUpRequest(string email, string nickname, string username, string password) {
         requesting_ = true;
@@ -172,9 +190,28 @@ public class DataManager : MonoBehaviour
         }
     }
 
-    public void RemoveCoin(int value)
+    public void SetHelper(int which_cat, int cat_idx)
     {
-        //+)플레이어 코인 제거
+        if (which_cat < 0 || which_cat >= BasicHelperManager.MAX_HELPER_ || cat_idx < 0 || cat_idx >= GameManager.CAT_SIZE_)
+        {
+            if (requestFailedDelegate != null)
+                requestFailedDelegate("인덱스 오류");
+        }
+
+        requesting_ = true;
+
+        int[] helperIndex = new int[BasicHelperManager.MAX_HELPER_];
+        for (int i = 0; i < BasicHelperManager.MAX_HELPER_; i++)
+        {
+            if (i == which_cat)
+            {
+                helperIndex[i] = cat_idx;
+            }
+            else
+            {
+                helperIndex[i] = selected_cat_[i];
+            }
+        }
     }
 
     public void UnlockCat(int idx)
@@ -199,6 +236,9 @@ public class DataManager : MonoBehaviour
                 requestFailedDelegate("이미 해제된 고양이");
             return;
         }
+
+        StartCoroutine(BuyCatRequest(BasicShopManager.CAT_COST_LIST[idx], idx));
+
     }
 
     public void UpgradeCat(int idx)
@@ -407,11 +447,14 @@ public class DataManager : MonoBehaviour
             {
                 Debug.Log("데이터 받아오기...");
                 UserCatData response = JsonUtility.FromJson<UserCatData>(web_request.downloadHandler.text);
+                Debug.Log("리스폰스 받기 성공...");
                 for (int i = 0; i < response.catHelpers.Length; i++)
                 {
-                    if (response.catHelpers[i] != null)
+                    Debug.Log(i.ToString() + "번 데이터 체크");
+                    Debug.Log((response.catHelpers[i].helperId).ToString() + "고양이 임");
+                    if (response.catHelpers[i] != null && response.catHelpers[i].helperId>=1 && response.catHelpers[i].helperId<=GameManager.CAT_SIZE_)
                     {
-                        is_unlock_cat_[response.catHelpers[i].helperId-1] = response.catHelpers[i].active;
+                        is_unlock_cat_[response.catHelpers[i].helperId-1] = true;
                         exp_cat_[response.catHelpers[i].helperId - 1] = response.catHelpers[i].exp;
                         level_cat_[response.catHelpers[i].helperId - 1] = response.catHelpers[i].level;
                     }
@@ -476,9 +519,10 @@ public class DataManager : MonoBehaviour
         {
             try
             {
-                LoginSuccessResponse success = JsonUtility.FromJson<LoginSuccessResponse>(web_request.downloadHandler.text);
                 if (requestSuccededDelegate != null)
                     requestSuccededDelegate();
+
+                //LoginSuccessResponse success = JsonUtility.FromJson<LoginSuccessResponse>(web_request.downloadHandler.text);
             }
             catch
             {
@@ -503,6 +547,121 @@ public class DataManager : MonoBehaviour
 
         requesting_ = false;
     }
+
+    private IEnumerator BuyCatRequest(int helperPrice, int cat_idx)
+    {
+        Debug.Log("서버에 고양이 구매 데이터를 SEND합니다.");
+
+        CatPriceData requestData = new CatPriceData
+        {
+            helperPrice = helperPrice
+        };
+
+        string jsonData = JsonUtility.ToJson(requestData);
+
+        UnityWebRequest web_request = new UnityWebRequest(SERVER_API_BASIC_ADDRESS + "/helper/buy/" + inherence_id_.ToString() + "/" + (cat_idx + 1).ToString(), "POST");
+        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+        web_request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        web_request.downloadHandler = new DownloadHandlerBuffer();
+        web_request.SetRequestHeader("Content-Type", "application/json; charset=UTF-8");
+
+        yield return web_request.SendWebRequest();
+
+        Debug.Log("서버에 고양이 구매를 요청했습니다.");
+
+        if (web_request.result == UnityWebRequest.Result.Success)
+        {
+            try
+            {
+                coin_ -= helperPrice;
+                is_unlock_cat_[cat_idx] = true;
+
+                if (requestSuccededDelegate != null)
+                    requestSuccededDelegate();
+
+                //LoginSuccessResponse success = JsonUtility.FromJson<LoginSuccessResponse>(web_request.downloadHandler.text);
+            }
+            catch
+            {
+                if (requestFailedDelegate != null)
+                    requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
+            }
+        }
+        else
+        {
+            try
+            {
+                ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
+                if (requestFailedDelegate != null)
+                    requestFailedDelegate("고양이 구매에 실패했습니다.\n다시 시도해주세요 : " + error.ToString());
+            }
+            catch
+            {
+                if (requestFailedDelegate != null)
+                    requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
+            }
+        }
+
+        requesting_ = false;
+    }
+
+    private IEnumerator SelectCatRequest(int[] helperIds)
+    {
+        Debug.Log("서버에 고양이 선택 데이터를 SEND합니다.");
+
+        CatSelectData requestData = new CatSelectData
+        {
+            helperIds = helperIds
+        };
+
+        string jsonData = JsonUtility.ToJson(requestData);
+
+        UnityWebRequest web_request = new UnityWebRequest(SERVER_API_BASIC_ADDRESS + "/helper/choose/" + inherence_id_.ToString(), "POST");
+        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+        web_request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        web_request.downloadHandler = new DownloadHandlerBuffer();
+        web_request.SetRequestHeader("Content-Type", "application/json; charset=UTF-8");
+
+        yield return web_request.SendWebRequest();
+
+        Debug.Log("서버에 고양이 구매를 요청했습니다.");
+
+        if (web_request.result == UnityWebRequest.Result.Success)
+        {
+            try
+            {
+                selected_cat_ = helperIds;
+
+                if (requestSuccededDelegate != null)
+                    requestSuccededDelegate();
+
+                LoginSuccessResponse success = JsonUtility.FromJson<LoginSuccessResponse>(web_request.downloadHandler.text);
+            }
+            catch
+            {
+                if (requestFailedDelegate != null)
+                    requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
+            }
+        }
+        else
+        {
+            try
+            {
+                ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
+                if (requestFailedDelegate != null)
+                    requestFailedDelegate("고양이 선택에 실패했습니다.\n다시 시도해주세요 : "+ error.ToString());
+            }
+            catch
+            {
+                if (requestFailedDelegate != null)
+                    requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
+            }
+        }
+
+        requesting_ = false;
+    }
+
+
 
     //======================데이터 리프레쉬================================
     private void SetStageUnlock() {
@@ -606,7 +765,7 @@ public class DataManager : MonoBehaviour
         is_unlock_cat_ = new bool[GameManager.CAT_SIZE_];
         level_cat_ = new int[GameManager.CAT_SIZE_];
         exp_cat_ = new float[GameManager.CAT_SIZE_];
-
+         
         for (int i = 0; i < BasicHelperManager.MAX_HELPER_; i++)
         {
             selected_cat_[i] = -1;

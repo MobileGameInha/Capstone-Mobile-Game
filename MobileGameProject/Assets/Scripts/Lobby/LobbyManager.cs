@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,9 +26,14 @@ public class LobbyManager : MonoBehaviour
     public GameObject[] StageAlert;
     public GameObject ChallangeAlert;
 
+    public GameObject WaitingPanel;
+    public GameObject ErrorPanel;
+    public TMP_Text Error_Text;
     private void Awake()
     {
         ProfileSelectPanel.SetActive(false);
+        WaitingPanel.SetActive(false);
+        ErrorPanel.SetActive(false);
         OnClickQuickButton(0);
     }
 
@@ -65,7 +71,7 @@ public class LobbyManager : MonoBehaviour
         NickNameText.text = DataManager.dataManager.GetNickName();
         LevelText.text = "LV " + DataManager.dataManager.GetLevel().ToString();
         CoinText.text = DataManager.dataManager.GetCoin().ToString() + "¿ø";
-        ExpText.text = DataManager.dataManager.GetRemainEXP().ToString("F2") + "/500";
+        ExpText.text = DataManager.dataManager.GetRemainEXP().ToString("F2") + "/100";
         EXPSlider.value = DataManager.dataManager.GetRemainEXP() / DataManager.PLAYER_PER_EXP;
     }
 
@@ -99,5 +105,26 @@ public class LobbyManager : MonoBehaviour
     private void ChangeProfileImage() 
     {
         profileImage.sprite = profileSprites[DataManager.dataManager.GetProfileImage()];
+    }
+
+    public void OpenError(string error)
+    {
+        Error_Text.text = error;
+        ErrorPanel.SetActive(true);
+    }
+
+    public void CloseError()
+    {
+        ErrorPanel.SetActive(false);
+    }
+
+    public void OpenWaiting()
+    {
+        WaitingPanel.SetActive(true);
+    }
+
+    public void CloseWaiting()
+    {
+        WaitingPanel.SetActive(false);
     }
 }

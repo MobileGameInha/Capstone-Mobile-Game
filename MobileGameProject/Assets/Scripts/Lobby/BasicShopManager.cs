@@ -17,6 +17,8 @@ public class BasicShopManager : MonoBehaviour
     public static readonly int WHEEL_COST = 500;
     public static readonly int ITEM_COUNT = 8;
 
+    public LobbyManager lobbyManager;
+
     public GameObject MainPanel;
     public GameObject PetPanel;
     public GameObject ItemPanel;
@@ -43,6 +45,9 @@ public class BasicShopManager : MonoBehaviour
 
     private bool isSpeening = false;
 
+    private enum RequestType { BuyCat};
+    private RequestType request_type_;
+    private bool is_requesting_ = false;
     private void Awake()
     {
         MainPanel.SetActive(true);
@@ -50,7 +55,18 @@ public class BasicShopManager : MonoBehaviour
         ItemPanel.SetActive(false);
         BuyPromptPanel.SetActive(false);
 
+        DataManager.dataManager.requestSuccededDelegate += SuccessRequestEvent;
+        DataManager.dataManager.requestFailedDelegate += FailRequestEvent;
+
         pet_index_ = 0;
+
+        is_requesting_ = false;
+    }
+
+    private void OnDestroy()
+    {
+        DataManager.dataManager.requestSuccededDelegate -= SuccessRequestEvent;
+        DataManager.dataManager.requestFailedDelegate -= FailRequestEvent;
     }
 
     private void Start()
@@ -112,11 +128,8 @@ public class BasicShopManager : MonoBehaviour
 
     public void OnClickPetShopBuyButtonYes()
     {
-        //+)구매 로직 추가
-
-        BuyAnimator.SetTrigger(SHOW_PARAM_HASH);
-        BuyPromptPanel.SetActive(false);
-        ResetPetState();
+        if (!DataManager.dataManager.GetIsRequesting())
+            SendCatBuyRequest();
     }
 
     public void OnClickPetShopBuyButtonNo()
@@ -184,4 +197,49 @@ public class BasicShopManager : MonoBehaviour
         Debug.Log(idx.ToString() + "아이템 획득");
         //+)아이템 획득
     }
+
+
+
+
+
+    private void SendCatBuyRequest() {
+        is_requesting_ = true;
+        lobbyManager.OpenWaiting();
+        DataManager.dataManager.UnlockCat(pet_index_);
+    }
+
+
+    private void SuccessRequestEvent()
+    {
+        if (!is_requesting_) return;
+
+        is_requesting_ = false;
+
+        lobbyManager.CloseWaiting();
+
+        Debug.Log("서버요청 성공 이벤트 발생");
+        switch (request_type_)
+        {
+            case RequestType.BuyCat:
+                BuyAnimator.SetTrigger(SHOW_PARAM_HASH);
+                BuyPromptPanel.SetActive(false);
+                ResetPetState();
+                GameObject.FindObjectOfType<BasicHelperManager>().ResetHelperSelectPanel();
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    private void FailRequestEvent(string err)
+    {
+        if (!is_requesting_) return;
+
+        is_requesting_ = false;
+
+        lobbyManager.CloseWaiting();
+        lobbyManager.OpenError(err);
+    }
+
 }
