@@ -58,12 +58,14 @@ public class AuthUIManager : MonoBehaviour
 
 
 
-    public void GotoLobby() {
+    public void GotoLobby()
+    {
         if (is_requesting_) { return; }
 
         LoadingManager.LoadScene("LobbyScene");
         //SceneManager.LoadScene("LobbyScene"); 동기식...
     }
+
 
     public void Remember_click() {
         if (is_requesting_) { return; }
@@ -202,7 +204,9 @@ public class AuthUIManager : MonoBehaviour
     }
 
 
-    private void SuccessRequestEvent() {
+    private void SuccessRequestEvent()
+    {
+
         if (is_requesting_)
         {
             if (signup_request_)
