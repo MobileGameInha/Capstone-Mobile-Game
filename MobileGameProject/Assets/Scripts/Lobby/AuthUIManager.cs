@@ -92,11 +92,6 @@ public class AuthUIManager : MonoBehaviour
     {
         if (is_requesting_) { return; }
 
-        emailInput.text = "";
-        nicknameInput.text = "";
-        idInput.text = "";
-        passwordInput.text = "";
-
         LOG_IN.SetActive(true);
         SIGN_UP.SetActive(false);
     }
