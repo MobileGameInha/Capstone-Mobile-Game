@@ -115,10 +115,6 @@ public class GameManager : MonoBehaviour
     private const int ADDING_SCORE_PERFECT_ = 20; //퍼펙트 점수
     private const int REMOVING_SCORE_TILE_ = -5; //감점
 
-    [SerializeField]
-    private int coin_per_score_ = 100;
-    [SerializeField]
-    private int exp_per_score_ = 500;
 
     private float co2_ = 50; //CO2
     private const float MAX_CO2_ = 100; //CO2 최대값
@@ -255,6 +251,15 @@ public class GameManager : MonoBehaviour
             using_cat_[i] = false;
         }
 
+        DataManager.dataManager.requestSuccededDelegate += SuccessRequestEvent;
+        DataManager.dataManager.requestFailedDelegate += FailRequestEvent;
+
+    }
+
+    private void OnDestroy()
+    {
+        DataManager.dataManager.requestSuccededDelegate -= SuccessRequestEvent;
+        DataManager.dataManager.requestFailedDelegate -= FailRequestEvent;
     }
 
     private void Start()
@@ -937,19 +942,19 @@ public class GameManager : MonoBehaviour
         {
             is_started_ = false;
 
-            int gold = score_ / coin_per_score_;
+            int gold = score_ / DataManager.COIN_PER_SCORE;
             if (using_cat_[CatIndex.GOLD_UP_])
             {
                 gold = Mathf.RoundToInt(gold*using_cat_value_[CatIndex.GOLD_UP_]);
             }
 
-            int ex = score_ / exp_per_score_;
+            int ex = score_ / DataManager.EXP_PER_SCORE;
             if (using_cat_[CatIndex.EXP_UP_])
             {
                 ex = Mathf.RoundToInt(ex * using_cat_value_[CatIndex.EXP_UP_]);
             }
 
-            //+)데이터 변경
+            DataManager.dataManager.UpdateScore(score_);
             visual_manager_.StartAnimationForEndGame(score_, gold, ex, using_cat_[CatIndex.GOLD_UP_], using_cat_[CatIndex.EXP_UP_]);
             Debug.Log("게임종료...");
         }
@@ -1050,7 +1055,17 @@ public class GameManager : MonoBehaviour
 
 
 
+    private void SuccessRequestEvent()
+    {
+        visual_manager_.ShowEndButton();
 
-    
+    }
+
+    private void FailRequestEvent(string err)
+    {
+        visual_manager_.ShowErrorMessage();
+        visual_manager_.ShowEndButton();
+    }
+
 
 }

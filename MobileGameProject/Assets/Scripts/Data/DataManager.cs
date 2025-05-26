@@ -38,6 +38,10 @@ public class DataManager : MonoBehaviour
     private readonly int[] STAGE_UNLOCK_LEVEL = {0,3,6,10,13};
     private readonly int STAGE_UNLOCK_CHALLENGE = 15;
 
+ 
+    public static readonly int COIN_PER_SCORE = 75;
+    public static readonly int EXP_PER_SCORE = 125;
+
     private bool requesting_ = false;
 
     public RequestSuccessDelegate requestSuccededDelegate;
@@ -157,7 +161,12 @@ public class DataManager : MonoBehaviour
     }
     //유저의 고양이 선택
 
-
+    [System.Serializable]
+    public class ScoreData
+    {
+        //+) TODO Update
+    }
+    //유저의 고양이 선택
 
 
     public void SendSignUpRequest(string email, string nickname, string username, string password) {
@@ -188,7 +197,7 @@ public class DataManager : MonoBehaviour
             if (requestFailedDelegate != null)
                 requestFailedDelegate("인덱스 오류");
         }
-    }
+    }//중요하지 않은 send이기에 requesting_ = true; 없이 진행
 
     public void SetSelectedCat(int which_cat, int cat_idx)
     {
@@ -239,6 +248,8 @@ public class DataManager : MonoBehaviour
             return;
         }
 
+        requesting_ = true;
+
         StartCoroutine(BuyCatRequest(BasicShopManager.CAT_COST_LIST[idx], idx));
 
     }
@@ -258,9 +269,10 @@ public class DataManager : MonoBehaviour
         //+)랭킹데이터 끌어오기
     }
 
-    public void ChangeDataOfEndGame(int score)
+    public void UpdateScore(int score)
     {
-        //+)게임 종료 후 데이터 전송
+        requesting_ = true;
+        StartCoroutine(UpdateScoreRequest(score));
     }
 
     private IEnumerator SignUpRequest(string email, string nickname, string username, string password)
@@ -546,8 +558,6 @@ public class DataManager : MonoBehaviour
                     requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
             }
         }
-
-        requesting_ = false;
     }
 
     private IEnumerator BuyCatRequest(int helperPrice, int cat_idx)
@@ -626,7 +636,7 @@ public class DataManager : MonoBehaviour
 
         yield return web_request.SendWebRequest();
 
-        Debug.Log("서버에 고양이 구매를 요청했습니다.");
+        Debug.Log("서버에 고양이 선택을 요청했습니다.");
 
         if (web_request.result == UnityWebRequest.Result.Success)
         {
@@ -666,7 +676,66 @@ public class DataManager : MonoBehaviour
         requesting_ = false;
     }
 
+    private IEnumerator UpdateScoreRequest(int score) 
+    {
+        Debug.Log("서버에 점수 데이터를 SEND합니다.");
 
+        ScoreData requestData = new ScoreData
+        {
+            //+)TODO
+        };
+
+        string jsonData = JsonUtility.ToJson(requestData);
+
+        //+)TODO Fill next Sentence
+        UnityWebRequest web_request = new UnityWebRequest(SERVER_API_BASIC_ADDRESS + "/helper/choose/" + inherence_id_.ToString(), "POST");
+        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+        web_request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        web_request.downloadHandler = new DownloadHandlerBuffer();
+        web_request.SetRequestHeader("Content-Type", "application/json; charset=UTF-8");
+
+        yield return web_request.SendWebRequest();
+
+        if (web_request.result == UnityWebRequest.Result.Success)
+        {
+            try
+            {
+                coin_ += score / COIN_PER_SCORE;
+                exp_ += score / EXP_PER_SCORE;
+                for (int i = 0; i < selected_cat_.Length; i++)
+                {
+                    if (selected_cat_[i] >= 0 && selected_cat_[i] < GameManager.CAT_SIZE_)
+                    {
+                        exp_cat_[selected_cat_[i]] += score / EXP_PER_SCORE;
+                        if (exp_cat_[selected_cat_[i]] >= 100.0f) { exp_cat_[selected_cat_[i]] = 100.0f; }
+                    }
+                }
+
+                //LoginSuccessResponse success = JsonUtility.FromJson<LoginSuccessResponse>(web_request.downloadHandler.text);
+            }
+            catch
+            {
+                if (requestFailedDelegate != null)
+                    requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
+            }
+        }
+        else
+        {
+            try
+            {
+                ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
+                if (requestFailedDelegate != null)
+                    requestFailedDelegate("점수 업데이트에 실패했습니다.\n다시 시도해주세요 :\n" + error.ToString());
+            }
+            catch
+            {
+                if (requestFailedDelegate != null)
+                    requestFailedDelegate("오류가 발생했습니다. 다시 시도해주세요");
+            }
+        }
+
+        requesting_ = false;
+    }
 
     //======================데이터 리프레쉬================================
     private void SetStageUnlock() {
