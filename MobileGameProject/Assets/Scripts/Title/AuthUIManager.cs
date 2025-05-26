@@ -8,6 +8,8 @@ using UnityEngine.SceneManagement;
 
 public class AuthUIManager : MonoBehaviour
 {
+    public GameObject WaitingPanel;
+
     [Header("Panels")]
     public GameObject LOG_IN;
     public GameObject SIGN_UP;
@@ -45,6 +47,8 @@ public class AuthUIManager : MonoBehaviour
 
     void Awake()
     {
+        WaitingPanel.SetActive(false);
+
         DataManager.dataManager.requestSuccededDelegate += SuccessRequestEvent;
         DataManager.dataManager.requestFailedDelegate += FailRequestEvent;
         toastPanel.SetActive(false);
@@ -147,6 +151,7 @@ public class AuthUIManager : MonoBehaviour
 
         is_requesting_ = true;
         signup_request_ = true;
+        WaitingPanel.SetActive(true);
         DataManager.dataManager.SendSignUpRequest(email, nickname, id, password);
     }
 
@@ -165,6 +170,7 @@ public class AuthUIManager : MonoBehaviour
 
         is_requesting_ = true;
         login_request_ = true;
+        WaitingPanel.SetActive(true);
         DataManager.dataManager.SendLoginRequest(id, password);
     }
 
@@ -207,9 +213,10 @@ public class AuthUIManager : MonoBehaviour
     private void SuccessRequestEvent()
     {
         Debug.Log("서버요청 성공 이벤트 발생");
-
+        WaitingPanel.SetActive(false);
         if (is_requesting_)
         {
+
             if (signup_request_)
             {
                 is_requesting_ = false;
@@ -230,8 +237,10 @@ public class AuthUIManager : MonoBehaviour
 
     private void FailRequestEvent(string err)
     {
+        WaitingPanel.SetActive(false);
         if (is_requesting_)
         {
+
             is_requesting_ = false;
             signup_request_ = false;
             login_request_ = false;
