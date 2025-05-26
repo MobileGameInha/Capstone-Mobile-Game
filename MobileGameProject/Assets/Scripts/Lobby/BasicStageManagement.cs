@@ -125,7 +125,7 @@ public class BasicStageManagement : MonoBehaviour
 
     public void OnClickMoveToStage(int idx) 
     {
-        if (PlayerPrefs.GetInt("Stage_" + idx.ToString(), 0)==0)
+        if (idx!=0 && PlayerPrefs.GetInt("Stage_" + idx.ToString(), 0)==0)
         {
             LoadingManager.LoadScene("CutScene_" + idx.ToString());
         }
