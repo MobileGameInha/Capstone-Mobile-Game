@@ -9,6 +9,8 @@ using UnityEngine.UI;
 
 public class BasicHelperManager : MonoBehaviour
 {
+    private readonly int SHOW_PARAM_HASH = Animator.StringToHash("SHOW");
+
     public static readonly string[] CAT_NAME_LIST_ = 
         { "토리", "아루", "루나", "솔라", "당금", "마키",
     "초코", "마리", "공주", "시아", "아이", "행복이"};
@@ -20,23 +22,23 @@ public class BasicHelperManager : MonoBehaviour
 
     public static readonly int[,] CAT_UPGRADE_LIST_ =
     {
-        { (int)Item.BELL,(int)Item.BOX,(int)Item.TICKET},
-        { (int)Item.BELL,(int)Item.BOX,(int)Item.TICKET},
-        { (int)Item.BELL,(int)Item.BOX,(int)Item.TICKET},
-        { (int)Item.BELL,(int)Item.BOX,(int)Item.TICKET},
-        { (int)Item.BELL,(int)Item.BOX,(int)Item.TICKET},
+    { (int)Item.SNACK, (int)Item.BELL,  (int)Item.FLOWER },
+    { (int)Item.BOX,   (int)Item.LEAF,  (int)Item.TICKET },
+    { (int)Item.DISK,  (int)Item.EARTH, (int)Item.SNACK },
+    { (int)Item.BELL,  (int)Item.BOX,   (int)Item.LEAF },
+    { (int)Item.TICKET,(int)Item.FLOWER,(int)Item.DISK },
 
-        { (int)Item.BELL,(int)Item.BOX,(int)Item.TICKET},
-        { (int)Item.BELL,(int)Item.BOX,(int)Item.TICKET},
-        { (int)Item.BELL,(int)Item.BOX,(int)Item.TICKET},
-        { (int)Item.BELL,(int)Item.BOX,(int)Item.TICKET},
-        { (int)Item.BELL,(int)Item.BOX,(int)Item.TICKET},
+    { (int)Item.SNACK, (int)Item.EARTH, (int)Item.BOX },
+    { (int)Item.LEAF,  (int)Item.FLOWER,(int)Item.BELL },
+    { (int)Item.DISK,  (int)Item.SNACK, (int)Item.TICKET },
+    { (int)Item.EARTH, (int)Item.LEAF,  (int)Item.FLOWER },
+    { (int)Item.BOX,   (int)Item.TICKET,(int)Item.DISK },
 
-        { (int)Item.BELL,(int)Item.BOX,(int)Item.TICKET},
-        { (int)Item.BELL,(int)Item.BOX,(int)Item.TICKET}
+    { (int)Item.BELL,  (int)Item.EARTH, (int)Item.SNACK },
+    { (int)Item.TICKET,(int)Item.DISK,  (int)Item.BELL }
     };
 
-    public static readonly int[] CAT_UPGRATE_COUNT_ = { 3, 4, 5, 6, 7, 0 };
+    public static readonly int[] CAT_UPGRATE_COUNT_ = { 0, 4, 5, 6, 7, 0 };
 
     public static readonly int MAX_HELPER_ = 3;
 
@@ -46,6 +48,7 @@ public class BasicHelperManager : MonoBehaviour
     public GameObject HelperUpgradePanel;
     public GameObject HelperButtons;
 
+    public Animator UpgradeSuccessAnimator;
 
     [SerializeField]
     private int[] selected_cat_index = { -1, -1, -1 };
@@ -76,7 +79,7 @@ public class BasicHelperManager : MonoBehaviour
 
     public Sprite[] Upgrade_ItemSprites;
 
-    private enum RequestType { SetCat };
+    private enum RequestType { SetCat, UpgradeCat };
     private RequestType request_type_;
     private bool is_requesting_ = false;
 
@@ -200,7 +203,12 @@ public class BasicHelperManager : MonoBehaviour
 
     public void OnClickCatUpgradeButton()
     {
-        //+)고양이 데이터를 기반으로 업그레이드 진행
+        if (DataManager.dataManager.GetIsRequesting() || selected_cat_index[now_showing_idx]==-1) { return; }
+
+        is_requesting_ = true;
+        request_type_ = RequestType.UpgradeCat;
+        lobbyManager.OpenWaiting();
+        DataManager.dataManager.UpgradeCat(selected_cat_index[now_showing_idx]);
     }
 
     private void ResetLobbyHelpers()
@@ -403,8 +411,15 @@ public class BasicHelperManager : MonoBehaviour
             case RequestType.SetCat:
                 ResetHelperSelectPanel();
                 ResetLobbyHelpers();
+                ResetHelperUpgradePanel();
                 GameObject.FindObjectOfType<BasicStageManagement>().ResetCatState();
                 GameObject.FindObjectOfType<BasicChallangeManager>().ResetCatState();
+                break;
+            case RequestType.UpgradeCat:
+                ResetHelperSelectPanel();
+                ResetLobbyHelpers();
+                ResetHelperUpgradePanel();
+                UpgradeSuccessAnimator.SetTrigger(SHOW_PARAM_HASH);
                 break;
             default:
                 break;

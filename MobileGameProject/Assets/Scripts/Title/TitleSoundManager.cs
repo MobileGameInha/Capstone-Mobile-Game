@@ -13,7 +13,6 @@ public class TitleSoundManager : MonoBehaviour
     private void Awake()
     {
         audioSource = GetComponent<AudioSource>();
-        DontDestroyOnLoad(this);
     }
 
 

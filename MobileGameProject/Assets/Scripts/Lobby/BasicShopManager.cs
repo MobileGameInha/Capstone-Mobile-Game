@@ -14,7 +14,6 @@ public class BasicShopManager : MonoBehaviour
     400,400,500,500,600,
     600,600};
 
-    public static readonly int WHEEL_COST = 500;
     public static readonly int ITEM_COUNT = 8;
 
     public LobbyManager lobbyManager;
@@ -45,7 +44,7 @@ public class BasicShopManager : MonoBehaviour
 
     private bool isSpeening = false;
 
-    private enum RequestType { BuyCat};
+    private enum RequestType { BuyCat, GetItem};
     private RequestType request_type_;
     private bool is_requesting_ = false;
     private void Awake()
@@ -166,14 +165,14 @@ public class BasicShopManager : MonoBehaviour
     public void OnClickWheelButton() {
         if (isSpeening) return;
 
-        if (DataManager.dataManager.GetCoin() < WHEEL_COST)
+        if (DataManager.dataManager.GetIsRequesting()) return;
+
+        if (DataManager.dataManager.GetCoin() < DataManager.ITEM_PRICE)
         {
             UnderCostWheelAnimator.SetTrigger(SHOW_PARAM_HASH);
         }
         else {
             isSpeening = true;
-
-            //+)µ· Â÷°¨
 
             Wheel.Spin();
 
@@ -195,7 +194,10 @@ public class BasicShopManager : MonoBehaviour
     public void AddItem(int idx) 
     {
         Debug.Log(idx.ToString() + "¾ÆÀÌÅÛ È¹µæ");
-        //+)¾ÆÀÌÅÛ È¹µæ
+        is_requesting_ = true;
+        request_type_ = RequestType.GetItem;
+        lobbyManager.OpenWaiting();
+        DataManager.dataManager.GetItem(idx);
     }
 
 
@@ -204,6 +206,7 @@ public class BasicShopManager : MonoBehaviour
 
     private void SendCatBuyRequest() {
         is_requesting_ = true;
+        request_type_ = RequestType.BuyCat;
         lobbyManager.OpenWaiting();
         DataManager.dataManager.UnlockCat(pet_index_);
     }
@@ -224,7 +227,13 @@ public class BasicShopManager : MonoBehaviour
                 BuyAnimator.SetTrigger(SHOW_PARAM_HASH);
                 BuyPromptPanel.SetActive(false);
                 ResetPetState();
+                lobbyManager.ResetState();
                 GameObject.FindObjectOfType<BasicHelperManager>().ResetHelperSelectPanel();
+                break;
+            case RequestType.GetItem:
+                ResetItemState();
+                lobbyManager.ResetState();
+                GameObject.FindObjectOfType<BasicHelperManager>().ResetHelperUpgradePanel();
                 break;
             default:
                 break;

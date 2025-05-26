@@ -42,6 +42,10 @@ public class LobbyManager : MonoBehaviour
         ChangeProfileImage();
         ResetState();
         SetAlert();
+
+        if (PlayerPrefs.GetInt("SawTutorial", 0) == 0) {
+            GameObject.FindObjectOfType<TutorialManager>().Open();
+        }
     }
 
     private void SetAlert() {
