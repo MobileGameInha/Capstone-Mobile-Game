@@ -102,6 +102,10 @@ public class BasicStageManagement : MonoBehaviour
 
     }
 
+    public void OnClickRankButton() {
+        GameObject.FindObjectOfType<LobbyManager>().OnClickQuickButton(4);
+        GameObject.FindObjectOfType<BasicRankingManager>().Onclick_Stage(currentStage + 1);
+    }
     
 
     public void OnClickCatButton() {

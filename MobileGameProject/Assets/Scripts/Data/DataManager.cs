@@ -49,6 +49,9 @@ public class DataManager : MonoBehaviour
     public RequestSuccessDelegate requestSuccededDelegate;
     public RequestFailDelegate requestFailedDelegate;
 
+    public RequestSuccessDelegate requestSuccededDelegateForRank;
+    public RequestFailDelegate requestFailedDelegateForRank;
+
     private int inherence_id_; // 플레이어 식별 고유 아이디
 
     private string email_;
@@ -81,7 +84,63 @@ public class DataManager : MonoBehaviour
     [SerializeField]
     private int[] inventory = { 0,0,0,0,0,0,0,0 };
 
-    
+
+    [SerializeField]
+    private int player_total_score_ = 0;
+    [SerializeField]
+    private int[] player_max_score_ = { 0,0,0,0,0,0,0,0};
+    [SerializeField]
+    private int[] player_rank_ = { 0, 0, 0, 0, 0, 0, 0, 0 };
+    [SerializeField]
+    private int player_tier_ = 0;
+
+    [SerializeField]
+    private int[,] profile_of_rankers_ = {
+    { 0,0,0 },
+    { 0,0,0 },
+    { 0,0,0 },
+    { 0,0,0 },
+    { 0,0,0 },
+    { 0,0,0 },
+    { 0,0,0 },
+    { 0,0,0 }
+    };
+
+    [SerializeField]
+    private int[,] level_of_rankers_ = {
+    { 0,0,0 },
+    { 0,0,0 },
+    { 0,0,0 },
+    { 0,0,0 },
+    { 0,0,0 },
+    { 0,0,0 },
+    { 0,0,0 },
+    { 0,0,0 }
+    };
+
+    [SerializeField]
+    private int[,] score_of_rankers_ = {
+    { 0,0,0 },
+    { 0,0,0 },
+    { 0,0,0 },
+    { 0,0,0 },
+    { 0,0,0 },
+    { 0,0,0 },
+    { 0,0,0 },
+    { 0,0,0 }
+    };
+
+    [SerializeField]
+    private string[,] nickname_of_rankers_ = {
+    { "","","" },
+    { "","","" },
+    { "","","" },
+    { "","","" },
+    { "","","" },
+    { "","","" },
+    { "","","" },
+    { "","","" },
+    };
 
     //===========서버 통신=============
 
@@ -184,6 +243,12 @@ public class DataManager : MonoBehaviour
     }
     //유저의 아이템 구매
 
+    [System.Serializable]
+    public class RankData
+    {
+        //+) TODO Update
+    }
+    //랭크 정보 끌어오기
 
     public void SendSignUpRequest(string email, string nickname, string username, string password) {
         requesting_ = true;
@@ -302,7 +367,7 @@ public class DataManager : MonoBehaviour
 
     public void GetRankingData()
     {
-        //+)랭킹데이터 끌어오기
+        StartCoroutine(GetRankDataRequest());
     }
 
     public void UpdateScore(int score)
@@ -747,6 +812,8 @@ public class DataManager : MonoBehaviour
                     }
                 }
 
+                if (requestSuccededDelegate != null)
+                    requestSuccededDelegate();
                 //LoginSuccessResponse success = JsonUtility.FromJson<LoginSuccessResponse>(web_request.downloadHandler.text);
             }
             catch
@@ -805,6 +872,8 @@ public class DataManager : MonoBehaviour
                 level_cat_[cat_idx]++;
                 exp_cat_[cat_idx] = 0.0f;
 
+                if (requestSuccededDelegate != null)
+                    requestSuccededDelegate();
                 //LoginSuccessResponse success = JsonUtility.FromJson<LoginSuccessResponse>(web_request.downloadHandler.text);
             }
             catch
@@ -857,6 +926,9 @@ public class DataManager : MonoBehaviour
             {
                 coin_ -= ITEM_PRICE;
                 inventory[item_idx]++;
+
+                if (requestSuccededDelegate != null)
+                    requestSuccededDelegate();
                 //LoginSuccessResponse success = JsonUtility.FromJson<LoginSuccessResponse>(web_request.downloadHandler.text);
             }
             catch
@@ -882,6 +954,59 @@ public class DataManager : MonoBehaviour
 
         requesting_ = false;
     }
+
+    private IEnumerator GetRankDataRequest()
+    {
+        Debug.Log("랭크 요청 데이터를 SEND합니다.");
+
+        RankData requestData = new RankData
+        {
+            //+)TODO
+        };
+
+        string jsonData = JsonUtility.ToJson(requestData);
+
+        //+)TODO Fill next Sentence
+        UnityWebRequest web_request = new UnityWebRequest(SERVER_API_BASIC_ADDRESS + "/helper/choose/" + inherence_id_.ToString(), "POST");
+        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+        web_request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        web_request.downloadHandler = new DownloadHandlerBuffer();
+        web_request.SetRequestHeader("Content-Type", "application/json; charset=UTF-8");
+
+        yield return web_request.SendWebRequest();
+
+        if (web_request.result == UnityWebRequest.Result.Success)
+        {
+            try
+            {
+                //+)TODO 랭크데이터 변경
+
+                if (requestSuccededDelegateForRank != null)
+                    requestSuccededDelegateForRank();
+                //LoginSuccessResponse success = JsonUtility.FromJson<LoginSuccessResponse>(web_request.downloadHandler.text);
+            }
+            catch
+            {
+                if (requestFailedDelegateForRank != null)
+                    requestFailedDelegateForRank("오류가 발생했습니다. 다시 시도해주세요");
+            }
+        }
+        else
+        {
+            try
+            {
+                ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
+                if (requestFailedDelegateForRank != null)
+                    requestFailedDelegateForRank("아이템 획득에 실패했습니다.\n다시 시도해주세요 :\n" + error.ToString());
+            }
+            catch
+            {
+                if (requestFailedDelegateForRank != null)
+                    requestFailedDelegateForRank("오류가 발생했습니다. 다시 시도해주세요");
+            }
+        }
+    }
+
 
     //======================데이터 리프레쉬================================
     private void SetStageUnlock() {
@@ -958,6 +1083,20 @@ public class DataManager : MonoBehaviour
     {
         coin_ -= remove_value;//+)임시 : 
     }
+
+    public int GetPlayerTotalScore() { return player_total_score_; }
+
+    public int GetPlayerMaxScore(int stage) { return player_max_score_[stage]; } 
+
+    public int GetPlayerRank(int stage) { return player_rank_[stage]; }
+
+    public int GetPlayerTier() { return player_tier_; }
+
+    public int GetProfileOfRanker(int stage, int idx) { return profile_of_rankers_[stage, idx]; }
+    public int GetLevelOfRanker(int stage, int idx) { return level_of_rankers_[stage, idx]; }
+
+    public int GetScoreOfRanker(int stage, int idx) { return score_of_rankers_[stage, idx]; }
+    public string GetNicknameOfRanker(int stage, int idx) { return nickname_of_rankers_[stage, idx]; }
 
     private void Awake()
     {
