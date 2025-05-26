@@ -188,7 +188,14 @@ public class BasicHelperManager : MonoBehaviour
         is_requesting_ = true;
         request_type_ = RequestType.SetCat;
         lobbyManager.OpenWaiting();
-        DataManager.dataManager.SetSelectedCat(now_showing_idx,selected_cat_index[now_showing_idx]);
+        if (selected_cat_index[now_showing_idx] == DataManager.dataManager.GetSelectedCat(now_showing_idx))
+        {
+            DataManager.dataManager.SetSelectedCat(now_showing_idx, -1);
+        }
+        else
+        {
+            DataManager.dataManager.SetSelectedCat(now_showing_idx, selected_cat_index[now_showing_idx]);
+        }
     }
 
     public void OnClickCatUpgradeButton()
