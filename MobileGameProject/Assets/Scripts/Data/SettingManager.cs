@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class SettingManager : MonoBehaviour
 {
+    public TutorialManager tutorialManager;
+
     [Header("Audio Mixer")]
     public AudioMixer audioMixer;
 
@@ -180,6 +182,12 @@ public class SettingManager : MonoBehaviour
     {
         PageText.text = $"{CurrentPage + 1}";
     }
+
+    public void OnClickTutorial() {
+        tutorialManager.Open();
+        ToggleSettingUI();
+    }
+
     public void ShowArrow(int index)
     {
         if (index==0){

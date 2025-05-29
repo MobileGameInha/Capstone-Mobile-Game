@@ -102,6 +102,10 @@ public class BasicStageManagement : MonoBehaviour
 
     }
 
+    public void OnClickRankButton() {
+        GameObject.FindObjectOfType<LobbyManager>().OnClickQuickButton(4);
+        GameObject.FindObjectOfType<BasicRankingManager>().Onclick_Stage(currentStage + 1);
+    }
     
 
     public void OnClickCatButton() {
@@ -125,7 +129,7 @@ public class BasicStageManagement : MonoBehaviour
 
     public void OnClickMoveToStage(int idx) 
     {
-        if (PlayerPrefs.GetInt("Stage_" + idx.ToString(), 0)==0)
+        if (idx!=0 && PlayerPrefs.GetInt("Stage_" + idx.ToString(), 0)==0)
         {
             LoadingManager.LoadScene("CutScene_" + idx.ToString());
         }

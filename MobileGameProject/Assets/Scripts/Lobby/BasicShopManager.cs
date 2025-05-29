@@ -14,8 +14,9 @@ public class BasicShopManager : MonoBehaviour
     400,400,500,500,600,
     600,600};
 
-    public static readonly int WHEEL_COST = 500;
     public static readonly int ITEM_COUNT = 8;
+
+    public LobbyManager lobbyManager;
 
     public GameObject MainPanel;
     public GameObject PetPanel;
@@ -43,6 +44,9 @@ public class BasicShopManager : MonoBehaviour
 
     private bool isSpeening = false;
 
+    private enum RequestType { BuyCat, GetItem};
+    private RequestType request_type_;
+    private bool is_requesting_ = false;
     private void Awake()
     {
         MainPanel.SetActive(true);
@@ -50,7 +54,18 @@ public class BasicShopManager : MonoBehaviour
         ItemPanel.SetActive(false);
         BuyPromptPanel.SetActive(false);
 
+        DataManager.dataManager.requestSuccededDelegate += SuccessRequestEvent;
+        DataManager.dataManager.requestFailedDelegate += FailRequestEvent;
+
         pet_index_ = 0;
+
+        is_requesting_ = false;
+    }
+
+    private void OnDestroy()
+    {
+        DataManager.dataManager.requestSuccededDelegate -= SuccessRequestEvent;
+        DataManager.dataManager.requestFailedDelegate -= FailRequestEvent;
     }
 
     private void Start()
@@ -112,11 +127,8 @@ public class BasicShopManager : MonoBehaviour
 
     public void OnClickPetShopBuyButtonYes()
     {
-        //+)구매 로직 추가
-
-        BuyAnimator.SetTrigger(SHOW_PARAM_HASH);
-        BuyPromptPanel.SetActive(false);
-        ResetPetState();
+        if (!DataManager.dataManager.GetIsRequesting())
+            SendCatBuyRequest();
     }
 
     public void OnClickPetShopBuyButtonNo()
@@ -153,14 +165,14 @@ public class BasicShopManager : MonoBehaviour
     public void OnClickWheelButton() {
         if (isSpeening) return;
 
-        if (DataManager.dataManager.GetCoin() < WHEEL_COST)
+        if (DataManager.dataManager.GetIsRequesting()) return;
+
+        if (DataManager.dataManager.GetCoin() < DataManager.ITEM_PRICE)
         {
             UnderCostWheelAnimator.SetTrigger(SHOW_PARAM_HASH);
         }
         else {
             isSpeening = true;
-
-            //+)돈 차감
 
             Wheel.Spin();
 
@@ -182,6 +194,61 @@ public class BasicShopManager : MonoBehaviour
     public void AddItem(int idx) 
     {
         Debug.Log(idx.ToString() + "아이템 획득");
-        //+)아이템 획득
+        is_requesting_ = true;
+        request_type_ = RequestType.GetItem;
+        lobbyManager.OpenWaiting();
+        DataManager.dataManager.GetItem(idx);
     }
+
+
+
+
+
+    private void SendCatBuyRequest() {
+        is_requesting_ = true;
+        request_type_ = RequestType.BuyCat;
+        lobbyManager.OpenWaiting();
+        DataManager.dataManager.UnlockCat(pet_index_);
+    }
+
+
+    private void SuccessRequestEvent()
+    {
+        if (!is_requesting_) return;
+
+        is_requesting_ = false;
+
+        lobbyManager.CloseWaiting();
+
+        Debug.Log("서버요청 성공 이벤트 발생");
+        switch (request_type_)
+        {
+            case RequestType.BuyCat:
+                BuyAnimator.SetTrigger(SHOW_PARAM_HASH);
+                BuyPromptPanel.SetActive(false);
+                ResetPetState();
+                lobbyManager.ResetState();
+                GameObject.FindObjectOfType<BasicHelperManager>().ResetHelperSelectPanel();
+                break;
+            case RequestType.GetItem:
+                ResetItemState();
+                lobbyManager.ResetState();
+                GameObject.FindObjectOfType<BasicHelperManager>().ResetHelperUpgradePanel();
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    private void FailRequestEvent(string err)
+    {
+        if (!is_requesting_) return;
+
+        is_requesting_ = false;
+
+        lobbyManager.CloseWaiting();
+        lobbyManager.OpenError(err);
+    }
+
 }

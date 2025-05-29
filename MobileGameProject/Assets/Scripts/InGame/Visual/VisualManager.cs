@@ -11,6 +11,7 @@ public class VisualManager : MonoBehaviour
     private enum EffectDeleteType { NONE, TIMER, NEXT_ROUND}
 
     private readonly int SHOW_PARAM_HASH = Animator.StringToHash("SHOW");
+    private readonly int END_PARAM_HASH = Animator.StringToHash("END");
 
     private static readonly int[] CAT_INDEX_GOOD = { 1, 7, 8, 15, 17, 18, 20, 22, 23, 25, 26 };
     private static readonly int[] CAT_INDEX_BAD = { 2,3,4,5,6,9,10,12,13,16,21,24 };
@@ -83,8 +84,11 @@ public class VisualManager : MonoBehaviour
     public TMP_Text CoinText;
     public TMP_Text EXPText;
 
+    public GameObject ErrorPanel;
     private void Awake()
     {
+        ErrorPanel.SetActive(false);
+
         for (int i = 0; i < BasicHelperManager.MAX_HELPER_; i++)
         {
             cat_index_[i] = -1;
@@ -156,6 +160,13 @@ public class VisualManager : MonoBehaviour
         }
     }
 
+    public void ShowErrorMessage() {
+        ErrorPanel.SetActive(true);
+    }
+
+    public void ShowEndButton() {
+        EndAnimator.SetBool(END_PARAM_HASH, true);
+    }
     public void ResetCatSkill()
     {
         for (int i = 0; i < SkillEffect.Length; i++)
