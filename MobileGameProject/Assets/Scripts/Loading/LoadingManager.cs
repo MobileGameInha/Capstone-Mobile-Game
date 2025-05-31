@@ -20,6 +20,7 @@ public class LoadingManager : MonoBehaviour
     public Slider Gauge;
     void Start()
     {
+        Debug.Log("씬 로딩매니저 스타트 함수 진입");
         Cat.initialSkinName = "Cat-" + Random.Range(1,17).ToString();
         Cat.Initialize(true);
         if (Cat.AnimationState != null)
@@ -33,13 +34,16 @@ public class LoadingManager : MonoBehaviour
     public static void LoadScene(string sceneName)
     {
         nextScene = sceneName;
+        Debug.Log(sceneName + "씬을 로드합니다");
         SceneManager.LoadScene("LoadingScene");
     }
 
     IEnumerator LoadScene()
     {
+        Debug.Log("씬 로딩 코루틴 진입...");
         yield return new WaitForSeconds(3.0f);
         yield return null;
+        Debug.Log("씬 로딩 시작...");
         AsyncOperation op = SceneManager.LoadSceneAsync(nextScene);
         op.allowSceneActivation = false;
         float timer = 0.0f;
@@ -66,5 +70,6 @@ public class LoadingManager : MonoBehaviour
                 }
             }
         }
+        Debug.Log("씬 로딩 완료...");
     }
 }

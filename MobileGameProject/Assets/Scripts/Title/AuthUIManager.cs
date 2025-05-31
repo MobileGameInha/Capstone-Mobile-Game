@@ -81,8 +81,11 @@ public class AuthUIManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        DataManager.dataManager.requestSuccededDelegate -= SuccessRequestEvent;
-        DataManager.dataManager.requestFailedDelegate -= FailRequestEvent;
+        if (DataManager.dataManager != null)
+        {
+            DataManager.dataManager.requestSuccededDelegate -= SuccessRequestEvent;
+            DataManager.dataManager.requestFailedDelegate -= FailRequestEvent;
+        }
     }
 
 
@@ -287,7 +290,7 @@ public class AuthUIManager : MonoBehaviour
                 }
                 Debug.Log(PlayerPrefs.GetString("saved_id"));
                 PlayerPrefs.Save();
-                ShowToast($"로그인 성공! 로그인 하세요!");
+                ShowToast($"로그인 성공! 시작 하세요!");
                 CloseUI();
             }
         }

@@ -154,6 +154,7 @@ public class SettingManager : MonoBehaviour
 
     public void ToggleSettingUI()
     {
+        if (settingUI.activeSelf == false) { Time.timeScale = 0f; } else { Time.timeScale = 1f; }
         settingUI.SetActive(!settingUI.activeSelf);
     }
     public void ToggleCutSceneUI()
@@ -231,6 +232,14 @@ public class SettingManager : MonoBehaviour
         switch (currentPromptType)
         {
             case PromptType.Logout:
+                DataManager dm = FindObjectOfType<DataManager>();
+                GameObject.Destroy(dm.gameObject);
+                DontDestroyOnLoad[] ddls = FindObjectsOfType<DontDestroyOnLoad>();
+                for (int i = 0; i < ddls.Length; i++)
+                {
+                    GameObject.Destroy(ddls[i].gameObject);
+                }
+
                 PlayerPrefs.DeleteKey("saved_id");
                 PlayerPrefs.DeleteKey("saved_pw");
                 PlayerPrefs.Save();
@@ -243,6 +252,7 @@ public class SettingManager : MonoBehaviour
                 Application.Quit();
                 break;
         }
+        Time.timeScale = 1f;
         settingUI.SetActive(false);
         ClosePrompt();
     }

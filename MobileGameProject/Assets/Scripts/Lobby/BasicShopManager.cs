@@ -64,8 +64,11 @@ public class BasicShopManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        DataManager.dataManager.requestSuccededDelegate -= SuccessRequestEvent;
-        DataManager.dataManager.requestFailedDelegate -= FailRequestEvent;
+        if (DataManager.dataManager != null)
+        {
+            DataManager.dataManager.requestSuccededDelegate -= SuccessRequestEvent;
+            DataManager.dataManager.requestFailedDelegate -= FailRequestEvent;
+        }
     }
 
     private void Start()

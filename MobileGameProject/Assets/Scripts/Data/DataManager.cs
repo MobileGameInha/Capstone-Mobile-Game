@@ -311,21 +311,21 @@ public class DataManager : MonoBehaviour
         if (idx < 0 || idx >= GameManager.CAT_SIZE_)
         {
             if (requestFailedDelegate != null)
-                requestFailedDelegate("�ε��� ����");
+                requestFailedDelegate("잘못된 접근입니다.");
             return;
         }
 
         if (coin_ < BasicShopManager.CAT_COST_LIST[idx])
         {
             if (requestFailedDelegate != null)
-                requestFailedDelegate("�ݾ� ����");
+                requestFailedDelegate("비용이 부족합니다.");
             return;
         }
 
         if (is_unlock_cat_[idx])
         {
             if (requestFailedDelegate != null)
-                requestFailedDelegate("�̹� ������ ������");
+                requestFailedDelegate("이미 해금한 고양이 입니다.");
             return;
         }
 
@@ -339,7 +339,7 @@ public class DataManager : MonoBehaviour
     {
         if (idx < 0 || idx >= GameManager.CAT_SIZE_)
         {
-            requestFailedDelegate("�ε��� ����");
+            requestFailedDelegate("잘못된 접근입니다.");
         }
 
         if (exp_cat_[idx] >= 100.0f && level_cat_[idx] < 5 &&
@@ -355,7 +355,7 @@ public class DataManager : MonoBehaviour
         }
         else 
         {
-            requestFailedDelegate("���� �� ����");
+            requestFailedDelegate("잘못된 접근입니다.");
         }
     }
 
@@ -378,7 +378,6 @@ public class DataManager : MonoBehaviour
 
     private IEnumerator SignUpRequest(string email, string nickname, string username, string password)
     {
-        Debug.Log("������ ȸ������ �����͸� SEND�մϴ�.");
 
         SignUpData requestData = new SignUpData
         {
@@ -398,7 +397,6 @@ public class DataManager : MonoBehaviour
 
         yield return web_request.SendWebRequest();
 
-        Debug.Log("�������� ȸ������ �����͸� �޾ƿԽ��ϴ�.");
 
         if (web_request.result == UnityWebRequest.Result.Success)
         {
@@ -411,7 +409,7 @@ public class DataManager : MonoBehaviour
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("������ �߻��߽��ϴ�. �ٽ� �õ����ּ���");
+                    requestFailedDelegate("회원가입에 실패하였습니다.\n다시 시도해주세요.");
             }
         }
         else
@@ -420,12 +418,12 @@ public class DataManager : MonoBehaviour
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("ȸ�����Կ� �����߽��ϴ�. �ٽ� �õ����ּ���");
+                    requestFailedDelegate("회원가입에 실패하였습니다.\n아이디와 비밀번호를 변경하여\n다시 시도해주세요.");
             }
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("������ �߻��߽��ϴ�. �ٽ� �õ����ּ���");
+                    requestFailedDelegate("회원가입에 실패하였습니다.\n다시 시도해주세요.");
             }
         }
 
@@ -434,7 +432,6 @@ public class DataManager : MonoBehaviour
 
     private IEnumerator LoginRequest(string username, string password)
     {
-        Debug.Log("������ �α��� �����͸� SEND�մϴ�.");
 
         LoginData loginData = new LoginData
         {
@@ -452,7 +449,6 @@ public class DataManager : MonoBehaviour
 
         yield return web_request.SendWebRequest();
 
-        Debug.Log("�������� �α��� �����͸� �޾ƿԽ��ϴ�.");
 
         bool is_succeded = false;
 
@@ -468,7 +464,7 @@ public class DataManager : MonoBehaviour
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("������ �߻��߽��ϴ�. �ٽ� �õ����ּ���");
+                    requestFailedDelegate("로그인에 실패하였습니다.\n다시 시도해주세요.");
             }
         }
         else
@@ -477,12 +473,12 @@ public class DataManager : MonoBehaviour
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("�α��ο� �����߽��ϴ�. �ٽ� �õ����ּ���");
+                    requestFailedDelegate("로그인에 실패하였습니다.\n다시 시도해주세요.");
             }
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("������ �߻��߽��ϴ�. �ٽ� �õ����ּ���");
+                    requestFailedDelegate("로그인에 실패하였습니다.\n다시 시도해주세요.");
             }
         }
         if (is_succeded) {
@@ -496,13 +492,12 @@ public class DataManager : MonoBehaviour
 
     private IEnumerator GetUserDataRequest()
     {
-        Debug.Log("������ �����͸� �޾ƿɴϴ�.");
         bool is_success = true;
 
         //���� �⺻ ������
 
         ErrorResponse error = new ErrorResponse();
-        error.message = "����ġ ���� ������ �߻��Ͽ����ϴ�.";
+        error.message = "데이터를 불러오는데 실패하였습니다.";
 
         UnityWebRequest web_request = new UnityWebRequest(SERVER_API_BASIC_ADDRESS + "/member/info/"+inherence_id_.ToString(), "GET");
         web_request.SetRequestHeader("Content-Type", "application/json; charset=UTF-8");
@@ -515,7 +510,6 @@ public class DataManager : MonoBehaviour
         {
             try
             {
-                Debug.Log("������ �޾ƿ���...");
                 UserBasicData response = JsonUtility.FromJson<UserBasicData>(web_request.downloadHandler.text);
                 nickname_ = response.nickname;
                 username_ = response.username;
@@ -541,15 +535,12 @@ public class DataManager : MonoBehaviour
             }
             catch
             {
-                Debug.Log("���� �������⵵ ����");
+                Debug.Log("데이터 불러오기 실패");
             }
         }
 
 
-        //���� ������ ������
 
-
-        Debug.Log("������ ������ �����͸� �޾ƿɴϴ�");
         web_request = new UnityWebRequest(SERVER_API_BASIC_ADDRESS + "/helper/all/" + inherence_id_.ToString(), "GET");
         web_request.SetRequestHeader("Content-Type", "application/json; charset=UTF-8");
         web_request.downloadHandler = new DownloadHandlerBuffer();
@@ -560,13 +551,9 @@ public class DataManager : MonoBehaviour
         {
             try
             {
-                Debug.Log("������ �޾ƿ���...");
                 UserCatData response = JsonUtility.FromJson<UserCatData>(web_request.downloadHandler.text);
-                Debug.Log("�������� �ޱ� ����...");
                 for (int i = 0; i < response.catHelpers.Length; i++)
                 {
-                    Debug.Log(i.ToString() + "�� ������ üũ");
-                    Debug.Log((response.catHelpers[i].helperId).ToString() + "������ ��");
                     if (response.catHelpers[i] != null && response.catHelpers[i].helperId>=1 && response.catHelpers[i].helperId<=GameManager.CAT_SIZE_)
                     {
                         is_unlock_cat_[response.catHelpers[i].helperId-1] = true;
@@ -590,18 +577,15 @@ public class DataManager : MonoBehaviour
             }
             catch
             {
-                Debug.Log("���� �������⵵ ����");
             }
         }
 
         if (is_success)
         {
-            Debug.Log("����!");
             if (requestSuccededDelegate != null)
                 requestSuccededDelegate();
         }
         else {
-            Debug.Log("���� : " + error.message);
             if (requestFailedDelegate != null)
                 requestFailedDelegate(error.message);
         }
@@ -611,7 +595,6 @@ public class DataManager : MonoBehaviour
 
     private IEnumerator ChangeProfileIndexRequest(int profileNumber)
     {
-        Debug.Log("������ ������ �����͸� SEND�մϴ�.");
 
         UserProfileImageData ProfileImageData = new UserProfileImageData
         {
@@ -628,7 +611,6 @@ public class DataManager : MonoBehaviour
 
         yield return web_request.SendWebRequest();
 
-        Debug.Log("�������� ������ �����͸� �޾ƿԽ��ϴ�.");
 
         if (web_request.result == UnityWebRequest.Result.Success)
         {
@@ -642,7 +624,7 @@ public class DataManager : MonoBehaviour
             catch
             {
                 if(requestFailedDelegate!=null)
-                    requestFailedDelegate("������ �߻��߽��ϴ�. �ٽ� �õ����ּ���");
+                    requestFailedDelegate("프로필 이미지 변경에 실패하였습니다.");
             }
         }
         else
@@ -651,19 +633,18 @@ public class DataManager : MonoBehaviour
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("���濡 �����߽��ϴ�. �ٽ� �õ����ּ���");
+                    requestFailedDelegate("프로필 이미지 변경에 실패하였습니다.\n"+ error.ToString());
             }
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("������ �߻��߽��ϴ�. �ٽ� �õ����ּ���");
+                    requestFailedDelegate("프로필 이미지 변경에 실패하였습니다.");
             }
         }
     }
 
     private IEnumerator BuyCatRequest(int helperPrice, int cat_idx)
     {
-        Debug.Log("������ ������ ���� �����͸� SEND�մϴ�.");
 
         CatPriceData requestData = new CatPriceData
         {
@@ -680,7 +661,6 @@ public class DataManager : MonoBehaviour
 
         yield return web_request.SendWebRequest();
 
-        Debug.Log("������ ������ ���Ÿ� ��û�߽��ϴ�.");
 
         if (web_request.result == UnityWebRequest.Result.Success)
         {
@@ -697,7 +677,7 @@ public class DataManager : MonoBehaviour
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("������ �߻��߽��ϴ�. �ٽ� �õ����ּ���");
+                    requestFailedDelegate("고양이 구매에 실패하였습니다.");
             }
         }
         else
@@ -706,12 +686,12 @@ public class DataManager : MonoBehaviour
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("������ ���ſ� �����߽��ϴ�.\n�ٽ� �õ����ּ��� : " + error.ToString());
+                    requestFailedDelegate("고양이 구매에 실패하였습니다.\n" + error.ToString());
             }
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("������ �߻��߽��ϴ�. �ٽ� �õ����ּ���");
+                    requestFailedDelegate("고양이 구매에 실패하였습니다.\n");
             }
         }
 
@@ -720,7 +700,6 @@ public class DataManager : MonoBehaviour
 
     private IEnumerator SelectCatRequest(int[] helperIds)
     {
-        Debug.Log("������ ������ ���� �����͸� SEND�մϴ�.");
 
         CatSelectData requestData = new CatSelectData
         {
@@ -737,7 +716,6 @@ public class DataManager : MonoBehaviour
 
         yield return web_request.SendWebRequest();
 
-        Debug.Log("������ ������ ������ ��û�߽��ϴ�.");
 
         if (web_request.result == UnityWebRequest.Result.Success)
         {
@@ -756,7 +734,7 @@ public class DataManager : MonoBehaviour
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("������ �߻��߽��ϴ�. �ٽ� �õ����ּ���");
+                    requestFailedDelegate("고양이 선택에 실패하였습니다.");
             }
         }
         else
@@ -765,12 +743,12 @@ public class DataManager : MonoBehaviour
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("������ ���ÿ� �����߽��ϴ�.\n�ٽ� �õ����ּ��� :\n" + error.ToString());
+                    requestFailedDelegate("고양이 선택에 실패하였습니다.\n" + error.ToString());
             }
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("������ �߻��߽��ϴ�. �ٽ� �õ����ּ���");
+                    requestFailedDelegate("고양이 선택에 실패하였습니다.");
             }
         }
 
@@ -779,7 +757,6 @@ public class DataManager : MonoBehaviour
 
     private IEnumerator UpdateScoreRequest(int score) 
     {
-        Debug.Log("������ ���� �����͸� SEND�մϴ�.");
 
         ScoreData requestData = new ScoreData
         {
@@ -819,7 +796,7 @@ public class DataManager : MonoBehaviour
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("������ �߻��߽��ϴ�. �ٽ� �õ����ּ���");
+                    requestFailedDelegate("점수 갱신에 실패하였습니다.");
             }
         }
         else
@@ -828,12 +805,12 @@ public class DataManager : MonoBehaviour
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("���� ������Ʈ�� �����߽��ϴ�.\n�ٽ� �õ����ּ��� :\n" + error.ToString());
+                    requestFailedDelegate("점수 갱신에 실패하였습니다.\n" + error.ToString());
             }
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("������ �߻��߽��ϴ�. �ٽ� �õ����ּ���");
+                    requestFailedDelegate("점수 갱신에 실패하였습니다.");
             }
         }
 
@@ -879,7 +856,7 @@ public class DataManager : MonoBehaviour
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("������ �߻��߽��ϴ�. �ٽ� �õ����ּ���");
+                    requestFailedDelegate("고양이 업그레이드에 실패하였습니다.");
             }
         }
         else
@@ -888,12 +865,12 @@ public class DataManager : MonoBehaviour
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("������ ���׷��̵忡 �����߽��ϴ�.\n�ٽ� �õ����ּ��� :\n" + error.ToString());
+                    requestFailedDelegate("고양이 업그레이드에 실패하였습니다.\n" + error.ToString());
             }
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("������ �߻��߽��ϴ�. �ٽ� �õ����ּ���");
+                    requestFailedDelegate("고양이 업그레이드에 실패하였습니다.");
             }
         }
 
@@ -934,7 +911,7 @@ public class DataManager : MonoBehaviour
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("������ �߻��߽��ϴ�. �ٽ� �õ����ּ���");
+                    requestFailedDelegate("아이템 획득에 실패하였습니다.");
             }
         }
         else
@@ -943,12 +920,12 @@ public class DataManager : MonoBehaviour
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("������ ȹ�濡 �����߽��ϴ�.\n�ٽ� �õ����ּ��� :\n" + error.ToString());
+                    requestFailedDelegate("아이템 획득에 실패하였습니다.\n" + error.ToString());
             }
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("������ �߻��߽��ϴ�. �ٽ� �õ����ּ���");
+                    requestFailedDelegate("아이템 획득에 실패하였습니다.");
             }
         }
 
@@ -988,7 +965,7 @@ public class DataManager : MonoBehaviour
             catch
             {
                 if (requestFailedDelegateForRank != null)
-                    requestFailedDelegateForRank("������ �߻��߽��ϴ�. �ٽ� �õ����ּ���");
+                    requestFailedDelegateForRank("랭크데이터 갱신에 실패하였습니다.");
             }
         }
         else
@@ -997,12 +974,12 @@ public class DataManager : MonoBehaviour
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
                 if (requestFailedDelegateForRank != null)
-                    requestFailedDelegateForRank("������ ȹ�濡 �����߽��ϴ�.\n�ٽ� �õ����ּ��� :\n" + error.ToString());
+                    requestFailedDelegateForRank("랭크데이터 갱신에 실패하였습니다.\n" + error.ToString());
             }
             catch
             {
                 if (requestFailedDelegateForRank != null)
-                    requestFailedDelegateForRank("������ �߻��߽��ϴ�. �ٽ� �õ����ּ���");
+                    requestFailedDelegateForRank("랭크데이터 갱신에 실패하였습니다.");
             }
         }
     }
