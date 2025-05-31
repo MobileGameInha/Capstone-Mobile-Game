@@ -19,8 +19,10 @@ public class AuthUIManager : MonoBehaviour
 
     [Header("Remember Button")]
     public GameObject REM_ON;
+    public GameObject Auto_ON;
 
     private bool ison;
+    private bool ison_auto;
 
     [Header("Sign Up Inputs")]
     public TMP_InputField emailInput;
@@ -48,10 +50,33 @@ public class AuthUIManager : MonoBehaviour
     void Awake()
     {
         WaitingPanel.SetActive(false);
+        if (PlayerPrefs.HasKey("saved_pw"))
+        {
+            string savedId = PlayerPrefs.GetString("saved_id");
+            string savedPw = PlayerPrefs.GetString("saved_pw");
 
+            if (!string.IsNullOrEmpty(savedId) && !string.IsNullOrEmpty(savedPw))
+            {
+                loginIdInput.text = savedId;
+                loginPasswordInput.text = savedPw;
+                ison_auto = true;
+                Auto_ON.SetActive(true);
+                TryLogin(); // 자동 로그인 시도
+            }
+        }
+        else if (PlayerPrefs.HasKey("saved_id"))
+        {
+            loginIdInput.text = PlayerPrefs.GetString("saved_id");
+            ison = true;
+            REM_ON.SetActive(true);
+        }
+        Debug.Log(PlayerPrefs.GetString("saved_id"));
+
+    
         DataManager.dataManager.requestSuccededDelegate += SuccessRequestEvent;
         DataManager.dataManager.requestFailedDelegate += FailRequestEvent;
         toastPanel.SetActive(false);
+
     }
 
     private void OnDestroy()
@@ -81,6 +106,19 @@ public class AuthUIManager : MonoBehaviour
         else {
             REM_ON.SetActive(true);
             ison = true;
+        }
+
+    }
+    public void Auto_click() {
+        if (is_requesting_) { return; }
+
+        if (ison_auto) {
+            Auto_ON.SetActive(false);
+            ison_auto = false;
+        }
+        else {
+            Auto_ON.SetActive(true);
+            ison_auto = true;
         }
 
     }
@@ -229,6 +267,26 @@ public class AuthUIManager : MonoBehaviour
                 Debug.Log("서버요청 성공 이벤트 발생 :  로그인");
                 is_requesting_ = false;
                 login_request_ = false;
+
+                if (ison) // 아이디 저장
+                {
+                    PlayerPrefs.SetString("saved_id", loginIdInput.text);
+                }
+                else
+                {
+                    PlayerPrefs.DeleteKey("saved_id");
+                }
+                if (ison_auto) // 자동 로그인
+                {
+                    PlayerPrefs.SetString("saved_id", loginIdInput.text);
+                    PlayerPrefs.SetString("saved_pw", loginPasswordInput.text);
+                }
+                else
+                {
+                    PlayerPrefs.DeleteKey("saved_pw");
+                }
+                Debug.Log(PlayerPrefs.GetString("saved_id"));
+                PlayerPrefs.Save();
                 ShowToast($"로그인 성공! 로그인 하세요!");
                 CloseUI();
             }
