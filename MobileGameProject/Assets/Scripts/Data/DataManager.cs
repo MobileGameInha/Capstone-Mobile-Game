@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
+using UnityEditor.PackageManager;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Networking;
 using static System.Net.WebRequestMethods;
@@ -222,17 +224,18 @@ public class DataManager : MonoBehaviour
     }
     //������ ������ ����
 
-    [System.Serializable]
-    public class CatUpgradeData
-    {
-        //+) TODO Update
-    }
-    //������ ������ ���׷��̵�Ʈ
 
+    [System.Serializable]
+    public class Score
+    {
+        public int score;
+    }
     [System.Serializable]
     public class ScoreData
     {
-        //+) TODO Update
+        public int exp;
+        public int memberGold;
+        public int[] helperIds;
     }
     //������ ���� ������Ʈ
 
@@ -370,10 +373,10 @@ public class DataManager : MonoBehaviour
         StartCoroutine(GetRankDataRequest());
     }
 
-    public void UpdateScore(int score)
+    public void UpdateScore(int score, int stage_id)
     {
         requesting_ = true;
-        StartCoroutine(UpdateScoreRequest(score));
+        StartCoroutine(UpdateScoreRequest(score, stage_id));
     }
 
     private IEnumerator SignUpRequest(string email, string nickname, string username, string password)
@@ -755,18 +758,29 @@ public class DataManager : MonoBehaviour
         requesting_ = false;
     }
 
-    private IEnumerator UpdateScoreRequest(int score) 
+    private IEnumerator UpdateScoreRequest(int score, int stage_id) 
     {
+        bool is_success = true;
+
+        ErrorResponse error = new ErrorResponse();
+
+        int[] tmp_cats = new int[BasicHelperManager.MAX_HELPER_];
+        for (int i = 0; i < BasicHelperManager.MAX_HELPER_; i++)
+        {
+            tmp_cats[i] = selected_cat_[i] + 1;
+        }
 
         ScoreData requestData = new ScoreData
         {
-            //+)TODO
+            exp = score / EXP_PER_SCORE,
+            memberGold = score / COIN_PER_SCORE,
+            helperIds = tmp_cats
         };
 
         string jsonData = JsonUtility.ToJson(requestData);
 
         //+)TODO Fill next Sentence
-        UnityWebRequest web_request = new UnityWebRequest(SERVER_API_BASIC_ADDRESS + "/helper/choose/" + inherence_id_.ToString(), "POST");
+        UnityWebRequest web_request = new UnityWebRequest(SERVER_API_BASIC_ADDRESS + "/stage/" + inherence_id_.ToString(), "POST");
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
         web_request.uploadHandler = new UploadHandlerRaw(bodyRaw);
         web_request.downloadHandler = new DownloadHandlerBuffer();
@@ -795,23 +809,73 @@ public class DataManager : MonoBehaviour
             }
             catch
             {
-                if (requestFailedDelegate != null)
-                    requestFailedDelegate("점수 갱신에 실패하였습니다.");
+                is_success = false;
             }
         }
         else
         {
+            is_success = false;
             try
             {
-                ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
-                if (requestFailedDelegate != null)
-                    requestFailedDelegate("점수 갱신에 실패하였습니다.\n" + error.ToString());
+                error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
+            }
+            catch { }
+        }
+
+        Score requestData2 = new Score
+        {
+            score = score
+        };
+
+        jsonData = JsonUtility.ToJson(requestData2);
+
+        //+)TODO Fill next Sentence
+        web_request = new UnityWebRequest(SERVER_API_BASIC_ADDRESS + "/stage/" + inherence_id_.ToString() + "/" + (stage_id+1).ToString(), "POST");
+        bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+        web_request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        web_request.downloadHandler = new DownloadHandlerBuffer();
+        web_request.SetRequestHeader("Content-Type", "application/json; charset=UTF-8");
+
+        yield return web_request.SendWebRequest();
+
+        if (web_request.result == UnityWebRequest.Result.Success)
+        {
+            try
+            {
+                UserCatData response = JsonUtility.FromJson<UserCatData>(web_request.downloadHandler.text);
+                for (int i = 0; i < response.catHelpers.Length; i++)
+                {
+                    if (response.catHelpers[i] != null && response.catHelpers[i].helperId >= 1 && response.catHelpers[i].helperId <= GameManager.CAT_SIZE_)
+                    {
+                        player_max_score_[stage_id] = score;
+                    }
+                }
             }
             catch
             {
-                if (requestFailedDelegate != null)
-                    requestFailedDelegate("점수 갱신에 실패하였습니다.");
+                is_success = false;
             }
+        }
+        else
+        {
+            is_success = false;
+
+            try
+            {
+                error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
+            }
+            catch { }
+        }
+
+        if (is_success)
+        {
+            if (requestSuccededDelegate != null)
+                requestSuccededDelegate();
+        }
+        else
+        {
+            if (requestFailedDelegate != null)
+                requestFailedDelegate(error.message);
         }
 
         requesting_ = false;
@@ -822,17 +886,9 @@ public class DataManager : MonoBehaviour
     {
         Debug.Log("������ ���׷��̵� �����͸� SEND�մϴ�.");
 
-        CatUpgradeData requestData = new CatUpgradeData
-        {
-            //+)TODO
-        };
-
-        string jsonData = JsonUtility.ToJson(requestData);
-
         //+)TODO Fill next Sentence
-        UnityWebRequest web_request = new UnityWebRequest(SERVER_API_BASIC_ADDRESS + "/helper/choose/" + inherence_id_.ToString(), "POST");
-        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
-        web_request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        UnityWebRequest web_request = new UnityWebRequest(SERVER_API_BASIC_ADDRESS + "/helper/detail/" + inherence_id_.ToString() +"/"+ (cat_idx+1).ToString(), "POST");
+
         web_request.downloadHandler = new DownloadHandlerBuffer();
         web_request.SetRequestHeader("Content-Type", "application/json; charset=UTF-8");
 
