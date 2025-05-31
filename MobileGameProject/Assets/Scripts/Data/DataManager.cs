@@ -23,9 +23,9 @@ public class DataManager : MonoBehaviour
 
             return dataManager_instance;
         }
-    }//DataManager¸¦ ½Ì±ÛÅÏÀ¸·Î º¯°æ
+    }//DataManagerï¿½ï¿½ ï¿½Ì±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-    private static DataManager dataManager_instance; //½Ì±ÛÅÏ ÀÎ½ºÅÏ½º
+    private static DataManager dataManager_instance; //ï¿½Ì±ï¿½ï¿½ï¿½ ï¿½Î½ï¿½ï¿½Ï½ï¿½
 
     public delegate void RequestSuccessDelegate();
     public delegate void RequestFailDelegate(string err);
@@ -33,7 +33,7 @@ public class DataManager : MonoBehaviour
     public const float PLAYER_PER_EXP = 100.0f;
     public const float MAX_CAT_EXP = 100.0f;
 
-    private const string SERVER_API_BASIC_ADDRESS = "http://18.204.43.221:8080";
+    private const string SERVER_API_BASIC_ADDRESS = "http://44.200.12.124:8080";
 
     private readonly int[] STAGE_UNLOCK_LEVEL = {0,3,6,10,13};
     private readonly int STAGE_UNLOCK_CHALLENGE = 15;
@@ -52,7 +52,7 @@ public class DataManager : MonoBehaviour
     public RequestSuccessDelegate requestSuccededDelegateForRank;
     public RequestFailDelegate requestFailedDelegateForRank;
 
-    private int inherence_id_; // ÇÃ·¹ÀÌ¾î ½Äº° °íÀ¯ ¾ÆÀÌµð
+    private int inherence_id_; // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½Äºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìµï¿½
 
     private string email_;
     private string password_;
@@ -142,7 +142,7 @@ public class DataManager : MonoBehaviour
     { "","","" },
     };
 
-    //===========¼­¹ö Åë½Å=============
+    //===========ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½=============
 
     public bool GetIsRequesting() { return requesting_; }
 
@@ -206,49 +206,49 @@ public class DataManager : MonoBehaviour
     {
         public int profileNumber;
     }
-    //À¯Àú ÇÁ·ÎÇÊ ÀÌ¹ÌÁö º¯°æ
+    //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¹ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
     [System.Serializable]
     public class CatPriceData
     {
         public int helperPrice;
     }
-    //À¯ÀúÀÇ °í¾çÀÌ ±¸¸Å
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
     [System.Serializable]
     public class CatSelectData
     {
         public int[] helperIds;
     }
-    //À¯ÀúÀÇ °í¾çÀÌ ¼±ÅÃ
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
     [System.Serializable]
     public class CatUpgradeData
     {
         //+) TODO Update
     }
-    //À¯ÀúÀÇ °í¾çÀÌ ¾÷±×·¹ÀÌµåÆ®
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½×·ï¿½ï¿½Ìµï¿½Æ®
 
     [System.Serializable]
     public class ScoreData
     {
         //+) TODO Update
     }
-    //À¯ÀúÀÇ Á¡¼ö ¾÷µ¥ÀÌÆ®
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
 
     [System.Serializable]
     public class ItemPriceData
     {
         //+) TODO Update
     }
-    //À¯ÀúÀÇ ¾ÆÀÌÅÛ ±¸¸Å
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
     [System.Serializable]
     public class RankData
     {
         //+) TODO Update
     }
-    //·©Å© Á¤º¸ ²ø¾î¿À±â
+    //ï¿½ï¿½Å© ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
     public void SendSignUpRequest(string email, string nickname, string username, string password) {
         requesting_ = true;
@@ -276,16 +276,16 @@ public class DataManager : MonoBehaviour
         }
         else {
             if (requestFailedDelegate != null)
-                requestFailedDelegate("ÀÎµ¦½º ¿À·ù");
+                requestFailedDelegate("ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
         }
-    }//Áß¿äÇÏÁö ¾ÊÀº sendÀÌ±â¿¡ requesting_ = true; ¾øÀÌ ÁøÇà
+    }//ï¿½ß¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ sendï¿½Ì±â¿¡ requesting_ = true; ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
     public void SetSelectedCat(int which_cat, int cat_idx)
     {
         if (which_cat < 0 || which_cat >= BasicHelperManager.MAX_HELPER_ || cat_idx < 0 || cat_idx >= GameManager.CAT_SIZE_)
         {
             if (requestFailedDelegate != null)
-                requestFailedDelegate("ÀÎµ¦½º ¿À·ù");
+                requestFailedDelegate("ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
         }
 
         requesting_ = true;
@@ -311,21 +311,21 @@ public class DataManager : MonoBehaviour
         if (idx < 0 || idx >= GameManager.CAT_SIZE_)
         {
             if (requestFailedDelegate != null)
-                requestFailedDelegate("ÀÎµ¦½º ¿À·ù");
+                requestFailedDelegate("ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
             return;
         }
 
         if (coin_ < BasicShopManager.CAT_COST_LIST[idx])
         {
             if (requestFailedDelegate != null)
-                requestFailedDelegate("±Ý¾× ºÎÁ·");
+                requestFailedDelegate("ï¿½Ý¾ï¿½ ï¿½ï¿½ï¿½ï¿½");
             return;
         }
 
         if (is_unlock_cat_[idx])
         {
             if (requestFailedDelegate != null)
-                requestFailedDelegate("ÀÌ¹Ì ÇØÁ¦µÈ °í¾çÀÌ");
+                requestFailedDelegate("ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
             return;
         }
 
@@ -339,7 +339,7 @@ public class DataManager : MonoBehaviour
     {
         if (idx < 0 || idx >= GameManager.CAT_SIZE_)
         {
-            requestFailedDelegate("ÀÎµ¦½º ¿À·ù");
+            requestFailedDelegate("ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
         }
 
         if (exp_cat_[idx] >= 100.0f && level_cat_[idx] < 5 &&
@@ -355,7 +355,7 @@ public class DataManager : MonoBehaviour
         }
         else 
         {
-            requestFailedDelegate("Á¶°Ç ºÒ ÃæÁ·");
+            requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
         }
     }
 
@@ -378,7 +378,7 @@ public class DataManager : MonoBehaviour
 
     private IEnumerator SignUpRequest(string email, string nickname, string username, string password)
     {
-        Debug.Log("¼­¹ö¿¡ È¸¿ø°¡ÀÔ µ¥ÀÌÅÍ¸¦ SENDÇÕ´Ï´Ù.");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ SENDï¿½Õ´Ï´ï¿½.");
 
         SignUpData requestData = new SignUpData
         {
@@ -398,7 +398,7 @@ public class DataManager : MonoBehaviour
 
         yield return web_request.SendWebRequest();
 
-        Debug.Log("¼­¹ö¿¡¼­ È¸¿ø°¡ÀÔ µ¥ÀÌÅÍ¸¦ ¹Þ¾Æ¿Ô½À´Ï´Ù.");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½Þ¾Æ¿Ô½ï¿½ï¿½Ï´ï¿½.");
 
         if (web_request.result == UnityWebRequest.Result.Success)
         {
@@ -411,7 +411,7 @@ public class DataManager : MonoBehaviour
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("¿À·ù°¡ ¹ß»ýÇß½À´Ï´Ù. ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä");
+                    requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½");
             }
         }
         else
@@ -420,12 +420,12 @@ public class DataManager : MonoBehaviour
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("È¸¿ø°¡ÀÔ¿¡ ½ÇÆÐÇß½À´Ï´Ù. ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä");
+                    requestFailedDelegate("È¸ï¿½ï¿½ï¿½ï¿½ï¿½Ô¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½");
             }
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("¿À·ù°¡ ¹ß»ýÇß½À´Ï´Ù. ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä");
+                    requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½");
             }
         }
 
@@ -434,7 +434,7 @@ public class DataManager : MonoBehaviour
 
     private IEnumerator LoginRequest(string username, string password)
     {
-        Debug.Log("¼­¹ö¿¡ ·Î±×ÀÎ µ¥ÀÌÅÍ¸¦ SENDÇÕ´Ï´Ù.");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Î±ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ SENDï¿½Õ´Ï´ï¿½.");
 
         LoginData loginData = new LoginData
         {
@@ -452,7 +452,7 @@ public class DataManager : MonoBehaviour
 
         yield return web_request.SendWebRequest();
 
-        Debug.Log("¼­¹ö¿¡¼­ ·Î±×ÀÎ µ¥ÀÌÅÍ¸¦ ¹Þ¾Æ¿Ô½À´Ï´Ù.");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Î±ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½Þ¾Æ¿Ô½ï¿½ï¿½Ï´ï¿½.");
 
         bool is_succeded = false;
 
@@ -468,7 +468,7 @@ public class DataManager : MonoBehaviour
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("¿À·ù°¡ ¹ß»ýÇß½À´Ï´Ù. ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä");
+                    requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½");
             }
         }
         else
@@ -477,12 +477,12 @@ public class DataManager : MonoBehaviour
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("·Î±×ÀÎ¿¡ ½ÇÆÐÇß½À´Ï´Ù. ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä");
+                    requestFailedDelegate("ï¿½Î±ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½");
             }
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("¿À·ù°¡ ¹ß»ýÇß½À´Ï´Ù. ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä");
+                    requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½");
             }
         }
         if (is_succeded) {
@@ -496,13 +496,13 @@ public class DataManager : MonoBehaviour
 
     private IEnumerator GetUserDataRequest()
     {
-        Debug.Log("À¯ÀúÀÇ µ¥ÀÌÅÍ¸¦ ¹Þ¾Æ¿É´Ï´Ù.");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½Þ¾Æ¿É´Ï´ï¿½.");
         bool is_success = true;
 
-        //À¯Àú ±âº» µ¥ÀÌÅÍ
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½âº» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
         ErrorResponse error = new ErrorResponse();
-        error.message = "¿¹±âÄ¡ ¸øÇÑ ¿¡·¯°¡ ¹ß»ýÇÏ¿´½À´Ï´Ù.";
+        error.message = "ï¿½ï¿½ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½Ï¿ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.";
 
         UnityWebRequest web_request = new UnityWebRequest(SERVER_API_BASIC_ADDRESS + "/member/info/"+inherence_id_.ToString(), "GET");
         web_request.SetRequestHeader("Content-Type", "application/json; charset=UTF-8");
@@ -515,7 +515,7 @@ public class DataManager : MonoBehaviour
         {
             try
             {
-                Debug.Log("µ¥ÀÌÅÍ ¹Þ¾Æ¿À±â...");
+                Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½...");
                 UserBasicData response = JsonUtility.FromJson<UserBasicData>(web_request.downloadHandler.text);
                 nickname_ = response.nickname;
                 username_ = response.username;
@@ -541,15 +541,15 @@ public class DataManager : MonoBehaviour
             }
             catch
             {
-                Debug.Log("¿¡·¯ °¡Á®¿À±âµµ ½ÇÆÐ");
+                Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½âµµ ï¿½ï¿½ï¿½ï¿½");
             }
         }
 
 
-        //À¯Àú Á¶·ÂÀÚ µ¥ÀÌÅÍ
+        //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 
-        Debug.Log("À¯ÀúÀÇ Á¶·ÂÀÚ µ¥ÀÌÅÍ¸¦ ¹Þ¾Æ¿É´Ï´Ù");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½Þ¾Æ¿É´Ï´ï¿½");
         web_request = new UnityWebRequest(SERVER_API_BASIC_ADDRESS + "/helper/all/" + inherence_id_.ToString(), "GET");
         web_request.SetRequestHeader("Content-Type", "application/json; charset=UTF-8");
         web_request.downloadHandler = new DownloadHandlerBuffer();
@@ -560,13 +560,13 @@ public class DataManager : MonoBehaviour
         {
             try
             {
-                Debug.Log("µ¥ÀÌÅÍ ¹Þ¾Æ¿À±â...");
+                Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¾Æ¿ï¿½ï¿½ï¿½...");
                 UserCatData response = JsonUtility.FromJson<UserCatData>(web_request.downloadHandler.text);
-                Debug.Log("¸®½ºÆù½º ¹Þ±â ¼º°ø...");
+                Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ±ï¿½ ï¿½ï¿½ï¿½ï¿½...");
                 for (int i = 0; i < response.catHelpers.Length; i++)
                 {
-                    Debug.Log(i.ToString() + "¹ø µ¥ÀÌÅÍ Ã¼Å©");
-                    Debug.Log((response.catHelpers[i].helperId).ToString() + "°í¾çÀÌ ÀÓ");
+                    Debug.Log(i.ToString() + "ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã¼Å©");
+                    Debug.Log((response.catHelpers[i].helperId).ToString() + "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½");
                     if (response.catHelpers[i] != null && response.catHelpers[i].helperId>=1 && response.catHelpers[i].helperId<=GameManager.CAT_SIZE_)
                     {
                         is_unlock_cat_[response.catHelpers[i].helperId-1] = true;
@@ -590,18 +590,18 @@ public class DataManager : MonoBehaviour
             }
             catch
             {
-                Debug.Log("¿¡·¯ °¡Á®¿À±âµµ ½ÇÆÐ");
+                Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½âµµ ï¿½ï¿½ï¿½ï¿½");
             }
         }
 
         if (is_success)
         {
-            Debug.Log("¼º°ø!");
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½!");
             if (requestSuccededDelegate != null)
                 requestSuccededDelegate();
         }
         else {
-            Debug.Log("½ÇÆÐ : " + error.message);
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½ : " + error.message);
             if (requestFailedDelegate != null)
                 requestFailedDelegate(error.message);
         }
@@ -611,7 +611,7 @@ public class DataManager : MonoBehaviour
 
     private IEnumerator ChangeProfileIndexRequest(int profileNumber)
     {
-        Debug.Log("¼­¹ö¿¡ ÇÁ·ÎÇÊ µ¥ÀÌÅÍ¸¦ SENDÇÕ´Ï´Ù.");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ SENDï¿½Õ´Ï´ï¿½.");
 
         UserProfileImageData ProfileImageData = new UserProfileImageData
         {
@@ -628,7 +628,7 @@ public class DataManager : MonoBehaviour
 
         yield return web_request.SendWebRequest();
 
-        Debug.Log("¼­¹ö¿¡¼­ ÇÁ·ÎÇÊ µ¥ÀÌÅÍ¸¦ ¹Þ¾Æ¿Ô½À´Ï´Ù.");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½Þ¾Æ¿Ô½ï¿½ï¿½Ï´ï¿½.");
 
         if (web_request.result == UnityWebRequest.Result.Success)
         {
@@ -642,7 +642,7 @@ public class DataManager : MonoBehaviour
             catch
             {
                 if(requestFailedDelegate!=null)
-                    requestFailedDelegate("¿À·ù°¡ ¹ß»ýÇß½À´Ï´Ù. ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä");
+                    requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½");
             }
         }
         else
@@ -651,19 +651,19 @@ public class DataManager : MonoBehaviour
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("º¯°æ¿¡ ½ÇÆÐÇß½À´Ï´Ù. ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä");
+                    requestFailedDelegate("ï¿½ï¿½ï¿½æ¿¡ ï¿½ï¿½ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½");
             }
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("¿À·ù°¡ ¹ß»ýÇß½À´Ï´Ù. ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä");
+                    requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½");
             }
         }
     }
 
     private IEnumerator BuyCatRequest(int helperPrice, int cat_idx)
     {
-        Debug.Log("¼­¹ö¿¡ °í¾çÀÌ ±¸¸Å µ¥ÀÌÅÍ¸¦ SENDÇÕ´Ï´Ù.");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ SENDï¿½Õ´Ï´ï¿½.");
 
         CatPriceData requestData = new CatPriceData
         {
@@ -680,7 +680,7 @@ public class DataManager : MonoBehaviour
 
         yield return web_request.SendWebRequest();
 
-        Debug.Log("¼­¹ö¿¡ °í¾çÀÌ ±¸¸Å¸¦ ¿äÃ»Çß½À´Ï´Ù.");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Å¸ï¿½ ï¿½ï¿½Ã»ï¿½ß½ï¿½ï¿½Ï´ï¿½.");
 
         if (web_request.result == UnityWebRequest.Result.Success)
         {
@@ -697,7 +697,7 @@ public class DataManager : MonoBehaviour
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("¿À·ù°¡ ¹ß»ýÇß½À´Ï´Ù. ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä");
+                    requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½");
             }
         }
         else
@@ -706,12 +706,12 @@ public class DataManager : MonoBehaviour
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("°í¾çÀÌ ±¸¸Å¿¡ ½ÇÆÐÇß½À´Ï´Ù.\n´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä : " + error.ToString());
+                    requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Å¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½.\nï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½ : " + error.ToString());
             }
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("¿À·ù°¡ ¹ß»ýÇß½À´Ï´Ù. ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä");
+                    requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½");
             }
         }
 
@@ -720,7 +720,7 @@ public class DataManager : MonoBehaviour
 
     private IEnumerator SelectCatRequest(int[] helperIds)
     {
-        Debug.Log("¼­¹ö¿¡ °í¾çÀÌ ¼±ÅÃ µ¥ÀÌÅÍ¸¦ SENDÇÕ´Ï´Ù.");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ SENDï¿½Õ´Ï´ï¿½.");
 
         CatSelectData requestData = new CatSelectData
         {
@@ -737,7 +737,7 @@ public class DataManager : MonoBehaviour
 
         yield return web_request.SendWebRequest();
 
-        Debug.Log("¼­¹ö¿¡ °í¾çÀÌ ¼±ÅÃÀ» ¿äÃ»Çß½À´Ï´Ù.");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã»ï¿½ß½ï¿½ï¿½Ï´ï¿½.");
 
         if (web_request.result == UnityWebRequest.Result.Success)
         {
@@ -756,7 +756,7 @@ public class DataManager : MonoBehaviour
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("¿À·ù°¡ ¹ß»ýÇß½À´Ï´Ù. ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä");
+                    requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½");
             }
         }
         else
@@ -765,12 +765,12 @@ public class DataManager : MonoBehaviour
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("°í¾çÀÌ ¼±ÅÃ¿¡ ½ÇÆÐÇß½À´Ï´Ù.\n´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä :\n" + error.ToString());
+                    requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ã¿ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½.\nï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½ :\n" + error.ToString());
             }
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("¿À·ù°¡ ¹ß»ýÇß½À´Ï´Ù. ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä");
+                    requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½");
             }
         }
 
@@ -779,7 +779,7 @@ public class DataManager : MonoBehaviour
 
     private IEnumerator UpdateScoreRequest(int score) 
     {
-        Debug.Log("¼­¹ö¿¡ Á¡¼ö µ¥ÀÌÅÍ¸¦ SENDÇÕ´Ï´Ù.");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ SENDï¿½Õ´Ï´ï¿½.");
 
         ScoreData requestData = new ScoreData
         {
@@ -819,7 +819,7 @@ public class DataManager : MonoBehaviour
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("¿À·ù°¡ ¹ß»ýÇß½À´Ï´Ù. ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä");
+                    requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½");
             }
         }
         else
@@ -828,12 +828,12 @@ public class DataManager : MonoBehaviour
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("Á¡¼ö ¾÷µ¥ÀÌÆ®¿¡ ½ÇÆÐÇß½À´Ï´Ù.\n´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä :\n" + error.ToString());
+                    requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½.\nï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½ :\n" + error.ToString());
             }
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("¿À·ù°¡ ¹ß»ýÇß½À´Ï´Ù. ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä");
+                    requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½");
             }
         }
 
@@ -843,7 +843,7 @@ public class DataManager : MonoBehaviour
 
     private IEnumerator UpgradeCatRequest(int cat_idx)
     {
-        Debug.Log("°í¾çÀÌ ¾÷±×·¹ÀÌµå µ¥ÀÌÅÍ¸¦ SENDÇÕ´Ï´Ù.");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½×·ï¿½ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ SENDï¿½Õ´Ï´ï¿½.");
 
         CatUpgradeData requestData = new CatUpgradeData
         {
@@ -879,7 +879,7 @@ public class DataManager : MonoBehaviour
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("¿À·ù°¡ ¹ß»ýÇß½À´Ï´Ù. ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä");
+                    requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½");
             }
         }
         else
@@ -888,12 +888,12 @@ public class DataManager : MonoBehaviour
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("°í¾çÀÌ ¾÷±×·¹ÀÌµå¿¡ ½ÇÆÐÇß½À´Ï´Ù.\n´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä :\n" + error.ToString());
+                    requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½×·ï¿½ï¿½Ìµå¿¡ ï¿½ï¿½ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½.\nï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½ :\n" + error.ToString());
             }
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("¿À·ù°¡ ¹ß»ýÇß½À´Ï´Ù. ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä");
+                    requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½");
             }
         }
 
@@ -902,7 +902,7 @@ public class DataManager : MonoBehaviour
 
     private IEnumerator AddItemRequest(int item_idx)
     {
-        Debug.Log("¾ÆÀÌÅÛ ±¸¸Å µ¥ÀÌÅÍ¸¦ SENDÇÕ´Ï´Ù.");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ SENDï¿½Õ´Ï´ï¿½.");
 
         ItemPriceData requestData = new ItemPriceData
         {
@@ -934,7 +934,7 @@ public class DataManager : MonoBehaviour
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("¿À·ù°¡ ¹ß»ýÇß½À´Ï´Ù. ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä");
+                    requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½");
             }
         }
         else
@@ -943,12 +943,12 @@ public class DataManager : MonoBehaviour
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("¾ÆÀÌÅÛ È¹µæ¿¡ ½ÇÆÐÇß½À´Ï´Ù.\n´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä :\n" + error.ToString());
+                    requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È¹ï¿½æ¿¡ ï¿½ï¿½ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½.\nï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½ :\n" + error.ToString());
             }
             catch
             {
                 if (requestFailedDelegate != null)
-                    requestFailedDelegate("¿À·ù°¡ ¹ß»ýÇß½À´Ï´Ù. ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä");
+                    requestFailedDelegate("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½");
             }
         }
 
@@ -957,7 +957,7 @@ public class DataManager : MonoBehaviour
 
     private IEnumerator GetRankDataRequest()
     {
-        Debug.Log("·©Å© ¿äÃ» µ¥ÀÌÅÍ¸¦ SENDÇÕ´Ï´Ù.");
+        Debug.Log("ï¿½ï¿½Å© ï¿½ï¿½Ã» ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ SENDï¿½Õ´Ï´ï¿½.");
 
         RankData requestData = new RankData
         {
@@ -979,7 +979,7 @@ public class DataManager : MonoBehaviour
         {
             try
             {
-                //+)TODO ·©Å©µ¥ÀÌÅÍ º¯°æ
+                //+)TODO ï¿½ï¿½Å©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
                 if (requestSuccededDelegateForRank != null)
                     requestSuccededDelegateForRank();
@@ -988,7 +988,7 @@ public class DataManager : MonoBehaviour
             catch
             {
                 if (requestFailedDelegateForRank != null)
-                    requestFailedDelegateForRank("¿À·ù°¡ ¹ß»ýÇß½À´Ï´Ù. ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä");
+                    requestFailedDelegateForRank("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½");
             }
         }
         else
@@ -997,18 +997,18 @@ public class DataManager : MonoBehaviour
             {
                 ErrorResponse error = JsonUtility.FromJson<ErrorResponse>(web_request.downloadHandler.text);
                 if (requestFailedDelegateForRank != null)
-                    requestFailedDelegateForRank("¾ÆÀÌÅÛ È¹µæ¿¡ ½ÇÆÐÇß½À´Ï´Ù.\n´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä :\n" + error.ToString());
+                    requestFailedDelegateForRank("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È¹ï¿½æ¿¡ ï¿½ï¿½ï¿½ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½.\nï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½ :\n" + error.ToString());
             }
             catch
             {
                 if (requestFailedDelegateForRank != null)
-                    requestFailedDelegateForRank("¿À·ù°¡ ¹ß»ýÇß½À´Ï´Ù. ´Ù½Ã ½ÃµµÇØÁÖ¼¼¿ä");
+                    requestFailedDelegateForRank("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½. ï¿½Ù½ï¿½ ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½");
             }
         }
     }
 
 
-    //======================µ¥ÀÌÅÍ ¸®ÇÁ·¹½¬================================
+    //======================ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½================================
     private void SetStageUnlock() {
         int level = GetLevel();
         for (int i = 0; i < isUnlockStage.Length; i++)
@@ -1035,7 +1035,7 @@ public class DataManager : MonoBehaviour
     }
 
 
-    //======================µ¥ÀÌÅÍ ÂüÁ¶================================
+    //======================ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½================================
     public int GetProfileImage() { return profile_image_; }
     public string GetNickName() { return nickname_; }
     public int GetCoin() { return coin_; }
@@ -1081,7 +1081,7 @@ public class DataManager : MonoBehaviour
 
     public void RequestRemoveCoin(int remove_value) 
     {
-        coin_ -= remove_value;//+)ÀÓ½Ã : 
+        coin_ -= remove_value;//+)ï¿½Ó½ï¿½ : 
     }
 
     public int GetPlayerTotalScore() { return player_total_score_; }

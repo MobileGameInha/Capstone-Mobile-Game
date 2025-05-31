@@ -36,6 +36,14 @@ public class SettingManager : MonoBehaviour
     private int CurrentPage=0;
     public TextMeshProUGUI PageText;
     public GameObject CutScneUI;
+    
+    [Header("Panel Prompt")]
+    public GameObject promptPanel; 
+    public GameObject blurBackground;
+    public TextMeshProUGUI promptTitleText;
+    public enum PromptType { Logout, Quit }
+    private PromptType currentPromptType;
+
     private void Start()
     {
 
@@ -198,5 +206,50 @@ public class SettingManager : MonoBehaviour
             Leftbtn.SetActive(true);
             Rightbtn.SetActive(false);
         }
+    }
+    public void OnLogoutButtonClicked()
+    {
+        currentPromptType = PromptType.Logout;
+        ShowPrompt("로그아웃 하시겠습니까?");
+    }
+
+    public void OnQuitGameButtonClicked()
+    {
+        currentPromptType = PromptType.Quit;
+        ShowPrompt("게임을 종료하시겠습니까?");
+    }
+
+    private void ShowPrompt(string message)
+    {
+        promptTitleText.text = message;
+        promptPanel.SetActive(true);
+        blurBackground.SetActive(true);
+    }
+
+    public void OnConfirmPrompt()
+    {
+        switch (currentPromptType)
+        {
+            case PromptType.Logout:
+                PlayerPrefs.DeleteKey("saved_id");
+                PlayerPrefs.DeleteKey("saved_pw");
+                PlayerPrefs.Save();
+                Debug.Log("로그아웃 완료");
+                LoadingManager.LoadScene("TitleScene");
+                break;
+
+            case PromptType.Quit:
+                Debug.Log("게임 종료");
+                Application.Quit();
+                break;
+        }
+        settingUI.SetActive(false);
+        ClosePrompt();
+    }
+
+    public void ClosePrompt()
+    {
+        promptPanel.SetActive(false);
+        blurBackground.SetActive(false);
     }
 }
