@@ -93,8 +93,13 @@ public class AuthUIManager : MonoBehaviour
     public void GotoLobby()
     {
         if (is_requesting_) { return; }
-
-        LoadingManager.LoadScene("LobbyScene");
+        if (PlayerPrefs.GetInt("Stage_0", 0)==0)
+        {
+            LoadingManager.LoadScene("CutScene_0");
+        }
+        else {
+            LoadingManager.LoadScene("LobbyScene");
+        }
         //SceneManager.LoadScene("LobbyScene"); 동기식...
     }
 

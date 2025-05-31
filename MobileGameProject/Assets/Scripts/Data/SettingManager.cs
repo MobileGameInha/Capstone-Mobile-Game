@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class SettingManager : MonoBehaviour
@@ -41,9 +42,13 @@ public class SettingManager : MonoBehaviour
     public GameObject promptPanel; 
     public GameObject blurBackground;
     public TextMeshProUGUI promptTitleText;
+
+    public GameObject[] reseeText;
+
     public enum PromptType { Logout, Quit }
     private PromptType currentPromptType;
 
+    
     private void Start()
     {
 
@@ -78,9 +83,18 @@ public class SettingManager : MonoBehaviour
         masterSlider.onValueChanged.AddListener(SetMasterVolume);
         bgmSlider.onValueChanged.AddListener(SetBgmVolume);
         sfxSlider.onValueChanged.AddListener(SetSfxVolume);
-        
 
-        
+
+        for (int i = 0; i < 5; i++)
+        {
+            if (PlayerPrefs.GetInt("Stage_" + i.ToString(), 0) != 0)
+            {
+                reseeText[i].SetActive(true);
+            }
+            else {
+                reseeText[i].SetActive(false);
+            }
+        }
     }
     
 
@@ -193,8 +207,11 @@ public class SettingManager : MonoBehaviour
     }
 
     public void OnClickTutorial() {
-        tutorialManager.Open();
-        ToggleSettingUI();
+        if (SceneManager.GetActiveScene().name == "LobbyScene")
+        {
+            tutorialManager.Open();
+            ToggleSettingUI();
+        }
     }
 
     public void ShowArrow(int index)
@@ -225,6 +242,19 @@ public class SettingManager : MonoBehaviour
         promptTitleText.text = message;
         promptPanel.SetActive(true);
         blurBackground.SetActive(true);
+    }
+
+    public void OnClickReSeeCutScene(int idx) {
+        Debug.Log("컷씬 다시보기 버튼이 눌렸음");
+        if (SceneManager.GetActiveScene().name == "LobbyScene")
+        {
+            if (PlayerPrefs.GetInt("Stage_" + idx.ToString(), 0) != 0)
+            {
+                ToggleCutSceneUI();
+                ToggleSettingUI();
+                LoadingManager.LoadScene("CutSceneRe_" + idx.ToString());
+            }
+        }
     }
 
     public void OnConfirmPrompt()
