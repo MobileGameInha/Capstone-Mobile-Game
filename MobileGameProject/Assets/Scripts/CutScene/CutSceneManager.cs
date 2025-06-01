@@ -262,7 +262,7 @@ public class CutSceneManager : MonoBehaviour
             case 1://for Cutscene 1,2
                 StartCoroutine(MoveToPositionX(0, -150.0f)); 
                 break;
-            case 2:
+            case 2://JUMP
                 now_index_ += now_text_set_.jump_index_;
 
                 ready_to_next_cut_ = true;
@@ -273,12 +273,18 @@ public class CutSceneManager : MonoBehaviour
                     textSelectAnimator.SetBool(SHOW_PARAM_HASH, true);
                 }
                 break;
+            case 3://for Cutscene 4
+                idleCats[1].GetComponent<RectTransform>().localScale = new Vector3(50, 50, 100);
+                StartCoroutine(MoveToPositionX(2, 175.0f));
+                break;
             case 1000://이미지 제거
                     imageShowAnimator.SetBool(SHOW_PARAM_HASH, false);
                     break;
             case 1001://이미지 생성
             case 1002:
-                    showingImage.sprite = showingImageSprites[idx - 1001];
+            case 1003:
+            case 1004:
+                showingImage.sprite = showingImageSprites[idx - 1001];
                     imageShowAnimator.SetBool(SHOW_PARAM_HASH, true);
                     break;
             case 2000://for Cutscene 2
