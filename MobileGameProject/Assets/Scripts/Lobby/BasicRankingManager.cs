@@ -66,8 +66,7 @@ public class BasicRankingManager : MonoBehaviour
         WatingPanel.SetActive(true);
         LockPanel.SetActive(false);
 
-        SuccessRequestEvent();
-        //+)DataManager.dataManager.GetRankingData();
+        DataManager.dataManager.GetRankingData();
     }
 
 

@@ -38,7 +38,7 @@ public class BasicHelperManager : MonoBehaviour
     { (int)Item.TICKET,(int)Item.DISK,  (int)Item.BELL }
     };
 
-    public static readonly int[] CAT_UPGRATE_COUNT_ = { 0, 4, 5, 6, 7, 0 };
+    public static readonly int[] CAT_UPGRATE_COUNT_ = { 3, 4, 5, 6, 7, 8 };
 
     public static readonly int MAX_HELPER_ = 3;
 
@@ -93,8 +93,11 @@ public class BasicHelperManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        DataManager.dataManager.requestSuccededDelegate -= SuccessRequestEvent;
-        DataManager.dataManager.requestFailedDelegate -= FailRequestEvent;
+        if (DataManager.dataManager != null)
+        {
+            DataManager.dataManager.requestSuccededDelegate -= SuccessRequestEvent;
+            DataManager.dataManager.requestFailedDelegate -= FailRequestEvent;
+        }
     }
 
     private void Start()
@@ -129,6 +132,9 @@ public class BasicHelperManager : MonoBehaviour
 
     public void OnClickCloseSelectPanel()
     {
+        ResetLobbyHelpers();
+        ResetHelperSelectPanel();
+        ResetHelperUpgradePanel();
         HelperUpgradePanel.SetActive(false);
         HelperSelectPanel.SetActive(false);
         HelperButtons.SetActive(true);
@@ -136,8 +142,9 @@ public class BasicHelperManager : MonoBehaviour
 
     public void OnClickCloseUpgradePanel()
     {
+        ResetLobbyHelpers();
         ResetHelperSelectPanel();
-
+        ResetHelperUpgradePanel();
         HelperUpgradePanel.SetActive(false);
         HelperSelectPanel.SetActive(true);
         HelperButtons.SetActive(false);
@@ -278,7 +285,7 @@ public class BasicHelperManager : MonoBehaviour
 
             CatEXPSlider.value = DataManager.dataManager.GetEXPOfCat(selected_cat_index[now_showing_idx]) / DataManager.MAX_CAT_EXP;
 
-            CatLevelText.text = DataManager.dataManager.GetLevelOfCat(selected_cat_index[now_showing_idx]).ToString() + " / 5";
+            CatLevelText.text = (DataManager.dataManager.GetLevelOfCat(selected_cat_index[now_showing_idx])+1).ToString() + " / 5";
 
 
             if (DataManager.dataManager.GetEXPOfCat(selected_cat_index[now_showing_idx]) == 100.0f)
@@ -320,7 +327,7 @@ public class BasicHelperManager : MonoBehaviour
 
             Upgrade_CatEXPSlider.value = DataManager.dataManager.GetEXPOfCat(selected_cat_index[now_showing_idx]) / DataManager.MAX_CAT_EXP;
 
-            Upgrade_CatLevelText.text = DataManager.dataManager.GetLevelOfCat(selected_cat_index[now_showing_idx]).ToString() + " / 5";
+            Upgrade_CatLevelText.text = (DataManager.dataManager.GetLevelOfCat(selected_cat_index[now_showing_idx])+1).ToString() + " / 5";
 
             if (DataManager.dataManager.GetEXPOfCat(selected_cat_index[now_showing_idx]) == 100.0f)
             {
@@ -339,7 +346,7 @@ public class BasicHelperManager : MonoBehaviour
             }
 
 
-            if (DataManager.dataManager.GetLevelOfCat(selected_cat_index[now_showing_idx]) == 5)
+            if (DataManager.dataManager.GetLevelOfCat(selected_cat_index[now_showing_idx]) == 4)
             {
                 Upgrade_UpgradeLevelCheckPanel.SetActive(true);
                 Upgrade_UpgradeButton.SetActive(false);
@@ -409,6 +416,7 @@ public class BasicHelperManager : MonoBehaviour
         switch (request_type_)
         {
             case RequestType.SetCat:
+                SetCatState();
                 ResetHelperSelectPanel();
                 ResetLobbyHelpers();
                 ResetHelperUpgradePanel();
@@ -416,6 +424,7 @@ public class BasicHelperManager : MonoBehaviour
                 GameObject.FindObjectOfType<BasicChallangeManager>().ResetCatState();
                 break;
             case RequestType.UpgradeCat:
+                SetCatState();
                 ResetHelperSelectPanel();
                 ResetLobbyHelpers();
                 ResetHelperUpgradePanel();
