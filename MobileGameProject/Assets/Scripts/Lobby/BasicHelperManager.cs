@@ -429,6 +429,7 @@ public class BasicHelperManager : MonoBehaviour
                 ResetLobbyHelpers();
                 ResetHelperUpgradePanel();
                 UpgradeSuccessAnimator.SetTrigger(SHOW_PARAM_HASH);
+                GameObject.FindObjectOfType<BasicShopManager>().ResetItemState();
                 break;
             default:
                 break;

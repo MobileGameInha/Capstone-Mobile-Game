@@ -9,6 +9,7 @@ using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Networking;
 using static System.Net.WebRequestMethods;
+using static UnityEngine.Rendering.DebugUI;
 
 public enum Item { SNACK, BELL, BOX, DISK, TICKET, FLOWER, LEAF, EARTH }
 
@@ -35,7 +36,7 @@ public class DataManager : MonoBehaviour
     public const float PLAYER_PER_EXP = 100.0f;
     public const float MAX_CAT_EXP = 100.0f;
 
-    private const string SERVER_API_BASIC_ADDRESS = "http://3.234.143.185:8080";
+    private const string SERVER_API_BASIC_ADDRESS = "http://3.231.148.170:8080";
 
     private readonly int[] STAGE_UNLOCK_LEVEL = {0,3,6,10,13};
     private readonly int STAGE_UNLOCK_CHALLENGE = 15;
@@ -231,17 +232,13 @@ public class DataManager : MonoBehaviour
     }
     //고양이 선택 데이터
 
-    [System.Serializable]
-    public class ItemCountEntry
-    {
-        public string key;
-        public int value;
-    }
+
 
     [System.Serializable]
     public class CatUpgradeData
     {
-        public List<ItemCountEntry> itemCount;
+        public int[] items;
+        public int itemCount;
     }
     //고양이 업그레이드 데이터
 
@@ -1031,7 +1028,13 @@ public class DataManager : MonoBehaviour
         else
         {
             if (requestFailedDelegate != null)
-                requestFailedDelegate(error.message);
+                if (error != null)
+                {
+                    requestFailedDelegate(error.message);
+                }
+                else {
+                    requestFailedDelegate("예기치 못한 오류가 발생하였습니다!");
+                }
         }
 
         requesting_ = false;
@@ -1040,28 +1043,17 @@ public class DataManager : MonoBehaviour
 
     private IEnumerator UpgradeCatRequest(int cat_idx)
     {
+
+        int[] removeitems = new int[3];
+        removeitems[0] = BasicHelperManager.CAT_UPGRADE_LIST_[cat_idx, 0] + 1;
+        removeitems[1] = BasicHelperManager.CAT_UPGRADE_LIST_[cat_idx, 1] + 1;
+        removeitems[2] = BasicHelperManager.CAT_UPGRADE_LIST_[cat_idx, 2] + 1;
+
         CatUpgradeData requestData = new CatUpgradeData
         {
-            itemCount = new List<ItemCountEntry>()
+            items = removeitems,
+            itemCount = BasicHelperManager.CAT_UPGRATE_COUNT_[level_cat_[cat_idx]]
         };
-
-        requestData.itemCount.Add(new ItemCountEntry
-        {
-            key = (BasicHelperManager.CAT_UPGRADE_LIST_[cat_idx, 0] + 1).ToString(),
-            value = BasicHelperManager.CAT_UPGRATE_COUNT_[level_cat_[cat_idx]]
-        });
-
-        requestData.itemCount.Add(new ItemCountEntry
-        {
-            key = (BasicHelperManager.CAT_UPGRADE_LIST_[cat_idx, 1] + 1).ToString(),
-            value = BasicHelperManager.CAT_UPGRATE_COUNT_[level_cat_[cat_idx]]
-        });
-
-        requestData.itemCount.Add(new ItemCountEntry
-        {
-            key = (BasicHelperManager.CAT_UPGRADE_LIST_[cat_idx, 2] + 1).ToString(),
-            value = BasicHelperManager.CAT_UPGRATE_COUNT_[level_cat_[cat_idx]]
-        });
 
         string jsonData = JsonUtility.ToJson(requestData);
 
@@ -1171,6 +1163,9 @@ public class DataManager : MonoBehaviour
     {
         bool is_success = true;
         ErrorResponse error = new ErrorResponse();
+
+        player_total_score_ = 0;
+
         for (int i = 0; i < 8; i++)
         {
             Debug.Log(i.ToString() + "번째 스테이지 데이터를 불러옵니다");
@@ -1238,25 +1233,31 @@ public class DataManager : MonoBehaviour
 
                 if (response.tier == "Bronze")
                 {
+                    Debug.Log("브론즈입니다");
                     player_tier_ = 0;
                 }
                 else if (response.tier == "Gold")
                 {
+                    Debug.Log("골드입니다");
                     player_tier_ = 1;
                 }
                 else if (response.tier == "Diamond")
                 {
+                    Debug.Log("다이아입니다");
                     player_tier_ = 2;
                 }
                 else if (response.tier == "Master")
                 {
+                    Debug.Log("마스터입니다");
                     player_tier_ = 3;
                 }
                 else if (response.tier == "Challenger")
                 {
+                    Debug.Log("챌린저입니다");
                     player_tier_ = 4;
                 }
                 else {
+                    Debug.Log("받아오지 못했습니다 : 브론즈");
                     player_tier_ = 0;
                 }
                 Debug.Log("유저 티어 데이터를 잘 불러왔습니다.");
