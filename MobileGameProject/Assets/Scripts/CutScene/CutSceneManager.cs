@@ -233,6 +233,11 @@ public class CutSceneManager : MonoBehaviour
                 now_index_ += now_text_set_.jump_index_;
                 NextCutScene();
                 break;
+            case 2: //단순 넥스트 + 배경음 삭제
+                is_selecting_ = false;
+                StopBGM();
+                NextCutScene();
+                break;
             default:
                 is_selecting_ = false;
                 NextCutScene();
@@ -254,10 +259,10 @@ public class CutSceneManager : MonoBehaviour
                     textSelectAnimator.SetBool(SHOW_PARAM_HASH, true);
                 }
                 break;
-            case 1://for Cutscene 2
+            case 1://for Cutscene 1,2
                 StartCoroutine(MoveToPositionX(0, -150.0f)); 
                 break;
-            case 2:
+            case 2://JUMP
                 now_index_ += now_text_set_.jump_index_;
 
                 ready_to_next_cut_ = true;
@@ -268,12 +273,18 @@ public class CutSceneManager : MonoBehaviour
                     textSelectAnimator.SetBool(SHOW_PARAM_HASH, true);
                 }
                 break;
+            case 3://for Cutscene 4
+                idleCats[1].GetComponent<RectTransform>().localScale = new Vector3(50, 50, 100);
+                StartCoroutine(MoveToPositionX(2, 175.0f));
+                break;
             case 1000://이미지 제거
                     imageShowAnimator.SetBool(SHOW_PARAM_HASH, false);
                     break;
             case 1001://이미지 생성
             case 1002:
-                    showingImage.sprite = showingImageSprites[idx - 1001];
+            case 1003:
+            case 1004:
+                showingImage.sprite = showingImageSprites[idx - 1001];
                     imageShowAnimator.SetBool(SHOW_PARAM_HASH, true);
                     break;
             case 2000://for Cutscene 2
@@ -281,7 +292,16 @@ public class CutSceneManager : MonoBehaviour
                 imageShowAnimator.SetBool(SHOW_PARAM_HASH, false);
                     StartCoroutine(MoveToPositionX(1, 150.0f, false));
                     break;
+            case 2001://for Cutscene 1
+                imageShowAnimator.SetBool(SHOW_PARAM_HASH, false);
+                StartCoroutine(MoveToPositionX(0, 0.0f, false));
+                break;
+            case 3000://BGM종료
+                StopBGM();
+                break;
             case 3001://BGM시작
+            case 3002:
+            case 3003:
                 StartBGM(idx - 3000);
                 break;
             default:
@@ -451,6 +471,8 @@ public class CSVOpener
 
             else
             {
+                Debug.Log(count.ToString()+"번째 라인 읽기");
+
                 var datas = str.Split(',');
                 TextSet textSet = new TextSet();
                 textSet.talking_index_ = int.Parse(datas[0]);

@@ -54,8 +54,11 @@ public class BasicRankingManager : MonoBehaviour
     }
     private void OnDestroy()
     {
-        DataManager.dataManager.requestSuccededDelegateForRank -= SuccessRequestEvent;
-        DataManager.dataManager.requestFailedDelegateForRank -= FailRequestEvent;
+        if (DataManager.dataManager != null)
+        {
+            DataManager.dataManager.requestSuccededDelegateForRank -= SuccessRequestEvent;
+            DataManager.dataManager.requestFailedDelegateForRank -= FailRequestEvent;
+        }
     }
 
     private void Start()
@@ -63,8 +66,7 @@ public class BasicRankingManager : MonoBehaviour
         WatingPanel.SetActive(true);
         LockPanel.SetActive(false);
 
-        SuccessRequestEvent();
-        //+)DataManager.dataManager.GetRankingData();
+        DataManager.dataManager.GetRankingData();
     }
 
 

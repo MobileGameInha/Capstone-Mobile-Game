@@ -77,6 +77,9 @@ public class GameManager : MonoBehaviour
     public Slider RoundTimerSlider;
 
     [SerializeField]
+    private int stageID = 0;
+
+    [SerializeField]
     private ChallangeMode Mode = ChallangeMode.None;
 
     [SerializeField]
@@ -954,7 +957,7 @@ public class GameManager : MonoBehaviour
                 ex = Mathf.RoundToInt(ex * using_cat_value_[CatIndex.EXP_UP_]);
             }
 
-            DataManager.dataManager.UpdateScore(score_);
+            DataManager.dataManager.UpdateScore(score_,stageID);
             visual_manager_.StartAnimationForEndGame(score_, gold, ex, using_cat_[CatIndex.GOLD_UP_], using_cat_[CatIndex.EXP_UP_]);
             Debug.Log("게임종료...");
         }

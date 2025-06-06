@@ -81,8 +81,11 @@ public class AuthUIManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        DataManager.dataManager.requestSuccededDelegate -= SuccessRequestEvent;
-        DataManager.dataManager.requestFailedDelegate -= FailRequestEvent;
+        if (DataManager.dataManager != null)
+        {
+            DataManager.dataManager.requestSuccededDelegate -= SuccessRequestEvent;
+            DataManager.dataManager.requestFailedDelegate -= FailRequestEvent;
+        }
     }
 
 
@@ -90,8 +93,13 @@ public class AuthUIManager : MonoBehaviour
     public void GotoLobby()
     {
         if (is_requesting_) { return; }
-
-        LoadingManager.LoadScene("LobbyScene");
+        if (PlayerPrefs.GetInt("Stage_0", 0)==0)
+        {
+            LoadingManager.LoadScene("CutScene_0");
+        }
+        else {
+            LoadingManager.LoadScene("LobbyScene");
+        }
         //SceneManager.LoadScene("LobbyScene"); 동기식...
     }
 
@@ -287,7 +295,7 @@ public class AuthUIManager : MonoBehaviour
                 }
                 Debug.Log(PlayerPrefs.GetString("saved_id"));
                 PlayerPrefs.Save();
-                ShowToast($"로그인 성공! 로그인 하세요!");
+                ShowToast($"로그인 성공! 시작 하세요!");
                 CloseUI();
             }
         }
