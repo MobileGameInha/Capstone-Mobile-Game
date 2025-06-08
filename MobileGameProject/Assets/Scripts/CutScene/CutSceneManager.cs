@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
-using UnityEditorInternal;
+//using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class CutSceneManager : MonoBehaviour
@@ -451,10 +452,11 @@ public struct TextSet
 
 public class CSVOpener
 {
+
+
     public static Dictionary<int, TextSet> OpenFileChat(int idx)
     {
-
-        StreamReader streamReader = new StreamReader(Application.dataPath + @"/StreamingAssets/TextSet/text" + idx.ToString() + ".csv");
+        StreamReader streamReader = new StreamReader(Application.streamingAssetsPath +"/TextSet/text" + idx.ToString() + ".csv");
         if (streamReader == null) { Debug.Log("파일 읽기 실패!"); return null; }
 
         Dictionary<int, TextSet> tmp = new Dictionary<int, TextSet>();

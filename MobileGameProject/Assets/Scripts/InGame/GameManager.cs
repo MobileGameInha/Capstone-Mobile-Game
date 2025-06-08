@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEditorInternal;
+//using UnityEditorInternal;
 
 
 public enum ChallangeMode { None, ButtonRoatator, OneLife, BlackAndWhite}
