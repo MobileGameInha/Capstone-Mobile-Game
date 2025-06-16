@@ -86,6 +86,7 @@ public class BasicShopManager : MonoBehaviour
 
     public void OnClickItemshopButton()
     {
+        isSpeening = false;
         MainPanel.SetActive(false);
         PetPanel.SetActive(false);
         ItemPanel.SetActive(true);
@@ -227,6 +228,7 @@ public class BasicShopManager : MonoBehaviour
         switch (request_type_)
         {
             case RequestType.BuyCat:
+                isSpeening = false;
                 BuyAnimator.SetTrigger(SHOW_PARAM_HASH);
                 BuyPromptPanel.SetActive(false);
                 ResetPetState();
@@ -234,6 +236,7 @@ public class BasicShopManager : MonoBehaviour
                 GameObject.FindObjectOfType<BasicHelperManager>().ResetHelperSelectPanel();
                 break;
             case RequestType.GetItem:
+                isSpeening = false;
                 ResetItemState();
                 lobbyManager.ResetState();
                 GameObject.FindObjectOfType<BasicHelperManager>().ResetHelperUpgradePanel();
@@ -249,7 +252,7 @@ public class BasicShopManager : MonoBehaviour
         if (!is_requesting_) return;
 
         is_requesting_ = false;
-
+        isSpeening = false;
         lobbyManager.CloseWaiting();
         lobbyManager.OpenError(err);
     }
