@@ -112,7 +112,9 @@ public class BasicHelperManager : MonoBehaviour
     {
         now_showing_idx = idx;
 
+        ResetLobbyHelpers();
         ResetHelperSelectPanel();
+        ResetHelperUpgradePanel();
 
         HelperUpgradePanel.SetActive(false);
         HelperSelectPanel.SetActive(true);
@@ -123,8 +125,9 @@ public class BasicHelperManager : MonoBehaviour
     {
         if (selected_cat_index[now_showing_idx] == -1) { return; }
 
+        ResetLobbyHelpers();
+        ResetHelperSelectPanel();
         ResetHelperUpgradePanel();
-
         HelperUpgradePanel.SetActive(true);
         HelperSelectPanel.SetActive(false);
         HelperButtons.SetActive(false);
@@ -222,7 +225,7 @@ public class BasicHelperManager : MonoBehaviour
     {
         for (int i = 0; i < MAX_HELPER_; i++)
         {
-            if (selected_cat_index[i] != -1)
+            if (DataManager.dataManager.GetSelectedCat(i) != -1)
             {
                 NoneImages[i].SetActive(false);
                 IdleCats[i].gameObject.SetActive(true);
@@ -288,7 +291,7 @@ public class BasicHelperManager : MonoBehaviour
             CatLevelText.text = (DataManager.dataManager.GetLevelOfCat(selected_cat_index[now_showing_idx])+1).ToString() + " / 5";
 
 
-            if (DataManager.dataManager.GetEXPOfCat(selected_cat_index[now_showing_idx]) == 100.0f)
+            if (DataManager.dataManager.GetEXPOfCat(selected_cat_index[now_showing_idx]) >= 100.0f)
             {
                 CatEXPIcon.SetActive(true);
             }
@@ -329,7 +332,7 @@ public class BasicHelperManager : MonoBehaviour
 
             Upgrade_CatLevelText.text = (DataManager.dataManager.GetLevelOfCat(selected_cat_index[now_showing_idx])+1).ToString() + " / 5";
 
-            if (DataManager.dataManager.GetEXPOfCat(selected_cat_index[now_showing_idx]) == 100.0f)
+            if (DataManager.dataManager.GetEXPOfCat(selected_cat_index[now_showing_idx]) >= 100.0f)
             {
                 Upgrade_CatEXPIcon.SetActive(true);
             }
@@ -352,7 +355,7 @@ public class BasicHelperManager : MonoBehaviour
                 Upgrade_UpgradeButton.SetActive(false);
                 Upgrade_UpgradeCheckPanel.SetActive(false);
             }
-            else if (DataManager.dataManager.GetEXPOfCat(selected_cat_index[now_showing_idx]) == 100.0f &&
+            else if (DataManager.dataManager.GetEXPOfCat(selected_cat_index[now_showing_idx]) >= 100.0f &&
                 DataManager.dataManager.GetItemCount((Item)CAT_UPGRADE_LIST_[selected_cat_index[now_showing_idx], 0]) >= CAT_UPGRATE_COUNT_[DataManager.dataManager.GetLevelOfCat(selected_cat_index[now_showing_idx])] &&
                 DataManager.dataManager.GetItemCount((Item)CAT_UPGRADE_LIST_[selected_cat_index[now_showing_idx], 1]) >= CAT_UPGRATE_COUNT_[DataManager.dataManager.GetLevelOfCat(selected_cat_index[now_showing_idx])] &&
                 DataManager.dataManager.GetItemCount((Item)CAT_UPGRADE_LIST_[selected_cat_index[now_showing_idx], 2]) >= CAT_UPGRATE_COUNT_[DataManager.dataManager.GetLevelOfCat(selected_cat_index[now_showing_idx])]
