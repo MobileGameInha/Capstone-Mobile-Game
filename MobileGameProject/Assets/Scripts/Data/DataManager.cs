@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Net;
 using System.Runtime.InteropServices.WindowsRuntime;
-using UnityEditor.PackageManager;
-using UnityEditor.SceneManagement;
-using UnityEditorInternal;
+//using UnityEditor.PackageManager;
+//using UnityEditor.SceneManagement;
+//using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.Networking;
 using static System.Net.WebRequestMethods;
@@ -36,7 +36,7 @@ public class DataManager : MonoBehaviour
     public const float PLAYER_PER_EXP = 100.0f;
     public const float MAX_CAT_EXP = 100.0f;
 
-    private const string SERVER_API_BASIC_ADDRESS = "http://3.231.148.170:8080";
+    private const string SERVER_API_BASIC_ADDRESS = "http://44.202.186.161:8080";
 
     private readonly int[] STAGE_UNLOCK_LEVEL = {0,3,6,10,13};
     private readonly int STAGE_UNLOCK_CHALLENGE = 15;

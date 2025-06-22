@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
-using UnityEditorInternal;
+//using UnityEditorInternal;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class CutSceneManager : MonoBehaviour
@@ -83,23 +84,29 @@ public class CutSceneManager : MonoBehaviour
 
     private void Start()
     {
-        StartCutScene();
+        StartCoroutine(StartCutScene());
     }
 
-    private void StartCutScene() 
+    private IEnumerator StartCutScene()
     {
-        chat_dictionary = CSVOpener.OpenFileChat(textIndex);
-        if (chat_dictionary == null) { LoadingManager.LoadScene("LobbyScene"); }
-        else
+        yield return StartCoroutine(CSVOpener.OpenFileChat(textIndex, result =>
         {
-            StartBGM(0);
-            now_index_ = -1;
-            ready_to_next_cut_ = true;
-            is_selecting_ = false;
-            is_skip_ = false;
-            end_cut_scene_ = false;
-            NextCutScene();
+            chat_dictionary = result;
+        }));
+
+        if (chat_dictionary == null)
+        {
+            LoadingManager.LoadScene("LobbyScene");
+            yield break;
         }
+
+        StartBGM(0);
+        now_index_ = -1;
+        ready_to_next_cut_ = true;
+        is_selecting_ = false;
+        is_skip_ = false;
+        end_cut_scene_ = false;
+        NextCutScene();
     }
 
     public void NextCutScene() 
@@ -451,70 +458,66 @@ public struct TextSet
 
 public class CSVOpener
 {
-    public static Dictionary<int, TextSet> OpenFileChat(int idx)
+    public static IEnumerator OpenFileChat(int idx, System.Action<Dictionary<int, TextSet>> onComplete)
     {
+        string filePath = Application.streamingAssetsPath + "/TextSet/text" + idx.ToString() + ".csv";
 
-        StreamReader streamReader = new StreamReader(Application.dataPath + @"/StreamingAssets/TextSet/text" + idx.ToString() + ".csv");
-        if (streamReader == null) { Debug.Log("파일 읽기 실패!"); return null; }
+        UnityWebRequest www = UnityWebRequest.Get(filePath);
+        yield return www.SendWebRequest();
+
+        if (www.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError("파일 읽기 실패! " + www.error);
+            onComplete?.Invoke(null);
+            yield break;
+        }
+
+        string[] lines = www.downloadHandler.text.Split(new[] { '\n', '\r' }, System.StringSplitOptions.RemoveEmptyEntries);
 
         Dictionary<int, TextSet> tmp = new Dictionary<int, TextSet>();
-
         int count = 0;
 
-        string str = streamReader.ReadLine();
-
-        while (true)
+        for (int i = 1; i < lines.Length; i++) // 0번 줄은 헤더
         {
-            str = streamReader.ReadLine();
+            string str = lines[i].Trim();
+            if (string.IsNullOrEmpty(str)) continue;
 
-            if (str == null) break;
+            var datas = str.Split(',');
 
-            else
+            TextSet textSet = new TextSet();
+            textSet.talking_index_ = int.Parse(datas[0]);
+            textSet.text_ = datas[1];
+            textSet.sprite_index_ = int.Parse(datas[2]);
+
+            textSet.have_selection_ = bool.Parse(datas[3]);
+            if (textSet.have_selection_)
             {
-                Debug.Log(count.ToString()+"번째 라인 읽기");
+                textSet.selection_count_ = int.Parse(datas[4]);
+                textSet.select_text_ = new string[3];
+                textSet.select_event_index_ = new int[3];
 
-                var datas = str.Split(',');
-                TextSet textSet = new TextSet();
-                textSet.talking_index_ = int.Parse(datas[0]);
-                textSet.text_ = datas[1];
-                textSet.sprite_index_ = int.Parse(datas[2]);
+                textSet.select_text_[0] = datas[5];
+                textSet.select_text_[1] = datas[6];
+                textSet.select_text_[2] = datas[7];
 
-                textSet.have_selection_ = bool.Parse(datas[3]);
-                if (textSet.have_selection_)
-                {
-                    textSet.selection_count_ = int.Parse(datas[4]);
-
-                    textSet.select_text_ = new string[3];
-                    textSet.select_event_index_ = new int[3];
-
-                    textSet.select_text_[0] = datas[5];
-                    textSet.select_text_[1] = datas[6];
-                    textSet.select_text_[2] = datas[7];
-
-                    textSet.select_event_index_[0] = int.Parse(datas[8]);
-                    textSet.select_event_index_[1] = int.Parse(datas[9]);
-                    textSet.select_event_index_[2] = int.Parse(datas[10]);
-                }
-
-                textSet.have_sound_ = bool.Parse(datas[11]);
-                if (textSet.have_sound_)
-                {
-                    textSet.sound_index_ = int.Parse(datas[12]);
-                }
-
-                textSet.have_end_event_ = bool.Parse(datas[13]);
-                if (textSet.have_end_event_)
-                {
-                    textSet.end_event_index_ = int.Parse(datas[14]);
-                }
-
-                textSet.jump_index_ = int.Parse(datas[15]);
-
-                tmp.Add(count++, textSet);
+                textSet.select_event_index_[0] = int.Parse(datas[8]);
+                textSet.select_event_index_[1] = int.Parse(datas[9]);
+                textSet.select_event_index_[2] = int.Parse(datas[10]);
             }
-        }
-        streamReader.Close();
-        return tmp;
-    }
 
+            textSet.have_sound_ = bool.Parse(datas[11]);
+            if (textSet.have_sound_)
+                textSet.sound_index_ = int.Parse(datas[12]);
+
+            textSet.have_end_event_ = bool.Parse(datas[13]);
+            if (textSet.have_end_event_)
+                textSet.end_event_index_ = int.Parse(datas[14]);
+
+            textSet.jump_index_ = int.Parse(datas[15]);
+
+            tmp.Add(count++, textSet);
+        }
+
+        onComplete?.Invoke(tmp);
+    }
 }

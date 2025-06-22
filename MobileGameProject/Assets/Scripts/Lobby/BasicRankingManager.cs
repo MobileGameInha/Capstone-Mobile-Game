@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Microsoft.Unity.VisualStudio.Editor;
+//using Microsoft.Unity.VisualStudio.Editor;
 
 [System.Serializable]
 public class RankerUI
@@ -108,7 +108,7 @@ public class BasicRankingManager : MonoBehaviour
             StageText.text = $"스테이지{StagePage}";    
         }
         else if(StagePage==6){StageText.text = $"흑백모드";}
-        else if(StagePage==7){StageText.text = $"무한모드";}
+        else if(StagePage==7){StageText.text = $"온리원 모드";}
         else if(StagePage==8){StageText.text = $"로테이션모드";}
 
 
